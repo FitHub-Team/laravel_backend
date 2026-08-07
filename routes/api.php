@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\EmailVerificationController;
+use App\Http\Controllers\Api\PasswordResetController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -16,4 +18,21 @@ Route::middleware('auth:sanctum')->group(function () {
             'user'   => $request->user()
         ]);
     });
+  
+    Route::post(
+        '/email/verification-notification',
+        [EmailVerificationController::class, 'resend']
+    );
 });
+
+// reset pass 
+    Route::post('/forgot-password', [PasswordResetController::class, 'forgotPassword']);
+
+    Route::post('/reset-password', [PasswordResetController::class, 'resetPassword']);
+
+Route::get(
+    '/email/verify/{id}/{hash}',
+    [EmailVerificationController::class, 'verifyEmail']
+)
+    ->middleware('signed')
+    ->name('verification.verify');
