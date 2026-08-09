@@ -23,7 +23,8 @@ class AuthController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'status' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
+
             ], 422);
         }
 
@@ -34,13 +35,14 @@ class AuthController extends Controller
             'password'  => $request->password,
             'role'      => $request->role 
         ]);
+        $user->sendEmailVerificationNotification();
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
             'status'  => true,
             'message' => 'User registered successfully',
-            'token'   => $token,
+             'token'   => $token,
             'user'    => $user
         ], 201);
     }
@@ -87,4 +89,3 @@ class AuthController extends Controller
             'message' => 'Logged out successfully'
         ], 200);
     }
-}
