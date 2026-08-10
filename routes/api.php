@@ -4,7 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\OnboardingController;
 use App\Http\Controllers\Api\EmailVerificationController;
 use App\Http\Controllers\Api\PasswordResetController;
-use App\Http\Controllers\Api\MedicalRestrictionController; // 👈 1. استدعاء الكنترولر هنا
+use App\Http\Controllers\Api\MedicalRestrictionController; 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
