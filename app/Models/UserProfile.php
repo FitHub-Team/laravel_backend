@@ -14,8 +14,15 @@ class UserProfile extends Model
         'weight',
         'health_goal',
         'medical_conditions',
+        'allergies',
+        'dietary_preference',
+        'disclaimer_accepted',
     ];
 
+    protected $casts = [
+        'allergies' => 'array',
+        'disclaimer_accepted' => 'boolean',
+    ];
     public function user()
     {
         return $this->belongsTo(User::class);
