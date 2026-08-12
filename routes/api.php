@@ -32,7 +32,7 @@ Route::middleware('auth:sanctum')->group(function () {
         '/email/verification-notification',
         [EmailVerificationController::class, 'resend']
     );
-});
+
 
 
 
