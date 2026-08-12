@@ -23,13 +23,21 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 });
 
-Route::post(
-    '/email/verification-notification',
-    [EmailVerificationController::class, 'resend']
-);
+
 
 
 // reset pass
+    
+    Route::post(
+        '/email/verification-notification',
+        [EmailVerificationController::class, 'resend']
+    );
+});
+
+
+
+
+// reset pass 
 Route::post('/forgot-password', [PasswordResetController::class, 'forgotPassword']);
 
 Route::post('/reset-password', [PasswordResetController::class, 'resetPassword']);
