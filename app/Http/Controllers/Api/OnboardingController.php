@@ -19,6 +19,9 @@ class OnboardingController extends Controller
             'weight' => 'required|numeric|min:20|max:300',
             'health_goal' => 'required|in:weight_loss,muscle_building,maintain_fitness',
             'medical_conditions' => 'nullable|string',
+            'allergies' => 'nullable|array',
+            'dietary_preference' => 'nullable|string',
+            'disclaimer_accepted' => 'required|boolean',
         ]);
 
         $user = $request->user();

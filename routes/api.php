@@ -21,6 +21,12 @@ Route::middleware('auth:sanctum')->group(function () {
             'user' => $request->user()
         ]);
     });
+});
+
+
+
+
+// reset pass
     
     Route::post(
         '/email/verification-notification',

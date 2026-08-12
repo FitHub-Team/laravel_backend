@@ -12,11 +12,12 @@ return new class extends Migration {
     {
         Schema::create('user_profiles', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->enum('gender', ['male', 'female'])->nullable();
             $table->unsignedInteger('age')->nullable();
             $table->decimal('height', 5, 2)->nullable();
             $table->decimal('weight', 5, 2)->nullable();
-            $table->enum('health_goal', ['weight_loss,muscle_building,maintain_fitness'])->nullable();
+            $table->string('health_goal')->nullable();
             $table->text('medical_conditions')->nullable();
             $table->timestamps();
         });
