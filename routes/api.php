@@ -13,6 +13,9 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/onboarding/complete', [OnboardingController::class, 'completeProfile']);
+    Route::get('/onboarding/profile', [OnboardingController::class, 'getProfile']);
+    Route::put('/onboarding/profile', [OnboardingController::class, 'updateProfile']);
+    Route::delete('/onboarding/profile', [OnboardingController::class, 'deleteProfile']);
 
     Route::get('/user', function (Request $request) {
         return response()->json([
