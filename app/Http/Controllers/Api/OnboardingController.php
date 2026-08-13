@@ -26,7 +26,7 @@ class OnboardingController extends Controller
 
         $user = $request->user();
         $user->profile()->updateOrCreate(
-            ['user_id' => $user->id],
+            [],
             $validated
         );
 

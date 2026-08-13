@@ -14,7 +14,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/onboarding/complete', [OnboardingController::class, 'completeProfile']);
 
-
     Route::get('/user', function (Request $request) {
         return response()->json([
             'status' => true,
@@ -32,9 +31,6 @@ Route::middleware('auth:sanctum')->group(function () {
         '/email/verification-notification',
         [EmailVerificationController::class, 'resend']
     );
-
-
-
 
 
 // reset pass 
