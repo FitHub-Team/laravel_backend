@@ -17,9 +17,15 @@ return new class extends Migration {
             $table->unsignedInteger('age')->nullable();
             $table->decimal('height', 5, 2)->nullable();
             $table->decimal('weight', 5, 2)->nullable();
-            $table->string('health_goal')->nullable();
+            $table->enum('health_goal', [
+                'weight_loss',        // خسارة وزن
+                'muscle_building',    // زيادة الكتلة العضلية
+                'maintain_weight',    // الحفاظ على الوزن
+                'improve_endurance'   // تحسين التحمل
+            ])->nullable();
             $table->text('medical_conditions')->nullable();
             $table->timestamps();
+            $table->string('profile_photo')->nullable();
         });
     }
 
