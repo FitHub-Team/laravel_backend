@@ -4,66 +4,77 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Auth\Events\Verified;
+use App\Services\EmailVerificationService;
 use Illuminate\Http\Request;
 
 
 class EmailVerificationController extends Controller
 {
+    public function __construct(
+        private EmailVerificationService $emailVerificationService
+    ) {}
 
 
-public function verifyEmail(Request $request)
-{
-    $user = User::find($request->route('id'));
+    public function verifyEmail(Request $request)
+    {
+        $user = User::find($request->route('id'));
 
-    if (! $user) {
-        return response()->json([
-            'status' => false,
-            'message' => 'User not found'
-        ], 404);
-    }
+        if (! $user) {
+            return response()->json([
+                'status' => false,
+                'message' => 'User not found',
+            ], 404);
+        }
 
-    if (! hash_equals(
-        sha1($user->getEmailForVerification()),
-        (string) $request->route('hash')
-    )) {
-        return response()->json([
-            'status' => false,
-            'message' => 'Invalid verification link.'
-        ], 403);
-    }
+        if ($user->hasVerifiedEmail()) {
+            return response()->json([
+                'status' => true,
+                'message' => 'Email already verified',
+            ]);
+        }
 
-    if ($user->hasVerifiedEmail()) {
+        $verified = $this->emailVerificationService->verify(
+            $user,
+            (string) $request->route('hash')
+        );
+
+        if (! $verified) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Invalid verification link.',
+            ], 403);
+        }
+
         return response()->json([
             'status' => true,
-            'message' => 'Email already verified'
+            'message' => 'Email verified successfully',
         ]);
     }
 
-    $user->markEmailAsVerified();
 
-    event(new Verified($user));
-
-    return response()->json([
-        'status' => true,
-        'message' => 'Email verified successfully'
-    ]);
-}
-    
     public function resend(Request $request)
     {
         $user = $request->user();
 
-        if ($user->hasVerifiedEmail()) {
+        if (! $user) {
             return response()->json([
-                'message' => 'Email already verified'
-            ]);
+                'status' => false,
+                'message' => 'Unauthenticated.',
+            ], 401);
         }
 
-        $user->sendEmailVerificationNotification();
+        if ($user->hasVerifiedEmail()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Email already verified',
+            ], 400);
+        }
+
+        $this->emailVerificationService->resend($user);
 
         return response()->json([
-            'message' => 'Verification email sent successfully'
+            'status' => true,
+            'message' => 'Verification email sent successfully',
         ]);
     }
 }

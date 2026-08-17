@@ -3,89 +3,52 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\Auth\ForgotPasswordRequest;
+use App\Http\Requests\Auth\ResetPasswordRequest;
+use App\Services\PasswordResetService;
 use Illuminate\Support\Facades\Password;
-use Illuminate\Support\Facades\Validator;
 
 class PasswordResetController extends Controller
 {
-    function forgotPassword(Request $request)
+    public function __construct(
+        private PasswordResetService $passwordResetService
+    ) {}
+    function forgotPassword(ForgotPasswordRequest $request)
     {
-      
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email|exists:users,email',
-        ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'errors' => $validator->errors()
-            ], 422);
-        }
-        $status = Password::sendResetLink(
-            $request->only('email')
+        $status = $this->passwordResetService->forgotPassword(
+            $request->email
         );
 
         if ($status === Password::RESET_LINK_SENT) {
             return response()->json([
                 'status' => true,
-                'message' => 'Password reset link sent successfully'
-            ]);
+                'message' => 'Password reset link sent successfully',
+            ], 200);
         }
+
         return response()->json([
             'status' => false,
-            'message' => 'Unable to send reset link'
+            'message' => 'Unable to send reset link',
         ], 500);
     }
 
-
-    public function resetPassword(Request $request)
+    public function resetPassword(ResetPasswordRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'token' => 'required',
-            'email' => 'required|email',
-            'password' => 'required|min:8|confirmed',
-        ]);
-
-
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
-
-        $status = Password::reset(
-            $request->only(
-                'email',
-                'password',
-                'password_confirmation',
-                'token'
-            ),
-
-            function (User $user, string $password) {
-
-                $user->password = Hash::make($password);
-                $user->save();
-            }
+        $status = $this->passwordResetService->resetPassword(
+            $request->validated()
         );
 
-
         if ($status === Password::PASSWORD_RESET) {
-
             return response()->json([
                 'status' => true,
-                'message' => 'Password reset successfully'
-            ]);
+                'message' => 'Password reset successfully',
+            ], 200);
         }
-
 
         return response()->json([
             'status' => false,
-            'message' => 'Invalid token or email'
+            'message' => 'Invalid token or email',
         ], 400);
     }
 }
