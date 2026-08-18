@@ -17,6 +17,7 @@ class UserProfile extends Model
         'allergies',
         'dietary_preference',
         'disclaimer_accepted',
+        'date_of_birth',
     ];
 
     protected $casts = [

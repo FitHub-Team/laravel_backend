@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\OnboardingController;
+use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\EmailVerificationController;
 use App\Http\Controllers\Api\PasswordResetController;
 use Illuminate\Http\Request;
@@ -12,8 +12,12 @@ Route::post('/login', [AuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::post('/onboarding/complete', [OnboardingController::class, 'completeProfile']);
-
+    //profile routes
+    Route::prefix('profile')->group(function () {
+        Route::post('/store', [ProfileController::class, 'store']);
+        Route::get('/show', [ProfileController::class, 'show']);
+        Route::put('/update ', [ProfileController::class, 'update']);
+    });
 
     Route::get('/user', function (Request $request) {
         return response()->json([
@@ -22,6 +26,17 @@ Route::middleware('auth:sanctum')->group(function () {
         ]);
     });
 });
+//try -> catch 
+
+
+// profile 
+// edit ( الوزن , الطول , الاسم ,الهدف , الصورة )
+
+
+
+
+
+// reset pass
 
 Route::post(
     '/email/verification-notification',
@@ -29,7 +44,7 @@ Route::post(
 );
 
 
-// reset pass
+// reset pass 
 Route::post('/forgot-password', [PasswordResetController::class, 'forgotPassword']);
 
 Route::post('/reset-password', [PasswordResetController::class, 'resetPassword']);
