@@ -55,6 +55,10 @@ class StoreProfileRequest extends FormRequest
                 : 'required|boolean',
 
             'profile_photo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+
+            'date_of_birth' => $isUpdate
+                ? 'sometimes|date|before:today'
+                : 'nullable|date|before:today',
         ];
     }
 }
