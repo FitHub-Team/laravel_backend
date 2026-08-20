@@ -38,10 +38,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
 // reset pass
 
-Route::post(
-    '/email/verification-notification',
-    [EmailVerificationController::class, 'resend']
-);
+// Route::post(
+//     '/email/verification-notification',
+//     [EmailVerificationController::class, 'resend']
+// );
 
 
 // reset pass 
@@ -49,9 +49,13 @@ Route::post('/forgot-password', [PasswordResetController::class, 'forgotPassword
 
 Route::post('/reset-password', [PasswordResetController::class, 'resetPassword']);
 
-Route::get(
-    '/email/verify/{id}/{hash}',
-    [EmailVerificationController::class, 'verifyEmail']
-)
-    ->middleware('signed')
-    ->name('verification.verify');
+// Route::get(
+//     '/email/verify/{id}/{hash}',
+//     [EmailVerificationController::class, 'verifyEmail']
+// )
+//     ->middleware('signed')
+//     ->name('verification.verify');
+
+Route::post('/verify-email', [EmailVerificationController::class, 'verifyEmail']);
+Route::post('/resend-verification', [EmailVerificationController::class, 'resend']);
+

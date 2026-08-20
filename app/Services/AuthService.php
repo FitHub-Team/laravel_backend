@@ -2,7 +2,11 @@
 
 namespace App\Services;
 
+use App\Models\EmailVerificationCode;
+use App\Models\User;
+use App\Notifications\VerifyEmailNotification;
 use App\Repositories\Contracts\UserRepositoryInterface;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
@@ -11,15 +15,24 @@ class AuthService
     /**
      * Create a new class instance.
      */
-    public function __construct(private UserRepositoryInterface $userRepository) {}
+    public function __construct(
+        private UserRepositoryInterface $userRepository,
+        private EmailVerificationService $emailVerificationService
+    ) {}
     public function register(array $data)
     {
+        
         $data['password'] = Hash::make($data['password']);
         $data['role'] = 'user';
-
+        if (User::where('email', $data['email'])->exists()) {
+            throw ValidationException::withMessages([
+                'email' => ['Email already registered'],
+            ]);
+        }
         $user = $this->userRepository->create($data);
+     
+        $this->emailVerificationService->sendVerificationCode($user);
 
-        $user->sendEmailVerificationNotification();
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
@@ -45,7 +58,8 @@ class AuthService
             'token' => $token,
         ];
     }
-    public function logout($user):void{
+    public function logout($user): void
+    {
         $user->currentAccessToken()?->delete();
     }
 }
