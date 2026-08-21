@@ -36,10 +36,22 @@ class AuthController extends Controller
             'user' => $result['user'],
         ], 200);
     }
+    public function loginWithGoogle(Request $request)
+    {
+        $request->validate([
+            'id_token' => ['required', 'string'],
+        ]);
+        $result = $this->authService->loginWithGoogle($request->id_token);
+        return response()->json([
+            'status' => true,
+            'message' => 'Login with Google successful',
+            'data' => $result,
+        ]);
+    }
 
     public function logout(Request $request)
     {
-       $this->authService->logout($request->user());
+        $this->authService->logout($request->user());
         return response()->json([
             'status'  => true,
             'message' => 'Logged out successfully'
