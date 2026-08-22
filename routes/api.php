@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\EmailVerificationController;
 use App\Http\Controllers\Api\PasswordResetController;
+use App\Http\Controllers\Api\Admin\AdminAuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -26,10 +27,10 @@ Route::middleware('auth:sanctum')->group(function () {
         ]);
     });
 });
-//try -> catch 
+//try -> catch
 
 
-// profile 
+// profile
 // edit ( الوزن , الطول , الاسم ,الهدف , الصورة )
 
 
@@ -44,7 +45,7 @@ Route::post(
 );
 
 
-// reset pass 
+// reset pass
 Route::post('/forgot-password', [PasswordResetController::class, 'forgotPassword']);
 
 Route::post('/reset-password', [PasswordResetController::class, 'resetPassword']);
@@ -55,3 +56,12 @@ Route::get(
 )
     ->middleware('signed')
     ->name('verification.verify');
+
+
+Route::prefix('admin')->group(function () {
+    Route::post('login', [AdminAuthController::class, 'login']);
+
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('logout', [AdminAuthController::class, 'logout']);
+    });
+});
