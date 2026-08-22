@@ -18,6 +18,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/show', [ProfileController::class, 'show']);
         Route::put('/update ', [ProfileController::class, 'update']);
     });
+    // coach profile 
+    Route::prefix('coach/profile')->group(function () {
+        Route::post('/store', [CoachProfileController::class, 'store']);
+        Route::get('/show', [CoachProfileController::class, 'show']);
+    });
 
     Route::get('/user', function (Request $request) {
         return response()->json([
