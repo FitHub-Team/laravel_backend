@@ -15,8 +15,8 @@ class StoreCoachProfileRequest extends FormRequest
     {
         return [
             'specialization' => 'required|string|max:255',
-            'experience_years' => 'required|integer|min:0',
-            'date_of_birth' => 'required|date|before:today',
+            'experience' => 'required|integer|min:0',
+            'birth_year' => 'required|date|before:today',
             'location' => 'required|string|max:255',
             'national_id' => 'required|string|max:50',
             'bio' => 'nullable|string',

@@ -12,8 +12,8 @@ class CoachProfile extends Model
     protected $fillable = [
         'user_id',
         'specialization',
-        'experience_years',
-        'date_of_birth',
+        'experience',
+        'birth_year',
         'location',
         'national_id',
         'bio',
@@ -22,7 +22,7 @@ class CoachProfile extends Model
     ];
 
     protected $casts = [
-        'date_of_birth' => 'date',
+       
         'certifications' => 'array',
         'is_approved' => 'boolean',
     ];
