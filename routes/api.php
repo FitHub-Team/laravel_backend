@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\EmailVerificationController;
 use App\Http\Controllers\Api\PasswordResetController;
+use App\Http\Controllers\Api\CoachProfileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
