@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+//login with google
+Route::post('/login/google',[AuthController::class,'loginWithGoogle']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -32,35 +34,13 @@ Route::middleware('auth:sanctum')->group(function () {
         ]);
     });
 });
-//try -> catch 
 
 
-// profile 
-// edit ( الوزن , الطول , الاسم ,الهدف , الصورة )
-
-
-
-
-
-// reset pass
-
-// Route::post(
-//     '/email/verification-notification',
-//     [EmailVerificationController::class, 'resend']
-// );
-
-
-// reset pass 
 Route::post('/forgot-password', [PasswordResetController::class, 'forgotPassword']);
 
 Route::post('/reset-password', [PasswordResetController::class, 'resetPassword']);
 
-// Route::get(
-//     '/email/verify/{id}/{hash}',
-//     [EmailVerificationController::class, 'verifyEmail']
-// )
-//     ->middleware('signed')
-//     ->name('verification.verify');
+
 
 Route::post('/verify-email', [EmailVerificationController::class, 'verifyEmail']);
 Route::post('/resend-verification', [EmailVerificationController::class, 'resend']);
