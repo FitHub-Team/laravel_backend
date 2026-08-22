@@ -28,9 +28,9 @@ class StoreProfileRequest extends FormRequest
                 ? 'sometimes|in:male,female'
                 : 'required|in:male,female',
 
-            'age' => $isUpdate
-                ? 'sometimes|integer|min:10|max:100'
-                : 'required|integer|min:10|max:100',
+            // 'age' => $isUpdate
+            //     ? 'sometimes|integer|min:10|max:100'
+            //     : 'required|integer|min:10|max:100',
 
             'height' => $isUpdate
                 ? 'sometimes|numeric|min:50|max:250'
