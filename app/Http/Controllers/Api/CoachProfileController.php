@@ -1,66 +1,43 @@
 <?php
 
 namespace App\Http\Controllers\Api;
-use App\Http\Controllers\Controller;
 
-use App\Models\coach_profile;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreCoachProfileRequest;
+use App\Services\CoachService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CoachProfileController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    protected CoachService $coachService;
+
+    public function __construct(CoachService $coachService)
     {
-        //
+        $this->coachService = $coachService;
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function store(StoreCoachProfileRequest $request): JsonResponse
     {
-        //
+        $profile = $this->coachService->saveCoachProfile(
+            $request->user()->id,
+            $request->validated()
+        );
+
+        return response()->json([
+            'message' => 'Coach profile saved successfully',
+            'data' => $profile
+        ], 200);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function show(Request $request): JsonResponse
     {
-        
-    }
+        $profile = $this->coachService->getCoachProfile($request->user()->id);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(coach_profile $coach_profile)
-    {
-        //
-    }
+        if (!$profile) {
+            return response()->json(['message' => 'Coach profile not found'], 404);
+        }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(coach_profile $coach_profile)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, coach_profile $coach_profile)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(coach_profile $coach_profile)
-    {
-        //
+        return response()->json(['data' => $profile], 200);
     }
 }
