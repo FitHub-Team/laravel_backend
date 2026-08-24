@@ -5,9 +5,8 @@ namespace App\Services;
 use App\Models\User;
 use Carbon\Carbon;
 use Exception;
-use Log;
-use Storage;
-
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 class ProfileService
 {
     /**
@@ -26,12 +25,12 @@ class ProfileService
             if (isset($data['profile_photo']) && $data['profile_photo'] instanceof \Illuminate\Http\UploadedFile) {
                 $data['profile_photo'] = $data['profile_photo']->store('profile_photos', 'public');
             }
-            $user->profile()->updateOrCreate(
+            $user->userProfile()->updateOrCreate(
                 [],
                 $data
             );
 
-            return $user->load('profile');
+            return $user->load('userProfile');
         } catch (Exception $e) {
             Log::error('ProfileService Store Error: ' . $e->getMessage());
             throw new Exception('فشلت عملية حفظ الملف الشخصي: ' . $e->getMessage());
@@ -42,7 +41,7 @@ class ProfileService
     {
 
         try {
-            return $user->load('profile');
+            return $user->load('userProfile');
         } catch (Exception $e) {
             Log::error('ProfileService Show Error: ' . $e->getMessage());
             throw new Exception('فشلت عملية جلب بيانات الملف الشخصي.');
@@ -51,7 +50,7 @@ class ProfileService
     public function update(User $user, array $data)
     {
         try {
-            $profile = $user->profile;
+            $profile = $user->userProfile;
 
             if (!$profile) {
                 return null;

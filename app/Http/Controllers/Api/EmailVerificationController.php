@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Services\EmailVerificationService;
 use Illuminate\Http\Request;
-
+use Illuminate\Validation\ValidationException;
 
 class EmailVerificationController extends Controller
 {
@@ -17,33 +17,26 @@ class EmailVerificationController extends Controller
 
     public function verifyEmail(Request $request)
     {
-        $user = User::find($request->route('id'));
+        $validated = $request->validate([
+            'email' => 'required|email',
+            'code' => 'required|string|size:6',
+        ]);
+        $user = User::where('email', $validated['email'])->first();
+
 
         if (! $user) {
-            return response()->json([
-                'status' => false,
-                'message' => 'User not found',
-            ], 404);
-        }
-
-        if ($user->hasVerifiedEmail()) {
-            return response()->json([
-                'status' => true,
-                'message' => 'Email already verified',
+            throw ValidationException::withMessages([
+                'email' => ['User not found'],
             ]);
         }
 
-        $verified = $this->emailVerificationService->verify(
-            $user,
-            (string) $request->route('hash')
-        );
 
-        if (! $verified) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Invalid verification link.',
-            ], 403);
+        if (!$this->emailVerificationService->verify($user, $validated['code'])) {
+            throw ValidationException::withMessages([
+                'code' => ['Invalid or expired verification code'],
+            ]);
         }
+
 
         return response()->json([
             'status' => true,
@@ -54,20 +47,15 @@ class EmailVerificationController extends Controller
 
     public function resend(Request $request)
     {
-        $user = $request->user();
+        $validated = $request->validate([
+            'email' => 'required|email',
+        ]);
+        $user = User::where('email', $validated['email'])->first();
 
         if (! $user) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Unauthenticated.',
-            ], 401);
-        }
-
-        if ($user->hasVerifiedEmail()) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Email already verified',
-            ], 400);
+           throw ValidationException::withMessages([
+                'email' => ['User not found'],
+            ]);
         }
 
         $this->emailVerificationService->resend($user);

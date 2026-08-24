@@ -4,12 +4,14 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\EmailVerificationController;
 use App\Http\Controllers\Api\PasswordResetController;
-use App\Http\Controllers\Api\Admin\AdminAuthController;
+use App\Http\Controllers\Api\CoachProfileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+//login with google
+Route::post('/login/google', [AuthController::class, 'loginWithGoogle']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -18,6 +20,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/store', [ProfileController::class, 'store']);
         Route::get('/show', [ProfileController::class, 'show']);
         Route::put('/update ', [ProfileController::class, 'update']);
+    });
+    // coach profile
+    Route::prefix('coach/profile')->group(function () {
+        Route::post('/store', [CoachProfileController::class, 'store']);
+        Route::get('/show', [CoachProfileController::class, 'show']);
     });
 
     Route::get('/user', function (Request $request) {
@@ -46,6 +53,8 @@ Route::post(
 
 
 // reset pass
+
+
 Route::post('/forgot-password', [PasswordResetController::class, 'forgotPassword']);
 
 Route::post('/reset-password', [PasswordResetController::class, 'resetPassword']);
@@ -58,10 +67,9 @@ Route::get(
     ->name('verification.verify');
 
 
-Route::prefix('admin')->group(function () {
-    Route::post('login', [AdminAuthController::class, 'login']);
+Route::post('/verify-email', [EmailVerificationController::class, 'verifyEmail']);
+Route::post('/resend-verification', [EmailVerificationController::class, 'resend']);
 
-    Route::middleware('auth:sanctum')->group(function () {
-        Route::post('logout', [AdminAuthController::class, 'logout']);
-    });
-});
+
+// admin
+Route::prefix('admin')->group(base_path('routes/admin.php'));
