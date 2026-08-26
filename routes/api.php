@@ -1,10 +1,10 @@
 <?php
 
-use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\ProfileController;
-use App\Http\Controllers\Api\EmailVerificationController;
-use App\Http\Controllers\Api\PasswordResetController;
-use App\Http\Controllers\Api\CoachProfileController;
+use App\Http\Controllers\Api\Auth\AuthController;
+use App\Http\Controllers\Api\user\ProfileController;
+use App\Http\Controllers\Api\Auth\EmailVerificationController;
+use App\Http\Controllers\Api\Auth\PasswordResetController;
+use App\Http\Controllers\Api\coach\CoachProfileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 

@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\LoginWithGoogleRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Models\User;
 use App\Services\AuthService;
@@ -36,11 +37,8 @@ class AuthController extends Controller
             'user' => $result['user'],
         ], 200);
     }
-    public function loginWithGoogle(Request $request)
+    public function loginWithGoogle(LoginWithGoogleRequest $request)
     {
-        $request->validate([
-            'id_token' => ['required', 'string'],
-        ]);
         $result = $this->authService->loginWithGoogle($request->id_token);
         return response()->json([
             'status' => true,
