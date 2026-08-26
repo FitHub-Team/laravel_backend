@@ -17,18 +17,19 @@ class CoachProfileController extends Controller
         $this->coachService = $coachService;
     }
 
-    public function store(StoreCoachProfileRequest $request): JsonResponse
-    {
-        $profile = $this->coachService->saveCoachProfile(
-            $request->user()->id,
-            $request->validated()
-        );
 
-        return response()->json([
-            'message' => 'Coach profile saved successfully',
-            'data' => $profile
-        ], 200);
-    }
+public function update(StoreCoachProfileRequest $request): JsonResponse
+{
+    $profile = $this->coachService->saveCoachProfile(
+        $request->user()->id,
+        $request->validated()
+    );
+
+    return response()->json([
+        'message' => 'Coach profile updated successfully',
+        'data' => $profile
+    ], 200);
+}
 
     public function show(Request $request): JsonResponse
     {
