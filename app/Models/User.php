@@ -54,4 +54,9 @@ class User extends Authenticatable implements MustVerifyEmail
             ->latest()
             ->first();
     }
+
+    public function packages()
+{
+    return $this->hasMany(Package::class);
+}
 }
