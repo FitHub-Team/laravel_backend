@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Coach;
 
 use App\Repositories\Contracts\CoachRepositoryInterface;
 use App\Models\CoachProfile;

@@ -18,9 +18,9 @@ return [
         'apisecret' => env('MAILJET_APISECRET'),
     ],
     'google' => [
-        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_id' => env('GOOGLE_WEB_CLIENT_ID'),
     ],
-
+    
 
     'postmark' => [
         'key' => env('POSTMARK_API_KEY'),

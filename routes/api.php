@@ -1,35 +1,30 @@
 <?php
 
-use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\ProfileController;
-use App\Http\Controllers\Api\EmailVerificationController;
-use App\Http\Controllers\Api\PasswordResetController;
-use App\Http\Controllers\Api\CoachProfileController;
+use App\Http\Controllers\Api\Auth\AuthController;
+use App\Http\Controllers\Api\user\SettingProfileController as UserSettingProfileController;
+use App\Http\Controllers\Api\Auth\EmailVerificationController;
+use App\Http\Controllers\Api\Auth\PasswordResetController;
+use App\Http\Controllers\Api\coach\SettingProfileController as CoachSettingProfileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-// Public Routes (تسجيل ودخول)
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+//login with google
 Route::post('/login/google', [AuthController::class, 'loginWithGoogle']);
-
-Route::post('/login', [AuthController::class, 'login'])->name('login');
-
-
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
-
-    // User Profile Routes
+    //profile routes
     Route::prefix('profile')->group(function () {
-        Route::post('/store', [ProfileController::class, 'store']);
-        Route::get('/show', [ProfileController::class, 'show']);
-        Route::put('/update', [ProfileController::class, 'update']); 
+        Route::post('/store', [UserSettingProfileController::class, 'store']);
+        Route::get('/show', [UserSettingProfileController::class, 'show']);
+        Route::put('/update ', [UserSettingProfileController::class, 'update']);
     });
-
+    // coach profile
     Route::prefix('coach/profile')->group(function () {
-        Route::put('/update', [CoachProfileController::class, 'update']);
-        Route::get('/show', [CoachProfileController::class, 'show']);
+        Route::post('/store', [CoachSettingProfileController::class, 'store']);
+        Route::get('/show', [CoachSettingProfileController::class, 'show']);
     });
 
     Route::get('/user', function (Request $request) {
@@ -40,10 +35,33 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 });
 
-// Password Reset Routes
+
+
+
+// reset pass
+
+Route::post(
+    '/email/verification-notification',
+    [EmailVerificationController::class, 'resend']
+);
+
+
+
 Route::post('/forgot-password', [PasswordResetController::class, 'forgotPassword']);
+
 Route::post('/reset-password', [PasswordResetController::class, 'resetPassword']);
 
-// Email Verification Routes
+Route::get(
+    '/email/verify/{id}/{hash}',
+    [EmailVerificationController::class, 'verifyEmail']
+)
+    ->middleware('signed')
+    ->name('verification.verify');
+
+
 Route::post('/verify-email', [EmailVerificationController::class, 'verifyEmail']);
 Route::post('/resend-verification', [EmailVerificationController::class, 'resend']);
+
+
+// admin
+Route::prefix('admin')->group(base_path('routes/admin.php'));
