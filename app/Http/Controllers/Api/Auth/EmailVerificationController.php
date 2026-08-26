@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Services\EmailVerificationService;
+use App\Services\Auth\EmailVerificationService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 

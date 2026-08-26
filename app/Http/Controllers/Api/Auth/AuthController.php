@@ -7,7 +7,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\LoginWithGoogleRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Models\User;
-use App\Services\AuthService;
+use App\Services\Auth\AuthService;
 use Illuminate\Http\Request;
 
 

@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Api\coach;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCoachProfileRequest;
-use App\Services\CoachService;
+use App\Services\Coach\CoachService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class CoachProfileController extends Controller
+class SettingProfileController extends Controller
 {
     protected CoachService $coachService;
 

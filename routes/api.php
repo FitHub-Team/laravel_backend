@@ -1,10 +1,10 @@
 <?php
 
 use App\Http\Controllers\Api\Auth\AuthController;
-use App\Http\Controllers\Api\user\ProfileController;
+use App\Http\Controllers\Api\user\SettingProfileController as UserSettingProfileController;
 use App\Http\Controllers\Api\Auth\EmailVerificationController;
 use App\Http\Controllers\Api\Auth\PasswordResetController;
-use App\Http\Controllers\Api\coach\CoachProfileController;
+use App\Http\Controllers\Api\coach\SettingProfileController as CoachSettingProfileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -17,14 +17,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     //profile routes
     Route::prefix('profile')->group(function () {
-        Route::post('/store', [ProfileController::class, 'store']);
-        Route::get('/show', [ProfileController::class, 'show']);
-        Route::put('/update ', [ProfileController::class, 'update']);
+        Route::post('/store', [UserSettingProfileController::class, 'store']);
+        Route::get('/show', [UserSettingProfileController::class, 'show']);
+        Route::put('/update ', [UserSettingProfileController::class, 'update']);
     });
     // coach profile
     Route::prefix('coach/profile')->group(function () {
-        Route::post('/store', [CoachProfileController::class, 'store']);
-        Route::get('/show', [CoachProfileController::class, 'show']);
+        Route::post('/store', [CoachSettingProfileController::class, 'store']);
+        Route::get('/show', [CoachSettingProfileController::class, 'show']);
     });
 
     Route::get('/user', function (Request $request) {
@@ -34,12 +34,6 @@ Route::middleware('auth:sanctum')->group(function () {
         ]);
     });
 });
-//try -> catch
-
-
-// profile
-// edit ( الوزن , الطول , الاسم ,الهدف , الصورة )
-
 
 
 
@@ -51,8 +45,6 @@ Route::post(
     [EmailVerificationController::class, 'resend']
 );
 
-
-// reset pass
 
 
 Route::post('/forgot-password', [PasswordResetController::class, 'forgotPassword']);

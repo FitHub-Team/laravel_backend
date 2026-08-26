@@ -31,19 +31,4 @@ class AdminAuthService
         $admin->currentAccessToken()->delete();
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
