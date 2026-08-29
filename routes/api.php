@@ -26,6 +26,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('coach/profile')->group(function () {
         Route::post('/store', [CoachSettingProfileController::class, 'store']);
         Route::get('/show', [CoachSettingProfileController::class, 'show']);
+        Route::put('/update', [CoachSettingProfileController::class, 'update']);
     });
 
     Route::get('/user', function (Request $request) {
