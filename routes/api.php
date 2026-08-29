@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\user\SettingProfileController as UserSettingProfile
 use App\Http\Controllers\Api\Auth\EmailVerificationController;
 use App\Http\Controllers\Api\Auth\PasswordResetController;
 use App\Http\Controllers\Api\coach\SettingProfileController as CoachSettingProfileController;
+use App\Http\Controllers\Api\user\UserProfileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -16,7 +17,7 @@ Route::post('/login/google', [AuthController::class, 'loginWithGoogle']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     //profile routes
-    Route::prefix('profile')->group(function () {
+    Route::prefix('profile/setting')->group(function () {
         Route::post('/store', [UserSettingProfileController::class, 'store']);
         Route::get('/show', [UserSettingProfileController::class, 'show']);
         Route::put('/update ', [UserSettingProfileController::class, 'update']);
@@ -34,7 +35,12 @@ Route::middleware('auth:sanctum')->group(function () {
         ]);
     });
 });
-
+// user profile
+Route::prefix('user')->group(function () {
+    Route::get('profile/{user}', [UserProfileController::class, 'index']);
+    Route::get('profile/{user}/coaches', [UserProfileController::class, 'getCoaches']);
+});
+// coach profile
 
 
 
@@ -44,7 +50,6 @@ Route::post(
     '/email/verification-notification',
     [EmailVerificationController::class, 'resend']
 );
-
 
 
 Route::post('/forgot-password', [PasswordResetController::class, 'forgotPassword']);
