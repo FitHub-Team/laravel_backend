@@ -59,4 +59,19 @@ class SettingProfileController extends Controller
         'data' => $coach
     ], 200);
 }
+public function showTraineeDetails($id)
+{
+    $trainee = User::with(['userProfile'])->find($id);
+
+    if (!$trainee) {
+        return response()->json([
+            'message' => 'Trainee not found'
+        ], 404);
+    }
+
+    return response()->json([
+        'status' => true,
+        'data' => $trainee
+    ], 200);
+}
 }
