@@ -6,7 +6,7 @@ use App\Http\Controllers\Api\coach\SettingProfileController as CoachSettingProfi
 use App\Http\Controllers\Api\Auth\EmailVerificationController;
 use App\Http\Controllers\Api\Auth\PasswordResetController;
 use App\Http\Controllers\Api\coach\PackageController;
-use App\Http\Controllers\Api\coach\SettingProfileController as CoachSettingProfileController;
+
 use App\Http\Controllers\Api\user\UserProfileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
