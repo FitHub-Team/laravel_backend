@@ -6,8 +6,6 @@ use App\Http\Controllers\Api\coach\SettingProfileController as CoachSettingProfi
 use App\Http\Controllers\Api\Auth\EmailVerificationController;
 use App\Http\Controllers\Api\Auth\PasswordResetController;
 use App\Http\Controllers\Api\coach\PackageController;
-use App\Http\Controllers\Api\coach\SettingProfileController as CoachSettingProfileController;
-use App\Http\Controllers\Api\coach\PackageController;
 use App\Http\Controllers\Api\coach\AvailabilityController;
 use App\Http\Controllers\Api\user\UserProfileController;
 use App\Http\Controllers\Api\coach\SubscriptionController as CoachSubscriptionController;
@@ -86,7 +84,7 @@ Route::post('/verify-email', [EmailVerificationController::class, 'verifyEmail']
 Route::post('/resend-verification', [EmailVerificationController::class, 'resend']);
 
 // Admin Routes
-Route::prefix('admin')->group(base_path('routes/admin.php'));
+//Route::prefix('admin')->group(base_path('routes/admin.php'));
 Route::prefix('admin')->group(base_path('routes/admin.php'));
 
 // Public Routes
