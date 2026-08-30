@@ -41,4 +41,27 @@ public function update(StoreCoachProfileRequest $request): JsonResponse
 
         return response()->json(['data' => $profile], 200);
     }
+
+    public function showPublicProfile($id)
+{
+    
+    $coach = User::where('id', $id)
+        ->where('role', 'coach') 
+         ->where('is_approved', true)
+        ->with(['coachProfile', 'packages' => function ($query) {
+            $query->where('is_active', true);
+        }])
+        ->first();
+
+    if (!$coach) {
+        return response()->json([
+            'message' => 'Coach not found'
+        ], 404);
+    }
+
+    return response()->json([
+        'status' => true,
+        'data' => $coach
+    ], 200);
+}
 }
