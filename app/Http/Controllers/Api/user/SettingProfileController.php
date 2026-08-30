@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api\user;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreProfileRequest;
+use App\Http\Requests\user\UpdateProfileRequest;
 use App\Services\User\ProfileService;
 use Exception;
 use Illuminate\Http\Request;
@@ -14,26 +14,6 @@ class SettingProfileController extends Controller
         private ProfileService $profileService
     ) {}
 
-    public function store(StoreProfileRequest $request)
-    {
-        try {
-            $profile = $this->profileService->store(
-                $request->user(),
-                $request->validated()
-            );
-            return response()->json([
-                'status' => true,
-                'message' => 'تم حفظ بيانات الملف الشخصي بنجاح',
-                'data' => $profile,
-            ], 200);
-        } catch (Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'حدث خطأ اثناء حفظ الملف الشخصي',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
-    }
 
     public function show(Request $request)
     {
@@ -62,7 +42,7 @@ class SettingProfileController extends Controller
         }
     }
 
-    public function update(StoreProfileRequest $request)
+    public function update(UpdateProfileRequest $request)
     {
         try {
             $validated = $request->validated();

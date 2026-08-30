@@ -41,7 +41,7 @@ class RegisterRequest extends FormRequest
             'weight' => 'sometimes|numeric|min:0',
             'health_goal' => 'sometimes|in:weight_loss,muscle_building,maintain_weight,improve_endurance',
             'medical_conditions' => 'sometimes|string',
-            'allergies' => 'sometimes|string',
+            'allergies' => 'sometimes|array',
             'dietary_preference' => 'sometimes|string|max:100',
             'profile_photo' => 'sometimes|image|mimes:jpg,jpeg,png|max:2048',
         ];

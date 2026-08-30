@@ -9,7 +9,6 @@ class UserProfile extends Model
     protected $fillable = [
         // Onboarding Fields
         'gender',
-        'age',
         'height',
         'weight',
         'health_goal',
@@ -21,6 +20,8 @@ class UserProfile extends Model
     ];
 
     protected $casts = [
+        'weight' => 'float',
+        'height' => 'float',
         'allergies' => 'array',
         'disclaimer_accepted' => 'boolean',
     ];
@@ -28,5 +29,4 @@ class UserProfile extends Model
     {
         return $this->belongsTo(User::class);
     }
-
 }
