@@ -33,9 +33,10 @@ class RegisterRequest extends FormRequest
             'experience' => 'sometimes|integer|min:0',
             'location' => 'sometimes|string|max:150',
             'birth_year' => 'sometimes|integer|min:1900|max:' . date('Y'),
+            'price' => 'sometimes|decimal:2|min:0',
 
             //user register
-          'gender' => 'sometimes|in:male,female',
+            'gender' => 'sometimes|in:male,female',
             'date_of_birth' => 'sometimes|date',
             'height' => 'sometimes|numeric|min:0',
             'weight' => 'sometimes|numeric|min:0',

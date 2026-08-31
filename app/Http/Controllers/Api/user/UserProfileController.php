@@ -40,18 +40,18 @@ class UserProfileController extends Controller
             ], 500);
         }
     }
-    public function getCoaches(User $user)
-    {
-        try {
-            $coaches = $user->coaches()->get();
-            return response()->json([
-                'message' => 'User coaches data',
-                'data' => $coaches,
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Error fetching user coaches data',
-            ], 500);
-        }
-    }
+    // public function getCoaches(User $user)
+    // {
+    //     try {
+    //         $coaches = $user->coaches()->get();
+    //         return response()->json([
+    //             'message' => 'User coaches data',
+    //             'data' => $coaches,
+    //         ]);
+    //     } catch (\Exception $e) {
+    //         return response()->json([
+    //             'message' => 'Error fetching user coaches data',
+    //         ], 500);
+    //     }
+    // }
 }

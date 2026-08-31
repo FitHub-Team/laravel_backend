@@ -17,6 +17,7 @@ class UserProfile extends Model
         'dietary_preference',
         'disclaimer_accepted',
         'date_of_birth',
+        'profile_photo'
     ];
 
     protected $casts = [
