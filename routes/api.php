@@ -48,9 +48,16 @@ Route::middleware('auth:sanctum')->group(function () {
 
     });
 
-    // Coach Packages CRUD Routes
+    // Coach Packages & Trainees Routes
     Route::prefix('coach')->group(function () {
+        // Packages CRUD
         Route::apiResource('packages', PackageController::class);
+
+        // Trainees & Plans Routes
+        Route::get('/trainees/{id}', [CoachSettingProfileController::class, 'showTraineeDetails']);
+        Route::post('/trainees/{id}/workout-plan', [WorkoutPlanController::class, 'storeOrUpdate']);
+        Route::post('/trainees/{id}/nutrition-plan', [NutritionPlanController::class, 'storeOrUpdate']);
+        Route::get('/trainees/{id}/progress', [ProgressController::class, 'show']);
     });
 
     Route::get('/user', function (Request $request) {

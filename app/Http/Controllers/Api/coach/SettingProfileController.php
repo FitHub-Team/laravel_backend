@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\coach;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCoachProfileRequest;
+use App\Models\User; 
 use App\Services\Coach\CoachService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -17,19 +18,18 @@ class SettingProfileController extends Controller
         $this->coachService = $coachService;
     }
 
+    public function update(StoreCoachProfileRequest $request): JsonResponse
+    {
+        $profile = $this->coachService->saveCoachProfile(
+            $request->user()->id,
+            $request->validated()
+        );
 
-public function update(StoreCoachProfileRequest $request): JsonResponse
-{
-    $profile = $this->coachService->saveCoachProfile(
-        $request->user()->id,
-        $request->validated()
-    );
-
-    return response()->json([
-        'message' => 'Coach profile updated successfully',
-        'data' => $profile
-    ], 200);
-}
+        return response()->json([
+            'message' => 'Coach profile updated successfully',
+            'data' => $profile
+        ], 200);
+    }
 
     public function show(Request $request): JsonResponse
     {
@@ -42,16 +42,11 @@ public function update(StoreCoachProfileRequest $request): JsonResponse
         return response()->json(['data' => $profile], 200);
     }
 
-    public function showPublicProfile($id)
+  public function showPublicProfile($id)
 {
-    
-    $coach = User::where('id', $id)
-        ->where('role', 'coach') 
-         ->where('is_approved', true)
-        ->with(['coachProfile', 'packages' => function ($query) {
-            $query->where('is_active', true);
-        }])
-        ->first();
+    $coach = User::with(['coachProfile', 'packages' => function ($query) {
+        $query->where('is_active', true);
+    }])->find($id);
 
     if (!$coach) {
         return response()->json([
@@ -62,6 +57,21 @@ public function update(StoreCoachProfileRequest $request): JsonResponse
     return response()->json([
         'status' => true,
         'data' => $coach
+    ], 200);
+}
+public function showTraineeDetails($id)
+{
+    $trainee = User::with(['userProfile'])->find($id);
+
+    if (!$trainee) {
+        return response()->json([
+            'message' => 'Trainee not found'
+        ], 404);
+    }
+
+    return response()->json([
+        'status' => true,
+        'data' => $trainee
     ], 200);
 }
 }
