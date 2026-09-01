@@ -5,8 +5,8 @@ use App\Http\Controllers\Api\user\SettingProfileController as UserSettingProfile
 use App\Http\Controllers\Api\coach\SettingProfileController as CoachSettingProfileController;
 use App\Http\Controllers\Api\Auth\EmailVerificationController;
 use App\Http\Controllers\Api\Auth\PasswordResetController;
-use App\Http\Controllers\Api\coach\PackageController;
-use App\Http\Controllers\Api\coach\AvailabilityController;
+
+use App\Http\Controllers\Api\coach\WorkoutPlanController;
 use App\Http\Controllers\Api\coach\NutritionPlanController;
 use App\Http\Controllers\Api\coach\ProgressController;
 use App\Http\Controllers\Api\user\UserProfileController;
@@ -51,10 +51,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     });
 
-    // Coach Packages & Trainees Routes
-    Route::prefix('coach')->group(function () {
-        // Packages CRUD
-        Route::apiResource('packages', PackageController::class);
 
         // Trainees & Plans Routes
         Route::get('/trainees/{id}', [CoachSettingProfileController::class, 'showTraineeDetails']);
