@@ -32,6 +32,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/update', [UserSettingProfileController::class, 'update']);
         Route::put('/update/avatar', [UserSettingProfileController::class, 'updateProfilePhoto']);
     });
+    //
+    Route::get('/coaches', [BrowseCoachController::class, 'index']);
 
     // Coach Routes
     Route::prefix('coach')->group(function () {       
@@ -97,5 +99,5 @@ Route::post('/resend-verification', [EmailVerificationController::class, 'resend
 Route::prefix('admin')->group(base_path('routes/admin.php'));
 
 // Public Routes
-Route::get('/coaches', [BrowseCoachController::class, 'index']);
+
 Route::get('/coaches/{id}', [CoachSettingProfileController::class, 'showPublicProfile']);

@@ -33,13 +33,15 @@ class BrowseCoachRequest extends FormRequest
             'max_price' => [
                 'nullable',
                 'numeric',
-                'min:0',
-                'gte:min_price',
+                'max:255'
+
             ],
 
-            'sort' => [
+            'search' => [
                 'nullable',
-                Rule::in(['oldest', 'newest']),
+                'string',
+                'max:255',
+
             ],
 
         ];
