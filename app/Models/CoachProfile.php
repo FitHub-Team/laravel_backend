@@ -19,16 +19,18 @@ class CoachProfile extends Model
         'bio',
         'certifications',
         'is_approved',
+        'price',
+        'profile_photo',
     ];
 
     protected $casts = [
-       
+
         'certifications' => 'array',
         'is_approved' => 'boolean',
     ];
 
     public function user()
     {
-        return $table->belongsTo(User::class);
+        return $this->belongsTo(User::class);
     }
 }

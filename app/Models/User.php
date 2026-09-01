@@ -59,12 +59,9 @@ class User extends Authenticatable implements MustVerifyEmail
 {
     return $this->hasMany(Package::class);
 }
-    public function coach()
-    {
-        return $this->belongsTo(User::class, 'coach_id');
-    }
-    public function clients()
-    {
-        return $this->hasMany(User::class, 'coach_id');
-    }
+
+    public function availabilities()
+{
+    return $this->hasMany(CoachAvailability::class, 'coach_id');
+}
 }
