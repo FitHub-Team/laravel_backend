@@ -44,4 +44,18 @@ class BrowseCoach
 
         return $query->paginate(10);
     }
+    public function getCoachById(int $id)
+    {
+        return User::where('id', $id)
+            ->where('role', 'coach')
+            ->whereHas('coachProfile', function ($q) {
+                $q->where('is_approved', true)
+                    ->where('status', 'active');
+            })
+            ->with([
+                'coachProfile:id,user_id,specialization,experience,location,price,profile_photo',
+            ])
+            ->first();
+    }
+    
 }
