@@ -8,15 +8,13 @@ use Illuminate\Http\Request;
 
 class UserProfileController extends Controller
 {
-    public function index(User $user)
+    public function index(Request $request)
     {
         try {
+            $user = $request->user();
+            //dd($user);
             $profile = $user->userProfile;
-            if (!$user) {
-                return response()->json([
-                    'message' => 'User not found',
-                ], 404);
-            }
+
             $age = $profile?->date_of_birth
                 ? \Carbon\Carbon::parse($profile->date_of_birth)->age
                 : null;
@@ -27,9 +25,9 @@ class UserProfileController extends Controller
                     'fullname' => $user->full_name,
                     'email' => $user->email,
                     'age' => $age,
-                    'gender' => $profile?->gender,          
-            'height' => $profile?->height,
-            'weight' => $profile?->weight,
+                    'gender' => $profile?->gender,
+                    'height' => $profile?->height,
+                    'weight' => $profile?->weight,
                     'health_goal' => $profile?->health_goal,
                     'profile_photo' => $profile?->profile_photo,
                 ],

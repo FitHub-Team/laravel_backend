@@ -31,7 +31,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/coaches/{id}', [CoachSettingProfileController::class, 'showPublicProfile']);
 
     // Trainee Routs
-    Route::prefix('Trainee')->group(function () {
+    Route::prefix('trainee')->group(function () {
         // User Profile Routes
         Route::prefix('profile/setting')->group(function () {
             Route::get('/show', [UserSettingProfileController::class, 'show']);
@@ -40,24 +40,16 @@ Route::middleware('auth:sanctum')->group(function () {
         });
         // Public User Profile Routes
         Route::prefix('profile')->group(function () {
-            Route::get('/{user}', [UserProfileController::class, 'index']);
+            Route::get('/', [UserProfileController::class, 'index']);
             Route::get('/{user}/coaches', [UserProfileController::class, 'getCoaches']);
         });
         // Request Subscription Route 
 
+        Route::post('/subscription-request', [RequestSubscriptionController::class,'requestSubscription']);
+        Route::get('/subscription-requests', [RequestSubscriptionController::class,'getMyRequests']);
     });
 
-    //public Rout 
 
-    /* Route::post('/RequestSubscription', [
-        RequestSubscriptionController::class,
-        'requestSubscription'
-    ]);
-    Route::get('/MyRequests', [
-        RequestSubscriptionController::class,
-        'getMyRequests'
-    ]);
-*/
     // Coach Routes
     Route::middleware(['coach'])->group(function () {
         Route::prefix('coach')->group(function () {
