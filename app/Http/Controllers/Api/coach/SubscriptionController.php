@@ -86,24 +86,23 @@ class SubscriptionController extends Controller
             'data' => $trainees
         ], 200);
     }
-    //عرض بيانات متدرب  محدد 
+//عرض بيانات متدرب  محدد 
     public function showTraineeDetails(Request $request, $trainee_id)
     {
         // التأكد أولا من وجود اشتراك بين الكوتش والمتدرب
         $hasSubscription = Subscription::where('coach_id', $request->user()->id)
             ->where('trainee_id', $trainee_id)
-            ->whereIn('status', ['pending', 'accepted'])
             ->exists();
 
         if (!$hasSubscription) {
             return response()->json([
                 'status' => false,
-                'message' => 'You do not have permission to view this trainee profile.'
+                'message' => 'Trainee not found in your subscription list'
             ], 404);
         }
 
         $trainee = User::where('id', $trainee_id)
-            ->with('userProfile')
+            ->with('profile') 
             ->firstOrFail();
 
         return response()->json([

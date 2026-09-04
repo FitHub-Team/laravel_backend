@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('trainee_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('coach_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('package_id')->constrained('packages')->onDelete('cascade');
             $table->enum('status', ['pending', 'accepted', 'rejected', 'expired'])->default('pending');
             $table->text('notes')->nullable(); //سبب الرفض 
             $table->date('start_date')->nullable();

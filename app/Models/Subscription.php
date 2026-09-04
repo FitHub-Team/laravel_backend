@@ -12,6 +12,7 @@ class Subscription extends Model
     protected $fillable = [
         'trainee_id',
         'coach_id',
+        'package_id',
         'status',
         'notes',
         'start_date',
@@ -28,5 +29,8 @@ class Subscription extends Model
         return $this->belongsTo(User::class, 'coach_id');
     }
 
-   
+    public function package()
+    {
+        return $this->belongsTo(Package::class, 'package_id');
+    }
 }
