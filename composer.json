@@ -10,7 +10,6 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
-        "darkaonline/l5-swagger": "^11.1",
         "google/apiclient": "^2.19",
         "guzzlehttp/guzzle": "^7.15",
         "laravel/framework": "^13.8",
