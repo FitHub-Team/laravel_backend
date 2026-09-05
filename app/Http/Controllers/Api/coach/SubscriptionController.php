@@ -10,12 +10,12 @@ use Carbon\Carbon;
 
 class SubscriptionController extends Controller
 {
-    //  عرض قائمة طلبات الاشتراك قيد الانتظار الواردة من المتدربين
+    // عرض قائمة طلبات الاشتراك قيد الانتظار الواردة من المتدربين
     public function pendingRequests(Request $request)
     {
         $requests = Subscription::where('coach_id', $request->user()->id)
             ->where('status', 'pending')
-            ->with(['trainee', 'package'])
+            ->with(['trainee']) // تم إزالة package
             ->latest()
             ->get();
 
@@ -32,7 +32,8 @@ class SubscriptionController extends Controller
             ->where('coach_id', $request->user()->id)
             ->firstOrFail();
 
-        $durationDays = $subscription->package ? $subscription->package->duration : 30;
+        // مدة ثابتة للاشتراك الشهري (30 يوماً) لعدم وجود باقات
+        $durationDays = 30;
 
         $startDate = Carbon::now();
         $endDate = Carbon::now()->addDays($durationDays);
@@ -50,7 +51,7 @@ class SubscriptionController extends Controller
         ], 200);
     }
 
-    //  رفض طلب الاشتراك
+    // رفض طلب الاشتراك
     public function rejectRequest(Request $request, $id)
     {
         $request->validate([
@@ -78,7 +79,7 @@ class SubscriptionController extends Controller
     {
         $trainees = Subscription::where('coach_id', $request->user()->id)
             ->where('status', 'accepted')
-            ->with(['trainee', 'package'])
+            ->with(['trainee']) 
             ->get();
 
         return response()->json([
@@ -86,10 +87,10 @@ class SubscriptionController extends Controller
             'data' => $trainees
         ], 200);
     }
-//عرض بيانات متدرب  محدد 
+
+    // عرض بيانات متدرب محدد 
     public function showTraineeDetails(Request $request, $trainee_id)
     {
-        // التأكد أولا من وجود اشتراك بين الكوتش والمتدرب
         $hasSubscription = Subscription::where('coach_id', $request->user()->id)
             ->where('trainee_id', $trainee_id)
             ->exists();

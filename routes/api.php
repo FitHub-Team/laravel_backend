@@ -69,7 +69,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
             // Trainees & Plans Routes
             Route::prefix('trainees')->group(function () {
-                Route::get('/{id}', [CoachSettingProfileController::class, 'showTraineeDetails'])->middleware('trainee.access');
+           //     Route::get('/{id}', [CoachSettingProfileController::class, 'showTraineeDetails'])->middleware('trainee.access');
                 Route::post('/{id}/workout-plan', [WorkoutPlanController::class, 'storeOrUpdate']);
                 Route::post('/{id}/nutrition-plan', [NutritionPlanController::class, 'storeOrUpdate']);
                 Route::get('/{id}/progress', [ProgressController::class, 'show']);
