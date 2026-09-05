@@ -37,15 +37,60 @@ class AdminAuthController extends Controller
         ], 200);
     }
 
+    public function showLoginForm()
+    {
+        return view('admin.login');
+    }
+
+    public function loginWeb(Request $request)
+    {
+        $credentials = $request->validate([
+            'name' => 'required|string',
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
+        if (auth()->guard('admin')->attempt($credentials)) {
+            $request->session()->regenerate();
+
+            return redirect()->intended(route('admin.dashboard'));
+        }
+
+        return back()->withErrors([
+            'email' => 'بيانات الدخول غير صحيحة.',
+        ])->onlyInput('email', 'name');
+    }
+
+    public function logoutWeb(Request $request)
+    {
+        auth()->guard('admin')->logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('admin.login');
+    }
+    public function dashboard()
+    {
+        $totalUsers = \App\Models\User::count();
+
+        $totalCoaches = \App\Models\CoachProfile::count();
+
+        $activeSubscriptions = $totalUsers + $totalCoaches;
+
+        return view('admin.dashboard', compact(
+            'totalUsers',
+            'totalCoaches',
+            'activeSubscriptions'
+        ));
+    }
 
 
 
-
-
-
-
-
-
+    public function userManage()
+    {
+        return view('admin.index');
+    }
 
 
 

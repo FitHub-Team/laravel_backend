@@ -64,4 +64,6 @@ Route::post('/resend-verification', [EmailVerificationController::class, 'resend
 
 
 // admin
-Route::prefix('admin')->group(base_path('routes/admin.php'));
+Route::prefix('admin')->group(
+    base_path('routes/admin.php')
+);
