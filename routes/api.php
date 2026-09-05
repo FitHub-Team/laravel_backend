@@ -9,9 +9,9 @@ use App\Http\Controllers\Api\Auth\PasswordResetController;
 use App\Http\Controllers\Api\coach\WorkoutPlanController;
 use App\Http\Controllers\Api\coach\NutritionPlanController;
 use App\Http\Controllers\Api\coach\ProgressController;
+use App\Http\Controllers\Api\coach\AvailabilityController;
 use App\Http\Controllers\Api\user\UserProfileController;
 use App\Http\Controllers\Api\coach\SubscriptionController as CoachSubscriptionController;
-use App\Http\Controllers\Api\coach\WorkoutPlanController;
 use App\Http\Controllers\Api\General\BrowseCoachController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -32,28 +32,31 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/update', [UserSettingProfileController::class, 'update']);
         Route::put('/update/avatar', [UserSettingProfileController::class, 'updateProfilePhoto']);
     });
-    //
+
     Route::get('/coaches', [BrowseCoachController::class, 'index']);
 
-    // Coach Routes
-    Route::prefix('coach')->group(function () {       
-        // Coach Profile
+    // Coach Routes Group
+    Route::prefix('coach')->group(function () { 
+        
+        // Coach Profile Settings
         Route::prefix('profile/setting')->group(function () {
             Route::get('/show', [CoachSettingProfileController::class, 'show']);
             Route::post('/update', [CoachSettingProfileController::class, 'update']);
-             Route::put('/update/avatar', [CoachSettingProfileController::class, 'updateProfilePhoto']);
+            Route::put('/update/avatar', [CoachSettingProfileController::class, 'updateProfilePhoto']);
         });
-        // Coach Packages
-        Route::apiResource('packages', PackageController::class);
+
         // Coach Availabilities (Working Days & Slots)
         Route::get('/availabilities', [AvailabilityController::class, 'index']);
         Route::post('/availabilities', [AvailabilityController::class, 'store']);
 
-    });
+        // Subscription & Trainees Management (Monthly Subscriptions)
+        Route::get('/subscriptions/pending', [CoachSubscriptionController::class, 'pendingRequests']);
+        Route::put('/subscriptions/{id}/accept', [CoachSubscriptionController::class, 'acceptRequest']);
+        Route::put('/subscriptions/{id}/reject', [CoachSubscriptionController::class, 'rejectRequest']);
+        Route::get('/trainees', [CoachSubscriptionController::class, 'myTrainees']);
+        Route::get('/trainees/{trainee_id}', [CoachSubscriptionController::class, 'showTraineeDetails']);
 
-
-        // Trainees & Plans Routes
-        Route::get('/trainees/{id}', [CoachSettingProfileController::class, 'showTraineeDetails']);
+        // Trainees Plans & Progress Routes
         Route::post('/trainees/{id}/workout-plan', [WorkoutPlanController::class, 'storeOrUpdate']);
         Route::post('/trainees/{id}/nutrition-plan', [NutritionPlanController::class, 'storeOrUpdate']);
         Route::get('/trainees/{id}/progress', [ProgressController::class, 'show']);
@@ -65,12 +68,6 @@ Route::middleware('auth:sanctum')->group(function () {
             'user' => $request->user()
         ]);
     });
-    // Subscription & Trainees Management
-        Route::get('/subscriptions/pending', [CoachSubscriptionController::class, 'pendingRequests']);
-        Route::put('/subscriptions/{id}/accept', [CoachSubscriptionController::class, 'acceptRequest']);
-        Route::put('/subscriptions/{id}/reject', [CoachSubscriptionController::class, 'rejectRequest']);
-        Route::get('/trainees', [CoachSubscriptionController::class, 'myTrainees']);
-        Route::get('/trainees/{trainee_id}', [CoachSubscriptionController::class, 'showTraineeDetails']);
 });
 
 // Public User Profile Routes
@@ -89,11 +86,8 @@ Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class, 've
 Route::post('/verify-email', [EmailVerificationController::class, 'verifyEmail']);
 Route::post('/resend-verification', [EmailVerificationController::class, 'resend']);
 
-
-
 // Admin Routes
 Route::prefix('admin')->group(base_path('routes/admin.php'));
 
 // Public Routes
-
 Route::get('/coaches/{id}', [CoachSettingProfileController::class, 'showPublicProfile']);
