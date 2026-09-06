@@ -82,7 +82,12 @@ class SettingProfileController extends Controller
             $user = $request->user();
 
             // Store the new profile photo
-            $photoPath = $request->file('profile_photo')->store('user_avatar', 'public');
+            // $photoPath = $request->file('profile_photo')->store('user_avatar', 'public');
+            $file = $request->file('profile_photo');
+
+            $filename = $file->getClientOriginalName();
+
+            $photoPath = $file->storeAs('user_avatar', $filename, 'public');
 
             // Update the user's profile photo
             $profile = $this->profileService->updateProfilePhoto($user, $photoPath);
@@ -104,4 +109,3 @@ class SettingProfileController extends Controller
         }
     }
 }
-

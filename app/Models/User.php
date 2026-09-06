@@ -62,12 +62,9 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(CoachAvailability::class, 'coach_id');
     }
 
-{
-    return $this->hasMany(CoachAvailability::class, 'coach_id');
-}
-public function profile()
-{
-    return $this->userProfile();
-}
 
+    public function profile()
+    {
+        return $this->userProfile();
+    }
 }

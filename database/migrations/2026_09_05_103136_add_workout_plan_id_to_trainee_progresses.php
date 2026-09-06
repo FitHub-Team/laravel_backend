@@ -27,5 +27,5 @@ return new class extends Migration
             $table->dropForeign(['workout_plan_id']);
             $table->dropColumn('workout_plan_id');
         });
-    }z
+    }
 };
