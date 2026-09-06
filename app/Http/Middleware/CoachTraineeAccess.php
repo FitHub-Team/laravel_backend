@@ -17,7 +17,7 @@ class CoachTraineeAccess
     public function handle(Request $request, Closure $next): Response
     {
         $coach = $request->user();
-        $traineeId = $request->route('id');
+        $traineeId = $request->route('trainee_id');
         $hasAccess = Subscription::where('coach_id', $coach->id)
             ->where('trainee_id', $traineeId)
             ->whereIn('status', ['pending', 'accepted'])

@@ -45,9 +45,7 @@ class SettingProfileController extends Controller
 
     public function showPublicProfile($id)
     {
-        $coach = User::with(['coachProfile', 'packages' => function ($query) {
-            $query->where('is_active', true);
-        }])->find($id);
+        $coach = User::with(['coachProfile'])->find($id);
 
         if (!$coach) {
             return response()->json([
@@ -60,6 +58,7 @@ class SettingProfileController extends Controller
             'data' => $coach
         ], 200);
     }
+
     public function showTraineeDetails($id)
     {
         $trainee = User::with(['userProfile'])->find($id);
@@ -75,6 +74,7 @@ class SettingProfileController extends Controller
             'data' => $trainee
         ], 200);
     }
+
     public function updateProfilePhoto(Request $request)
     {
         $request->validate([
