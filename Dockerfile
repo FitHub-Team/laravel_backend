@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     libzip-dev \
     nginx \
+    gettext-base \
     && docker-php-ext-install pdo_pgsql pgsql zip \
     && rm -rf /var/lib/apt/lists/*
 
@@ -17,8 +18,14 @@ COPY . .
 
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-RUN mkdir -p storage/logs storage/framework/sessions storage/framework/cache storage/framework/views
+RUN mkdir -p \
+    storage/logs \
+    storage/framework/sessions \
+    storage/framework/cache \
+    storage/framework/views
+
 RUN chmod -R 775 storage bootstrap/cache
+
 RUN chown -R www-data:www-data /var/www/html
 
 COPY nginx.conf /etc/nginx/nginx.conf
