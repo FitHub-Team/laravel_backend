@@ -55,13 +55,10 @@ class User extends Authenticatable implements MustVerifyEmail
             ->first();
     }
 
-    public function packages()
-{
-    return $this->hasMany(Package::class);
-}
+
 
     public function availabilities()
-{
-    return $this->hasMany(CoachAvailability::class, 'coach_id');
-}
+    {
+        return $this->hasMany(CoachAvailability::class, 'coach_id');
+    }
 }

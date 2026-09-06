@@ -9,7 +9,9 @@ class WorkoutPlan extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['coach_id', 'trainee_id', 'title', 'description', 'start_date', 'end_date'];
+    protected $fillable = 
+    ['coach_id', 'trainee_id', 'title', 'description', 'start_date', 'end_date'
+    ,'status'];
 
     public function exercises()
     {
@@ -20,4 +22,6 @@ class WorkoutPlan extends Model
     {
         return $this->belongsTo(User::class, 'trainee_id');
     }
+    
+    
 }
