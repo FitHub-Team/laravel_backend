@@ -1,4 +1,4 @@
-FROM php:8.4-apache
+FROM php:8.4-fpm
 
 WORKDIR /var/www/html
 
@@ -7,9 +7,8 @@ RUN apt-get update && apt-get install -y \
     unzip \
     libpq-dev \
     libzip-dev \
+    nginx \
     && docker-php-ext-install pdo_pgsql pgsql zip \
-    && a2dismod mpm_prefork mpm_worker mpm_event \
-    && a2enmod rewrite mpm_prefork \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
@@ -20,13 +19,8 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction
 
 RUN chown -R www-data:www-data storage bootstrap/cache
 
-RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/public|' /etc/apache2/sites-available/000-default.conf
-
-RUN printf '<Directory /var/www/html/public>\n\
-    AllowOverride All\n\
-    Require all granted\n\
-</Directory>\n' >> /etc/apache2/apache2.conf
+COPY nginx.conf /etc/nginx/nginx.conf
 
 EXPOSE 80
 
-CMD ["apache2-foreground"]
+CMD ["sh", "-c", "php-fpm -D && nginx -g 'daemon off;'"]
