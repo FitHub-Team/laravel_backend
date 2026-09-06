@@ -139,7 +139,7 @@ Route::middleware('auth:sanctum')->group(function () {
         ]);
     });
 });
-
+});
 
 // Verification & Password Reset Routes
 Route::post('/email/verification-notification', [EmailVerificationController::class, 'resend']);
