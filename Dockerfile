@@ -17,7 +17,9 @@ COPY . .
 
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-RUN chown -R www-data:www-data storage bootstrap/cache
+RUN mkdir -p storage/logs storage/framework/sessions storage/framework/cache storage/framework/views
+RUN chmod -R 775 storage bootstrap/cache
+RUN chown -R www-data:www-data /var/www/html
 
 COPY nginx.conf /etc/nginx/nginx.conf
 
