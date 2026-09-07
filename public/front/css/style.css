@@ -1,0 +1,92 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+h1{
+    text-align: center;
+    padding: 2px;
+}
+body {
+    background-color: #134e40;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+.login-container {
+    background-color: #ffffff;
+    width: 900px;
+    max-width: 95%;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: row;
+    padding: 50px;
+    align-items: center;
+    justify-content: space-between;
+}
+.form-section {
+    flex: 1;
+    padding-right: 20px;
+}
+.form-section h2 {
+    font-size: 32px;
+    font-weight: 700;
+    color: #111;
+    margin-bottom: 35px;
+}
+.input-group {
+    position: relative;
+    margin-bottom: 25px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+    padding-bottom: 8px;
+}
+.input-group i {
+    color: #666;
+    margin-left: 10px;
+    font-size: 14px;
+}
+.input-group input {
+    border: none;
+    outline: none;
+    width: 100%;
+    font-size: 15px;
+    color: #333;
+    background: transparent;
+}
+.input-group input::placeholder {
+    color: #aaa;
+}
+.register-btn {
+    background-color: #0d4d3f;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 5px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    width: 100%;
+}
+.register-btn:hover {
+    background-color: #042510;
+}
+.image-section {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.signup-image {
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+    border-radius: 10px;
+}
+.login-card {
+    position: relative; /* ضروري عشان نقدر نتحكم بمكانها بالنسبة للمربع الأبيض */
+}

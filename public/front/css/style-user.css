@@ -1,0 +1,518 @@
+/* ==========================================================================
+   SuperFit — Coach / User Management theme
+   Matches the Dashboard Statistics visual identity (teal / leaf brand)
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@500;600;700;800&family=Poppins:wght@600;700;800&display=swap');
+
+:root {
+    --teal-950: #0a2f2c;
+    --teal-800: #0f6e6e;
+    --teal-600: #128f89;
+    --teal-500: #17a89e;
+    --teal-400: #2ec9b8;
+    --teal-100: #e3f5f1;
+    --teal-50: #f2faf8;
+    --ink: #0e2624;
+    --ink-soft: #4c6663;
+    --paper: #ffffff;
+    --line: #d7ece7;
+    --danger-bg: #fee2e2;
+    --danger-fg: #ef4444;
+    --success-bg: #dcfce7;
+    --success-fg: #15803d;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: 'Cairo', 'Inter', sans-serif;
+    background: var(--teal-50);
+    color: var(--ink);
+    min-height: 100vh;
+    background-image:
+        radial-gradient(circle at 100% 0%, #d8f2ec 0%, transparent 45%),
+        radial-gradient(circle at 0% 100%, #d8f2ec 0%, transparent 45%);
+    background-repeat: no-repeat;
+}
+
+.container {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 32px 24px 60px;
+}
+
+/* ---------------- Navbar ---------------- */
+.navbar {
+    display: flex;
+    gap: 10px;
+    background: linear-gradient(135deg, var(--teal-800), var(--teal-950));
+    padding: 10px;
+    border-radius: 16px;
+    margin-bottom: 28px;
+    box-shadow: 0 8px 24px rgba(15, 110, 110, 0.18);
+}
+
+.nav-link {
+    flex: 1;
+    text-align: center;
+    padding: 13px 16px;
+    border-radius: 11px;
+    color: #cdece6;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 15px;
+    transition: background .18s ease, color .18s ease;
+}
+
+.nav-link:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+}
+
+.nav-link.active {
+    background: var(--teal-400);
+    color: var(--teal-950);
+    font-weight: 700;
+}
+
+/* ---------------- Filter bar ---------------- */
+.filter-bar {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.search-input {
+    width: 100%;
+    max-width: 420px;
+    padding: 13px 18px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--paper);
+    font-family: inherit;
+    font-size: 14.5px;
+    color: var(--ink);
+    box-shadow: 0 2px 10px rgba(15, 110, 110, 0.06);
+    outline: none;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.search-input::placeholder {
+    color: #9fb8b4;
+}
+
+.search-input:focus {
+    border-color: var(--teal-500);
+    box-shadow: 0 0 0 3px rgba(23, 168, 158, 0.15);
+}
+
+/* ---------------- Table card ---------------- */
+.table-card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 8px;
+    box-shadow: 0 6px 24px rgba(15, 110, 110, 0.07);
+    overflow: hidden;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead th {
+    text-align: right;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--teal-800);
+    background: var(--teal-50);
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--line);
+}
+
+thead th:first-child {
+    border-top-right-radius: 12px;
+}
+
+thead th:last-child {
+    border-top-left-radius: 12px;
+}
+
+tbody tr {
+    border-bottom: 1px solid var(--line);
+    transition: background .15s ease;
+}
+
+tbody tr:last-child {
+    border-bottom: none;
+}
+
+tbody tr:hover {
+    background: var(--teal-50);
+}
+
+tbody td {
+    padding: 14px 18px;
+    font-size: 14.5px;
+    color: var(--ink);
+}
+
+tbody td:first-child {
+    color: var(--ink-soft);
+    font-weight: 600;
+}
+
+/* ---------------- Table Action Button ---------------- */
+
+tbody a,
+tbody button.row-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 8px 16px;
+    min-width: 90px;
+
+    border: 1px solid var(--teal-500);
+    border-radius: 10px;
+
+    background: transparent;
+    color: var(--teal-600);
+
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+
+    text-decoration: none;
+    cursor: pointer;
+
+    transition: all 0.2s ease;
+}
+
+tbody a:hover,
+tbody button.row-action:hover {
+    background: var(--teal-500);
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(23, 168, 158, 0.2);
+}
+
+tbody a:active,
+tbody button.row-action:active {
+    transform: translateY(0);
+}
+
+/* ---------------- Pagination ---------------- */
+.pagination-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 16px 18px 10px;
+}
+
+.pagination-info {
+    font-size: 13.5px;
+    color: var(--ink-soft);
+}
+
+.pagination-buttons {
+    display: flex;
+    gap: 6px;
+}
+
+.pagination-buttons button,
+.pagination-buttons .page-btn {
+    min-width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    color: var(--ink-soft);
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 13.5px;
+    cursor: pointer;
+    transition: all .15s ease;
+}
+
+.pagination-buttons button:hover {
+    background: var(--teal-100);
+    color: var(--teal-800);
+}
+
+.pagination-buttons button.active {
+    background: var(--teal-500);
+    border-color: var(--teal-500);
+    color: #fff;
+}
+
+/* ---------------- Drawer (side panel) ---------------- */
+.drawer-toggle {
+    display: none;
+}
+
+.drawer-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 47, 44, 0.35);
+    backdrop-filter: blur(2px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .25s ease, visibility .25s ease;
+    z-index: 100;
+    display: flex;
+    justify-content: flex-end;
+    /* drawer slides from the left in RTL reading order */
+}
+
+.drawer-toggle:checked~.drawer-overlay {
+    opacity: 1;
+    visibility: visible;
+}
+
+.drawer {
+    width: 100%;
+    max-width: 380px;
+    height: 100%;
+    background: var(--paper);
+    box-shadow: -16px 0 40px rgba(10, 47, 44, 0.18);
+    padding: 26px 26px 30px;
+    transform: translateX(20px);
+    transition: transform .25s ease;
+    overflow-y: auto;
+}
+
+.drawer-toggle:checked~.drawer-overlay .drawer {
+    transform: translateX(0);
+}
+
+.drawer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 22px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--line);
+}
+
+.drawer-header h2 {
+    font-family: 'Cairo', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--teal-950);
+    margin: 0;
+}
+
+.close-drawer {
+    cursor: pointer;
+    font-size: 22px;
+    line-height: 1;
+    color: var(--ink-soft);
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .15s ease;
+}
+
+.close-drawer:hover {
+    background: var(--teal-100);
+    color: var(--teal-800);
+}
+
+#drawer-avatar-container {
+    background: var(--teal-100) !important;
+    color: var(--teal-800) !important;
+    border: 3px solid var(--teal-50);
+    box-shadow: 0 4px 14px rgba(15, 110, 110, 0.15);
+}
+
+.detail-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 4px;
+    border-bottom: 1px dashed var(--line);
+}
+
+.detail-group:last-of-type {
+    border-bottom: none;
+}
+
+.detail-label {
+    font-size: 13px;
+    color: var(--ink-soft);
+    font-weight: 600;
+}
+
+.detail-value {
+    font-size: 14px;
+    color: var(--ink);
+    font-weight: 700;
+}
+
+.drawer-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 26px;
+}
+
+.btn {
+    padding: 12px 16px;
+    border-radius: 11px;
+    border: none;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: filter .15s ease, transform .15s ease;
+}
+
+.btn:hover {
+    filter: brightness(0.95);
+    transform: translateY(-1px);
+}
+
+/* Inline colors set in the HTML (success / danger) are preserved;
+   this just keeps the shared button shape and hover behavior consistent. */
+
+@media (max-width: 720px) {
+    .navbar {
+        flex-direction: column;
+    }
+
+    thead {
+        display: none;
+    }
+
+    table,
+    tbody,
+    tr,
+    td {
+        display: block;
+        width: 100%;
+    }
+
+    tbody tr {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        margin-bottom: 10px;
+        padding: 6px 4px;
+    }
+
+    tbody td {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 14px;
+    }
+
+    .drawer {
+        max-width: 100%;
+    }
+}
+
+/* ==========================================
+   زر عرض التفاصيل
+   ========================================== */
+
+.btn-details {
+    border: none;
+    outline: none;
+
+    cursor: pointer;
+
+    padding: 9px 18px;
+
+    border-radius: 10px;
+
+    background-color: #e0f2fe;
+
+    color: #0369a1;
+
+    font-family: inherit;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    transition:
+        all 0.2s ease;
+}
+
+.btn-details:hover {
+    background-color: #bae6fd;
+
+    color: #075985;
+
+    transform: translateY(-1px);
+}
+
+.btn-details:active {
+    transform: scale(0.97);
+}
+
+
+/* ==========================================
+   حقول التعديل
+   ========================================== */
+
+.drawer-edit-input {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 10px 12px;
+
+    border: 1px solid #dbe4e8;
+
+    border-radius: 9px;
+
+    background-color: #ffffff;
+
+    color: #243b3b;
+
+    font-family: inherit;
+
+    font-size: 14px;
+
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.drawer-edit-input:focus {
+    border-color: #94d8c7;
+
+    box-shadow:
+        0 0 0 3px rgba(148, 216, 199, 0.15);
+}
+
+
+/* ==========================================
+   الطول والوزن
+   ========================================== */
+
+.height-weight-edit {
+    display: flex;
+
+    gap: 8px;
+
+    width: 100%;
+}
+
+
+.height-weight-edit .drawer-edit-input {
+    flex: 1;
+}

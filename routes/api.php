@@ -151,5 +151,8 @@ Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class, 've
 Route::post('/verify-email', [EmailVerificationController::class, 'verifyEmail']);
 Route::post('/resend-verification', [EmailVerificationController::class, 'resend']);
 
-// Admin Routes
-Route::prefix('admin')->group(base_path('routes/admin.php'));
+
+// admin
+Route::prefix('admin')->group(
+    base_path('routes/admin.php')
+);

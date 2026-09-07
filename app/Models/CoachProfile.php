@@ -19,6 +19,7 @@ class CoachProfile extends Model
         'bio',
         'certifications',
         'is_approved',
+        'rejection_reason',
         'price',
         'profile_photo',
     ];
