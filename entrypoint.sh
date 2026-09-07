@@ -31,6 +31,10 @@ fi
 echo "Creating storage link..."
 php artisan storage:link || true
 
+echo "📁 Checking uploaded files..."
+ls -la storage/app/public || true
+ls -la storage/app/public/user_avatar || true
+
 echo ""
 echo " Database setup..."
 
