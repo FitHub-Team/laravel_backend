@@ -61,7 +61,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/', [TraineeProgressController::class, 'store']);
             Route::put('/{id}/upload-photo', [TraineeProgressController::class, 'updatePhoto']);
         });
-
+    });
 
         // Coach Routes
         Route::middleware(['coach'])->group(function () {
@@ -139,7 +139,7 @@ Route::middleware('auth:sanctum')->group(function () {
         ]);
     });
 });
-});
+
 
 // Verification & Password Reset Routes
 Route::post('/email/verification-notification', [EmailVerificationController::class, 'resend']);
