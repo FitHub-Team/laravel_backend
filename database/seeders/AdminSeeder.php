@@ -3,9 +3,10 @@
 namespace Database\Seeders;
 
 use App\Models\Admin;
-use Hash;
+//use Hash;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash as FacadesHash;
 
 class AdminSeeder extends Seeder
 {
@@ -17,7 +18,7 @@ class AdminSeeder extends Seeder
         Admin::create([
             'name' => 'Super Admin',
             'email' => 'admin@superfit.com',
-            'password' => Hash::make('password123'),
+            'password' => FacadesHash::make('password123'),
         ]);
     }
 }

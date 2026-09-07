@@ -1,14 +1,22 @@
-FROM php:8.4-apache
+FROM php:8.4-fpm
 
 WORKDIR /var/www/html
 
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
+    curl \
+    wget \
+    supervisor \
+    gettext-base \
     libpq-dev \
     libzip-dev \
-    && docker-php-ext-install pdo_pgsql pgsql zip \
-    && a2enmod rewrite \
+    nginx \
+    && docker-php-ext-install \
+    pdo_pgsql \
+    pgsql \
+    zip \
+    pcntl \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
@@ -17,15 +25,25 @@ COPY . .
 
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-RUN chown -R www-data:www-data storage bootstrap/cache
+RUN mkdir -p \
+    storage/logs \
+    storage/framework/sessions \
+    storage/framework/cache \
+    storage/framework/views \
+    /run/php-fpm \
+    /var/log/supervisor \
+    /var/log/nginx
 
-RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/public|' /etc/apache2/sites-available/000-default.conf
+RUN chmod -R 775 storage bootstrap/cache && \
+    chown -R www-data:www-data /var/www/html
 
-RUN printf '<Directory /var/www/html/public>\n\
-    AllowOverride All\n\
-    Require all granted\n\
-</Directory>\n' >> /etc/apache2/apache2.conf
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY php-fpm.conf /usr/local/etc/php-fpm.d/docker.conf
+COPY entrypoint.sh /entrypoint.sh
 
-EXPOSE 80
+RUN chmod +x /entrypoint.sh
 
-CMD ["apache2-foreground"]
+EXPOSE 8080
+
+CMD ["/entrypoint.sh"]

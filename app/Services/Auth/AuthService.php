@@ -17,7 +17,7 @@ class AuthService
      */
     public function __construct(
         private UserRepositoryInterface $userRepository,
-        private EmailVerificationService $emailVerificationService
+       // private EmailVerificationService $emailVerificationService
     ) {}
     public function register(array $data)
     {
@@ -54,7 +54,7 @@ class AuthService
             }
 
 
-            $this->emailVerificationService->sendVerificationCode($user);
+           // $this->emailVerificationService->sendVerificationCode($user);
 
 
             $token = $user->createToken('auth_token')->plainTextToken;

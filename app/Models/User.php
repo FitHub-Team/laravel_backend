@@ -54,4 +54,17 @@ class User extends Authenticatable implements MustVerifyEmail
             ->latest()
             ->first();
     }
+
+
+
+    public function availabilities()
+    {
+        return $this->hasMany(CoachAvailability::class, 'coach_id');
+    }
+
+
+    public function profile()
+    {
+        return $this->userProfile();
+    }
 }

@@ -9,7 +9,6 @@ class UserProfile extends Model
     protected $fillable = [
         // Onboarding Fields
         'gender',
-        'age',
         'height',
         'weight',
         'health_goal',
@@ -18,9 +17,12 @@ class UserProfile extends Model
         'dietary_preference',
         'disclaimer_accepted',
         'date_of_birth',
+        'profile_photo'
     ];
 
     protected $casts = [
+        'weight' => 'float',
+        'height' => 'float',
         'allergies' => 'array',
         'disclaimer_accepted' => 'boolean',
     ];
@@ -28,5 +30,4 @@ class UserProfile extends Model
     {
         return $this->belongsTo(User::class);
     }
-
 }

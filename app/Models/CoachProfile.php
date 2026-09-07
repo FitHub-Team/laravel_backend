@@ -20,6 +20,8 @@ class CoachProfile extends Model
         'certifications',
         'is_approved',
         'rejection_reason',
+        'price',
+        'profile_photo',
     ];
 
     protected $casts = [
