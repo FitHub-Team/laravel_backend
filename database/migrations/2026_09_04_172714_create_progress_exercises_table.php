@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('progress_exercises', function (Blueprint $table) {
             $table->id();
-
+            
             $table->foreignId('trainee_progress_id')
                 ->constrained('trainee_progresses')
                 ->onDelete('cascade');
