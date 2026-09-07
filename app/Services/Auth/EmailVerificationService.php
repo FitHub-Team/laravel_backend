@@ -1,4 +1,4 @@
-<?php
+ <!-- <?php
 
 namespace App\Services\Auth;
 
@@ -6,7 +6,7 @@ use App\Models\EmailVerificationCode;
 use App\Models\User;
 use App\Notifications\VerifyEmailNotification;
 use Carbon\Carbon;
-use Illuminate\Auth\Events\Verified;
+use Illuminate\Auth\Events\Verified; 
 
 class EmailVerificationService
 {
@@ -75,4 +75,4 @@ class EmailVerificationService
         // بعت الايميل
        // $user->notify(new VerifyEmailNotification($this->mailjet, $verificationCode));
     }
-}
+} 
