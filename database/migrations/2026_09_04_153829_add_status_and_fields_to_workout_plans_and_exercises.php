@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('workout_plans', function (Blueprint $table) {
-            $table->enum('status', ['active', 'completed', 'cancelled'])->default('active');
-        });
+       
+        
         Schema::table('workout_exercises', function (Blueprint $table) {
             $table->string('duration')->nullable();
             $table->string('equipment')->nullable();
@@ -25,10 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('workout_plans', function (Blueprint $table) {
-            $table->dropColumn('status');
-        });
-
         Schema::table('workout_exercises', function (Blueprint $table) {
             $table->dropColumn(['duration', 'equipment']);
         });

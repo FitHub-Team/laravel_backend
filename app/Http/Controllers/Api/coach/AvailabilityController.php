@@ -3,15 +3,22 @@
 namespace App\Http\Controllers\Api\coach;
 
 use App\Http\Controllers\Controller;
-use App\Models\CoachAvailability;
+use App\Services\Coach\AvailabilityService;
 use Illuminate\Http\Request;
 
 class AvailabilityController extends Controller
 {
+    protected AvailabilityService $availabilityService;
+
+    public function __construct(AvailabilityService $availabilityService)
+    {
+        $this->availabilityService = $availabilityService;
+    }
+
     // عرض أوقات العمل المتاحة للكوتش
     public function index(Request $request)
     {
-        $availabilities = $request->user()->availabilities;
+        $availabilities = $this->availabilityService->getAvailabilities($request->user());
 
         return response()->json([
             'status' => true,
@@ -22,26 +29,22 @@ class AvailabilityController extends Controller
     // تحديد أو تحديث أوقات العمل المتاحة
     public function store(Request $request)
     {
-        $request->validate([
+        $validatedData = $request->validate([
             'availabilities' => 'required|array|min:1',
             'availabilities.*.day_of_week' => 'required|in:Saturday,Sunday,Monday,Tuesday,Wednesday,Thursday,Friday',
             'availabilities.*.start_time' => 'required|date_format:H:i',
             'availabilities.*.end_time' => 'required|date_format:H:i|after:availabilities.*.start_time',
         ]);
 
-        $coach = $request->user();
-
-        // حذف المواعيد القديمة واستبدالها بالجديدة
-        $coach->availabilities()->delete();
-
-        foreach ($request->availabilities as $slot) {
-            $coach->availabilities()->create($slot);
-        }
+        $availabilities = $this->availabilityService->updateAvailabilities(
+            $request->user(), 
+            $validatedData['availabilities']
+        );
 
         return response()->json([
             'status' => true,
             'message' => 'Working hours updated successfully',
-            'data' => $coach->availabilities
+            'data' => $availabilities
         ], 200);
     }
 }

@@ -3,21 +3,22 @@
 namespace App\Http\Controllers\Api\coach;
 
 use App\Http\Controllers\Controller;
-use App\Models\Subscription;
-use App\Models\User;
+use App\Services\Coach\SubscriptionService;
 use Illuminate\Http\Request;
-use Carbon\Carbon;
 
 class SubscriptionController extends Controller
 {
+    protected SubscriptionService $subscriptionService;
+
+    public function __construct(SubscriptionService $subscriptionService)
+    {
+        $this->subscriptionService = $subscriptionService;
+    }
+
     // عرض قائمة طلبات الاشتراك قيد الانتظار الواردة من المتدربين
     public function pendingRequests(Request $request)
     {
-        $requests = Subscription::where('coach_id', $request->user()->id)
-            ->where('status', 'pending')
-            ->with(['trainee']) // تم إزالة package
-            ->latest()
-            ->get();
+        $requests = $this->subscriptionService->getPendingRequests($request->user()->id);
 
         return response()->json([
             'status' => true,
@@ -28,21 +29,7 @@ class SubscriptionController extends Controller
     // قبول طلب الاشتراك
     public function acceptRequest(Request $request, $id)
     {
-        $subscription = Subscription::where('id', $id)
-            ->where('coach_id', $request->user()->id)
-            ->firstOrFail();
-
-        // مدة ثابتة للاشتراك الشهري (30 يوماً) لعدم وجود باقات
-        $durationDays = 30;
-
-        $startDate = Carbon::now();
-        $endDate = Carbon::now()->addDays($durationDays);
-
-        $subscription->update([
-            'status' => 'accepted',
-            'start_date' => $startDate,
-            'end_date' => $endDate,
-        ]);
+        $subscription = $this->subscriptionService->acceptSubscription($id, $request->user()->id);
 
         return response()->json([
             'status' => true,
@@ -58,14 +45,11 @@ class SubscriptionController extends Controller
             'notes' => 'nullable|string'
         ]);
 
-        $subscription = Subscription::where('id', $id)
-            ->where('coach_id', $request->user()->id)
-            ->firstOrFail();
-
-        $subscription->update([
-            'status' => 'rejected',
-            'notes' => $request->notes,
-        ]);
+        $subscription = $this->subscriptionService->rejectSubscription(
+            $id, 
+            $request->user()->id, 
+            $request->notes
+        );
 
         return response()->json([
             'status' => true,
@@ -77,10 +61,7 @@ class SubscriptionController extends Controller
     // عرض قائمة المتدربين المشتركين حاليا مع الكوتش
     public function myTrainees(Request $request)
     {
-        $trainees = Subscription::where('coach_id', $request->user()->id)
-            ->where('status', 'accepted')
-            ->with(['trainee']) 
-            ->get();
+        $trainees = $this->subscriptionService->getAcceptedTrainees($request->user()->id);
 
         return response()->json([
             'status' => true,
@@ -91,20 +72,17 @@ class SubscriptionController extends Controller
     // عرض بيانات متدرب محدد 
     public function showTraineeDetails(Request $request, $trainee_id)
     {
-        $hasSubscription = Subscription::where('coach_id', $request->user()->id)
-            ->where('trainee_id', $trainee_id)
-            ->exists();
+        $trainee = $this->subscriptionService->verifyAndGetTraineeDetails(
+            $request->user()->id, 
+            $trainee_id
+        );
 
-        if (!$hasSubscription) {
+        if (!$trainee) {
             return response()->json([
                 'status' => false,
                 'message' => 'Trainee not found in your subscription list'
             ], 404);
         }
-
-        $trainee = User::where('id', $trainee_id)
-            ->with('profile') 
-            ->firstOrFail();
 
         return response()->json([
             'status' => true,
