@@ -12,10 +12,11 @@ return new class extends Migration
             $table->id();
             $table->foreignId('coach_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('trainee_id')->constrained('users')->onDelete('cascade');
-            $table->string('title'); 
+            $table->string('title');
             $table->text('description')->nullable();
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
+            $table->string('status')->default('active'); 
             $table->timestamps();
         });
     }

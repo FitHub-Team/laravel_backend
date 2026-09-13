@@ -3,18 +3,21 @@
 namespace App\Http\Controllers\Api\coach;
 
 use App\Http\Controllers\Controller;
-use App\Models\TraineeProgress;
+use App\Services\Coach\ProgressService;
 use Illuminate\Http\Request;
 
 class ProgressController extends Controller
 {
-  
- public function show(Request $request, $trainee_id)
+    protected ProgressService $progressService;
+
+    public function __construct(ProgressService $progressService)
     {
-        $reports = TraineeProgress::where('coach_id', $request->user()->id)
-            ->where('trainee_id', $trainee_id)
-            ->latest('recorded_at')
-            ->get();
+        $this->progressService = $progressService;
+    }
+ 
+    public function show(Request $request, $trainee_id)
+    {
+        $reports = $this->progressService->getTraineeReports($request->user()->id, $trainee_id);
 
         return response()->json([
             'status' => true,

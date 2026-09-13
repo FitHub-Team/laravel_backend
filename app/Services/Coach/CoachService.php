@@ -12,55 +12,68 @@ use Illuminate\Support\Facades\Log;
 
 class CoachService
 {
-  protected CoachRepositoryInterface $coachRepository;
+    protected CoachRepositoryInterface $coachRepository;
 
-  public function __construct(CoachRepositoryInterface $coachRepository)
-  {
-    $this->coachRepository = $coachRepository;
-  }
-  public function saveCoachProfile(int $userId, array $data): CoachProfile
-  {
-    return $this->coachRepository->createOrUpdate($userId, $data);
-  }
-  public function getCoachProfile(int $userId): ?CoachProfile
-  {
-    return $this->coachRepository->findByUserId($userId);
-  }
-  public function updateProfilePhoto(User $coach, string $photoPath)
-  {
-    try {
-      return DB::transaction(function () use ($coach, $photoPath) {
-
-        $profile = $coach->coachProfile;
-
-        if (!$profile) {
-          return null;
-        }
-
-        // Delete old profile photo
-        if (
-          $profile->profile_photo &&
-          Storage::disk('public')->exists($profile->profile_photo)
-        ) {
-          Storage::disk('public')->delete($profile->profile_photo);
-        }
-
-        // Update profile photo
-        $profile->update([
-          'profile_photo' => $photoPath,
-        ]);
-
-        return $profile->fresh();
-      });
-    } catch (Exception $e) {
-
-      Log::error(
-        'CoachService Update Profile Photo Error: ' . $e->getMessage()
-      );
-
-      throw new Exception(
-        'فشلت عملية تحديث صورة الملف الشخصي: ' . $e->getMessage()
-      );
+    public function __construct(CoachRepositoryInterface $coachRepository)
+    {
+        $this->coachRepository = $coachRepository;
     }
-  }
+
+    public function saveCoachProfile(int $userId, array $data): CoachProfile
+    {
+        return $this->coachRepository->createOrUpdate($userId, $data);
+    }
+
+    public function getCoachProfile(int $userId): ?CoachProfile
+    {
+        return $this->coachRepository->findByUserId($userId);
+    }
+
+    public function getPublicProfile(int $id): ?User
+    {
+        return User::with(['coachProfile'])->find($id);
+    }
+
+    public function getTraineeDetails(int $id): ?User
+    {
+        return User::with(['userProfile'])->find($id);
+    }
+
+    public function updateProfilePhoto(User $coach, string $photoPath)
+    {
+        try {
+            return DB::transaction(function () use ($coach, $photoPath) {
+
+                $profile = $coach->coachProfile;
+
+                if (!$profile) {
+                    return null;
+                }
+
+                // Delete old profile photo
+                if (
+                    $profile->profile_photo &&
+                    Storage::disk('public')->exists($profile->profile_photo)
+                ) {
+                    Storage::disk('public')->delete($profile->profile_photo);
+                }
+
+                // Update profile photo
+                $profile->update([
+                    'profile_photo' => $photoPath,
+                ]);
+
+                return $profile->fresh();
+            });
+        } catch (Exception $e) {
+
+            Log::error(
+                'CoachService Update Profile Photo Error: ' . $e->getMessage()
+            );
+
+            throw new Exception(
+                'فشلت عملية تحديث صورة الملف الشخصي: ' . $e->getMessage()
+            );
+        }
+    }
 }

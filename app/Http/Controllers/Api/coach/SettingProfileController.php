@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api\coach;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCoachProfileRequest;
-use App\Models\User;
 use App\Services\Coach\CoachService;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -43,9 +42,9 @@ class SettingProfileController extends Controller
         return response()->json(['data' => $profile], 200);
     }
 
-    public function showPublicProfile($id)
+    public function showPublicProfile($id): JsonResponse
     {
-        $coach = User::with(['coachProfile'])->find($id);
+        $coach = $this->coachService->getPublicProfile($id);
 
         if (!$coach) {
             return response()->json([
@@ -59,9 +58,9 @@ class SettingProfileController extends Controller
         ], 200);
     }
 
-    public function showTraineeDetails($id)
+    public function showTraineeDetails($id): JsonResponse
     {
-        $trainee = User::with(['userProfile'])->find($id);
+        $trainee = $this->coachService->getTraineeDetails($id);
 
         if (!$trainee) {
             return response()->json([
@@ -75,7 +74,7 @@ class SettingProfileController extends Controller
         ], 200);
     }
 
-    public function updateProfilePhoto(Request $request)
+    public function updateProfilePhoto(Request $request): JsonResponse
     {
         $request->validate([
             'profile_photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -94,7 +93,7 @@ class SettingProfileController extends Controller
                 'status' => true,
                 'message' => 'تم تحديث صورة الملف الشخصي بنجاح',
                 'data' => [
-                      'profile_photo' => asset('storage/' . $photoPath),
+                    'profile_photo' => asset('storage/' . $photoPath),
                 ],
             ], 200);
         } catch (Exception $e) {
