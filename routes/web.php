@@ -86,7 +86,7 @@ Route::prefix('admin')->group(function () {
 Route::get(
     '/admin/dashboard',
     [DashboardController::class, 'index']
-)->name('admin.dashboard');
+)->name('admin.dashboard.page');
 
 
 // ==========================================

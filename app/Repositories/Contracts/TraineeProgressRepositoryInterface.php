@@ -9,5 +9,5 @@ interface TraineeProgressRepositoryInterface
     public function getTraineeProgress(int $traineeId);
 
     public function updateProgress(int $progressId, array $data);
-    public function updateProgressPhoto(int $progressId, string $photoPath);
+    public function findProgress(int $progressId);
 }

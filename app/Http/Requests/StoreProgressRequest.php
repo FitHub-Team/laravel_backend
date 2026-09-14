@@ -29,8 +29,7 @@ class StoreProgressRequest extends FormRequest
                 'min:0',
                 'max:999.99'],
                 'height' => ['nullable', 'numeric', 'min:0', 'max:999.99'],
-                //لاحقا دغيرها ل text 
-                'notes' => ['nullable', 'string',],
+                'notes' => ['nullable', 'text',],
                 'recorded_at' => ['required', 'date', 'before_or_equal:today'],
 
                 'exercises' => ['required', 'array', 'min:1',],
@@ -46,6 +45,7 @@ class StoreProgressRequest extends FormRequest
                 'exercises.*.completed_reps' => ['nullable', 'integer', 'min:0'],
 
                 'exercises.*.notes' => ['nullable', 'string'],
+                'progress_photo'=>['nullable','mimes:png,jpg']
 
             ];
         

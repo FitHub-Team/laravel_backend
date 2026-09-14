@@ -12,6 +12,7 @@ class Coach_profile extends Model
         'experience',
         'location',
         'birth_year',
+        'profile_photo'
     ];
     public function user()
     {
