@@ -1,4 +1,4 @@
- <!-- <?php
+<?php
 
 namespace App\Services\Auth;
 
@@ -6,11 +6,13 @@ use App\Models\EmailVerificationCode;
 use App\Models\User;
 use App\Notifications\VerifyEmailNotification;
 use Carbon\Carbon;
-use Illuminate\Auth\Events\Verified; 
+use Illuminate\Auth\Events\Verified;
 
 class EmailVerificationService
 {
-    public function __construct(private MailService $mailjet) {}
+    public function __construct(private MailService $mailjet)
+    {
+    }
 
     public function verify(User $user, string $code): bool
     {
@@ -24,7 +26,7 @@ class EmailVerificationService
         }
 
 
-        if (! $user->hasVerifiedEmail()) {
+        if (!$user->hasVerifiedEmail()) {
             $user->markEmailAsVerified();
 
             event(new Verified($user));
@@ -62,7 +64,7 @@ class EmailVerificationService
             'code' => $verificationCode,
             'expires_at' => Carbon::now()->addMinutes(10),
         ]);
-          $this->mailjet->send(
+        $this->mailjet->send(
             $user->email,
             'Verify Your Email Address',
             view('emails.verify-email-code', [
@@ -71,8 +73,8 @@ class EmailVerificationService
             ])->render(),
             'Your verification code is: ' . $verificationCode
         );
-        
+
         // بعت الايميل
-       // $user->notify(new VerifyEmailNotification($this->mailjet, $verificationCode));
+        // $user->notify(new VerifyEmailNotification($this->mailjet, $verificationCode));
     }
-} 
+}
