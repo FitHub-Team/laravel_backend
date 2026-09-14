@@ -24,16 +24,18 @@ if [ ! -f .env ]; then
     fi
 fi
 
-if ! grep -q "^APP_KEY=..\{10\}" .env; then
+if [ -z "${APP_KEY:-}" ]; then
     echo " Generating APP_KEY..."
     php artisan key:generate --force
+else
+    echo " APP_KEY already set, skipping key generation."
 fi
 echo "Creating storage link..."
 php artisan storage:link || true
 
 # echo "📁 Checking uploaded files..."
 ls -la storage/app/public || true
-ls -la storage/app/public/user_avatar || true
+
 
 echo ""
 echo " Database setup..."

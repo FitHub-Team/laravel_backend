@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('progress_meals', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('trainee_id ')->constrained('user')->onDelete('cascade');
+            $table->foreignId('trainee_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('nutrition_meal_id ')
                 ->constrained('nutrition_meals')
                 ->onDelete('cascade');
-            $table->boolean('is_consumed ')->default(false);
+            $table->boolean('is_consumed')->default(false);
             $table->string('meal_image')->nullable();
             $table->text('notes')->nullable();
             $table->dateTime('consumed_at')->nullable();
