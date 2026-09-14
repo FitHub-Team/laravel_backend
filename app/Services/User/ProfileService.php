@@ -2,11 +2,13 @@
 
 namespace App\Services\User;
 
+use App\Helper\ImageHelper;
 use App\Models\User;
 // use Carbon\Carbon;
 use Exception;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
+
 use Illuminate\Support\Facades\DB;
 
 
@@ -32,14 +34,6 @@ class ProfileService
                 return null;
             }
 
-            // 2- update new profile pictuer and delete the old
-            // if (isset($data['profile_photo']) && $data['profile_photo'] instanceof \Illuminate\Http\UploadedFile) {
-            //     if ($profile->profile_photo && Storage::disk('public')->exists($profile->profile_photo)) {
-            //         Storage::disk('public')->delete($profile->profile_photo);
-            //     }
-            //     $data['profile_photo'] = $data['profile_photo']->store('profile_photos', 'public');
-            // }
-
             $profile->update($data);
             return $user->load('userProfile');
         } catch (Exception $e) {
@@ -47,24 +41,21 @@ class ProfileService
             throw new Exception('فشلت عملية تحديث الملف الشخصي: ' . $e->getMessage());
         }
     }
-    public function updateProfilePhoto(User $user, string $photoPath)
+    public function updateProfilePhoto(User $user, UploadedFile $image)
     {
         try {
-            return DB::transaction(function () use ($user, $photoPath) {
+            return DB::transaction(function () use ($user, $image) {
 
                 $profile = $user->userProfile;
-
+                //   dd($profile);
                 if (!$profile) {
                     return null;
                 }
-
-                // Delete the old profile photo if it exists
-                if (
-                    $profile->profile_photo &&
-                    Storage::disk('public')->exists($profile->profile_photo)
-                ) {
-                    Storage::disk('public')->delete($profile->profile_photo);
-                }
+                $photoPath = ImageHelper::update(
+                    $image,
+                    $profile->profile_photo,
+                    'user_avatar'
+                );
 
                 // Update profile photo
                 $profile->update([
@@ -81,6 +72,32 @@ class ProfileService
 
             throw new Exception(
                 'فشلت عملية تحديث صورة الملف الشخصي: ' . $e->getMessage()
+            );
+        }
+    }
+    public function deleteProfilePhoto(User $user)
+    {
+        try {
+            $profile = $user->userProfile;
+
+            if (!$profile) {
+                return null;
+            }
+
+            ImageHelper::delete($profile->profile_photo);
+
+            $profile->update([
+                'profile_photo' => null,
+            ]);
+
+            return $user->fresh('userProfile');
+        } catch (Exception $e) {
+            Log::error(
+                'ProfileService Delete Profile Photo Error: ' . $e->getMessage()
+            );
+
+            throw new Exception(
+                'فشلت عملية حذف صورة الملف الشخصي: ' . $e->getMessage()
             );
         }
     }
