@@ -17,52 +17,55 @@ class AuthService
      */
     public function __construct(
         private UserRepositoryInterface $userRepository,
-       // private EmailVerificationService $emailVerificationService
-    ) {}
+        // private EmailVerificationService $emailVerificationService
+    ) {
+    }
     public function register(array $data)
     {
         try {
-             return DB::transaction(function () use ($data) {
-            $data['password'] = Hash::make($data['password']);
-            // $data['role'] = 'user';
-            if (User::where('email', $data['email'])->exists()) {
-                throw ValidationException::withMessages([
-                    'email' => ['Email already registered'],
-                ]);
-            }
-            $user = $this->userRepository->create($data);
-            if ($data['role'] === 'user') {
-                $user->userProfile()->create([
-                    'gender' => $data['gender'] ?? null,
-                    'date_of_birth' => $data['date_of_birth'] ?? null,
-                    'height' => $data['height'] ?? null,
-                    'weight' => $data['weight'] ?? null,
-                    'health_goal' => $data['health_goal'] ?? null,
-                    'medical_conditions' => $data['medical_conditions'] ?? null,
-                    'allergies' => $data['allergies'] ?? null,
-                    'dietary_preference' => $data['dietary_preference'] ?? null,
-                ]);
-            } elseif ($data['role'] === 'coach') {
-                $user->coachProfile()->create([
-                    'identity_number' => $data['identity_number'] ?? null,
-                    'specialization' => $data['specialization'] ?? null,
-                    'experience' => $data['experience'] ?? null,
-                    'location' => $data['location'] ?? null,
-                    'certification' => $data['certification'] ?? null,
-                    'birth_year' => $data['birth_year'] ?? null,
-                ]);
-            }
+            return DB::transaction(function () use ($data) {
+                $data['password'] = Hash::make($data['password']);
+                // $data['role'] = 'user';
+                if (User::where('email', $data['email'])->exists()) {
+                    throw ValidationException::withMessages([
+                        'email' => ['Email already registered'],
+                    ]);
+                }
+
+                $user = $this->userRepository->create($data);
+                if ($data['role'] === 'user') {
+                    $user->userProfile()->create([
+                        'gender' => $data['gender'] ?? null,
+                        'date_of_birth' => $data['date_of_birth'] ?? null,
+                        'height' => $data['height'] ?? null,
+                        'weight' => $data['weight'] ?? null,
+                        'health_goal' => $data['health_goal'] ?? null,
+                        'medical_conditions' => $data['medical_conditions'] ?? null,
+                        'allergies' => $data['allergies'] ?? null,
+                        'dietary_preference' => $data['dietary_preference'] ?? null,
+                    ]);
+                } elseif ($data['role'] === 'coach') {
+                    $user->coachProfile()->create([
+                        'identity_number' => $data['identity_number'] ?? null,
+                        'specialization' => $data['specialization'] ?? null,
+                        'experience' => $data['experience'] ?? null,
+                        'location' => $data['location'] ?? null,
+                        'certification' => $data['certification'] ?? null,
+                        'birth_year' => $data['birth_year'] ?? null,
+                    ]);
+                }
 
 
-           // $this->emailVerificationService->sendVerificationCode($user);
+                // $this->emailVerificationService->sendVerificationCode($user);
 
 
-            $token = $user->createToken('auth_token')->plainTextToken;
-            return [
-                'user' => $user,
-                'token' => $token,
-            ];
-        }); }catch (\Throwable $e) {
+                $token = $user->createToken('auth_token')->plainTextToken;
+                return [
+                    'user' => $user,
+                    'token' => $token,
+                ];
+            });
+        } catch (\Throwable $e) {
             Log::error('User registration failed', [
                 'email' => $data['email'] ?? null,
                 'error' => $e->getMessage(),
@@ -76,7 +79,7 @@ class AuthService
         try {
             $user = $this->userRepository->findByEmail($data['email']);
 
-            if (! $user || ! Hash::check($data['password'], $user->password)) {
+            if (!$user || !Hash::check($data['password'], $user->password)) {
                 throw ValidationException::withMessages([
                     'email' => ['Invalid email or password'],
                 ]);
@@ -98,7 +101,7 @@ class AuthService
         }
     }
 
-    // login with gogle email 
+    // login with gogle email
     public function loginWithGoogle(string $idToken)
     {
         try {
@@ -107,20 +110,20 @@ class AuthService
                 'client_id' => config('services.google.client_id'),
             ]);
             $payload = $client->verifyIdToken($idToken);
-            if (! $payload) {
+            if (!$payload) {
                 throw ValidationException::withMessages([
                     'google' => ['Invalid Google token'],
                 ]);
             }
             $email = $payload['email'] ?? null;
-            if (! $email) {
+            if (!$email) {
                 throw ValidationException::withMessages([
                     'email' => ['Email not found in Google account'],
                 ]);
             }
             $user = $this->userRepository->findByEmail($email);
 
-            if (! $user) {
+            if (!$user) {
                 throw ValidationException::withMessages([
                     'email' => ['User not found'],
                 ]);

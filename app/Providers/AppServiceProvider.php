@@ -47,6 +47,7 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        \Illuminate\Support\Facades\URL::forceScheme('https');
         ResetPassword::createUrlUsing(function ($notifiable, $token) {
             return config('app.frontend_url')
                 . '/reset-password?token='
@@ -65,5 +66,8 @@ class AppServiceProvider extends ServiceProvider
                 ]
             );
         });
+        if (config('app.env') === 'production' || request()->header('X-Forwarded-Proto') === 'https') {
+            URL::forceScheme('https');
+        }
     }
 }

@@ -137,3 +137,13 @@ Route::delete(
     '/admin/trainers/{id}',
     [TrainerController::class, 'destroy']
 )->name('admin.trainer.destroy');
+
+
+
+Route::get('/clear-all-cache', function () {
+    \Illuminate\Support\Facades\Artisan::call('config:clear');
+    \Illuminate\Support\Facades\Artisan::call('cache:clear');
+    \Illuminate\Support\Facades\Artisan::call('view:clear');
+    \Illuminate\Support\Facades\Artisan::call('route:clear');
+    return 'Done! All cache cleared successfully.';
+});
