@@ -5,10 +5,13 @@ namespace App\Http\Controllers\Api\user;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreProgressRequest;
 use App\Services\User\TraineeProgress;
+
+use Exception;
 use Illuminate\Http\Request;
 
 class TraineeProgressController extends Controller
 {
+
     public function __construct(
         private TraineeProgress $progressService
     ) {}
@@ -57,7 +60,7 @@ class TraineeProgressController extends Controller
                 'message' => 'Error fetching progress data',
             ], 500);
         }
-    } 
+    }
 
     public function update(StoreProgressRequest $request, $progressId)
     {
@@ -65,9 +68,13 @@ class TraineeProgressController extends Controller
             $traineeId = $request->user()->id;
 
             $data = $request->validated();
+            if ($request->hasFile('progress_photo')) {
+                $data['progress_photo'] = $request->file('progress_photo');
+            }
 
             $progress = $this->progressService
                 ->updateProgress($progressId, $data);
+
 
             return response()->json([
                 'status' => true,

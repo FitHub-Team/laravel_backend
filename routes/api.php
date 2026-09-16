@@ -35,12 +35,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/coaches/{id}', [CoachSettingProfileController::class, 'showPublicProfile']);
 
     // Trainee Routes
-    Route::prefix('trainee')->group(function () {
+    Route::prefix('trainee')->middleware(['user'])->group(function () {
         // User Profile Settings
         Route::prefix('profile/setting')->group(function () {
             Route::get('/show', [UserSettingProfileController::class, 'show']);
             Route::put('/update', [UserSettingProfileController::class, 'update']);
             Route::put('/update/avatar', [UserSettingProfileController::class, 'updateProfilePhoto']);
+            Route::delete('/update/avatar/delete', [UserSettingProfileController::class, 'deleteProfilePhoto']);
         });
 
         // Public User Profile & Coaches
@@ -89,7 +90,6 @@ Route::middleware('auth:sanctum')->group(function () {
                 Route::post('/update', [CoachSettingProfileController::class, 'update']);
                 Route::put('/update/avatar', [CoachSettingProfileController::class, 'updateProfilePhoto']);
             });
-
 
                 // Coach Availabilities (Working Days & Slots)
                 Route::prefix('availabilities')->group(function () {

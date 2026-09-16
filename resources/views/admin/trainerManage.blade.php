@@ -6,6 +6,7 @@
     <title>إدارة المدربين</title>
     <link rel="stylesheet" href="{{ asset('front/css/style-trainer.css') }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+
 </head>
 <body>
     <input type="checkbox" id="drawer-check" class="drawer-toggle">

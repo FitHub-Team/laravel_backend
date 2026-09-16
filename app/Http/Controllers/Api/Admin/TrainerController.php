@@ -3,8 +3,7 @@
 namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\TrainerDetailResource;
-use App\Http\Resources\TrainerIndexResource;
+use App\Http\Resources\Admin\TrainerDetailResource;
 use App\Models\CoachProfile;
 use App\Models\User;
 use App\Services\Admin\TrainerService;

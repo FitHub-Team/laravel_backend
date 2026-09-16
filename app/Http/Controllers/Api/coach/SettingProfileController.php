@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Api\coach;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCoachProfileRequest;
 use App\Services\Coach\CoachService;
+
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class SettingProfileController extends Controller
 {
+
     protected CoachService $coachService;
 
     public function __construct(CoachService $coachService)
@@ -81,25 +83,60 @@ class SettingProfileController extends Controller
         ]);
 
         try {
-            $coach = $request->user();
+            $profile = $this->coachService->updateProfilePhoto(
+                $request->user(),
+                $request->file('profile_photo')
+            );
+            // dd($profile);
 
-            // Store the new profile photo
-            $photoPath = $request->file('profile_photo')->store('coach_avatar', 'public');
-
-            // Update the coach's profile photo
-            $profile = $this->coachService->updateProfilePhoto($coach, $photoPath);
+            if (!$profile) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'الملف الشخصي للمستخدم غير موجود.',
+                ], 404);
+            }
 
             return response()->json([
                 'status' => true,
                 'message' => 'تم تحديث صورة الملف الشخصي بنجاح',
                 'data' => [
-                    'profile_photo' => asset('storage/' . $photoPath),
+
+                    'profile_photo' => $profile->coachProfile->profile_photo
+                        ? asset('storage/' . $profile->coachProfile->profile_photo)
+                        : null,
+
                 ],
             ], 200);
         } catch (Exception $e) {
             return response()->json([
                 'status' => false,
                 'message' => 'حدث خطأ اثناء تحديث صورة الملف الشخصي',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+    public function deleteProfilePhoto(Request $request)
+    {
+        try {
+            $profile = $this->coachService->deleteProfilePhoto(
+                $request->user()
+            );
+
+            if (!$profile) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'الملف الشخصي للمستخدم غير موجود.',
+                ], 404);
+            }
+
+            return response()->json([
+                'status' => true,
+                'message' => 'تم حذف صورة الملف الشخصي بنجاح',
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'حدث خطأ اثناء حذف صورة الملف الشخصي',
                 'error' => $e->getMessage(),
             ], 500);
         }

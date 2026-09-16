@@ -40,7 +40,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function coachProfile()
     {
-        return $this->hasOne(Coach_profile::class);
+        return $this->hasOne(CoachProfile::class);
     }
 
     public function emailVerificationCodes()
