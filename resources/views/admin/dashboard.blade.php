@@ -8,7 +8,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <style>
+ <style>
         :root {
             --teal-950: #0a2f2c;
             --teal-800: #0f6e6e;
@@ -86,6 +86,7 @@
             align-items: center;
             justify-content: center;
             font-size: 20px;
+            color: var(--teal-950);
         }
 
         .brand-name {
@@ -366,6 +367,16 @@
             color: #0f8f6f;
         }
 
+        /* أيقونات SVG بديلة الإيموجي */
+        .ic svg,
+        .stat-icon svg,
+        .action-ic svg,
+        .brand-mark svg {
+            display: block;
+            width: 1em;
+            height: 1em;
+        }
+
         @media (max-width: 980px) {
             .stats-grid { grid-template-columns: 1fr; }
             .action-grid { grid-template-columns: repeat(2, 1fr); }
@@ -389,31 +400,52 @@
     <!-- الشريط الجانبي -->
     <aside class="sidebar">
         <div class="brand">
-            <div class="brand-mark">🌿</div>
+            <div class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 4 13c0-6 6-10 15-11 0 9-3 15-8 18z"></path><path d="M4 13c3 0 6-1 8-3"></path></svg></div>
             <div class="brand-name"> SuperFit</div>
         </div>
 
         <div class="nav-section-label">نظرة عامة</div>
         <a href="{{ route('admin.dashboard') }}" class="nav-btn {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-            <span class="ic">📊</span> إحصائيات لوحة التحكم
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg></span> إحصائيات لوحة التحكم
         </a>
 
         <div class="nav-section-label">الإدارة</div>
         <a href="{{ route('admin.users.manage') }}" class="nav-btn {{ request()->routeIs('admin.users.manage') ? 'active' : '' }}">
-            <span class="ic">👥</span> إدارة المستخدمين
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></span> إدارة المستخدمين
         </a>
 
         <a href="{{ route('admin.trainer.manage') }}" class="nav-btn {{ request()->routeIs('admin.trainer.manage') ? 'active' : '' }}">
-            <span class="ic">🏋️</span> إدارة المدربين
+            <span class="ic"><svg viewBox="0 0 512 512" fill="currentColor"><path d="M448 96V64c0-17.7-14.3-32-32-32h-32c-17.7 0-32 14.3-32 32V96H160V64c0-17.7-14.3-32-32-32H96C78.3 32 64 46.3 64 64V96H48c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16H64v96H48c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16H64v32c0 17.7 14.3 32 32 32h32c17.7 0 32-14.3 32-32V352h192v32c0 17.7 14.3 32 32 32h32c17.7 0 32-14.3 32-32V352h16c8.8 0 16-7.2 16-16V304c0-8.8-7.2-16-16-16H464V192h16c8.8 0 16-7.2 16-16V144c0-8.8-7.2-16-16-16H448z"></path></svg></span> إدارة المدربين
         </a>
 
         <a href="{{ route('admin.coaches.requests') }}" class="nav-btn {{ request()->routeIs('admin.coaches.requests') ? 'active' : '' }}">
-            <span class="ic">📑</span> طلبات الانضمام
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect><line x1="9" y1="12" x2="15" y2="12"></line><line x1="9" y1="16" x2="15" y2="16"></line></svg></span> طلبات الانضمام
+        </a>
+
+        <div class="nav-section-label">الملف الرياضي</div>
+        <a href="{{ route('admin.goals.manage') }}" class="nav-btn {{ request()->routeIs('admin.goals.manage') ? 'active' : '' }}">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="5"></circle><circle cx="12" cy="12" r="1"></circle></svg></span> الأهداف
+        </a>
+
+        <a href="{{ route('admin.activity-level.manage') }}" class="nav-btn {{ request()->routeIs('admin.activity-level.manage') ? 'active' : '' }}">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg></span> مستوى النشاط
+        </a>
+
+        <a href="{{ route('admin.health-restrictions.manage') }}" class="nav-btn {{ request()->routeIs('admin.health-restrictions.manage') ? 'active' : '' }}">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 1 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path><line x1="12" y1="8" x2="12" y2="14"></line><line x1="9" y1="11" x2="15" y2="11"></line></svg></span> القيود الصحية
+        </a>
+
+        <a href="{{ route('admin.preferences.manage') }}" class="nav-btn {{ request()->routeIs('admin.preferences.manage') ? 'active' : '' }}">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg></span> تفضيلات
+        </a>
+
+        <a href="{{ route('admin.skills.manage') }}" class="nav-btn {{ request()->routeIs('admin.skills.manage') ? 'active' : '' }}">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"></circle><path d="M8.21 13.89 7 23l5-3 5 3-1.21-9.12"></path></svg></span> المهارات
         </a>
 
         <div class="nav-section-label">الحساب</div>
         <a href="{{ route('admin.login') }}" class="nav-btn">
-            <span class="ic">🔑</span> تسجيل الدخول
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg></span> تسجيل الدخول
         </a>
 
  <div class="sidebar-footer">
@@ -421,7 +453,7 @@
         @csrf
 
         <button type="submit" class="nav-btn logout-btn">
-            <span class="ic">⎋</span>
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg></span>
             تسجيل الخروج
         </button>
     </form>
@@ -442,7 +474,7 @@
         <section class="stats-grid">
             <div class="stat-card card-users" style="--leaf-tint:#e3f5f1">
                 <div class="stat-top">
-                    <div class="stat-icon">👥</div>
+                    <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div>
                     <div class="stat-trend trend-up">+8.2%</div>
                 </div>
                 <div class="stat-value">{{ number_format($totalUsers ?? 0) }}</div>
@@ -451,7 +483,7 @@
 
             <div class="stat-card card-coaches" style="--leaf-tint:#dff2ec">
                 <div class="stat-top">
-                    <div class="stat-icon">🏋️</div>
+                    <div class="stat-icon"><svg viewBox="0 0 512 512" fill="currentColor"><path d="M448 96V64c0-17.7-14.3-32-32-32h-32c-17.7 0-32 14.3-32 32V96H160V64c0-17.7-14.3-32-32-32H96C78.3 32 64 46.3 64 64V96H48c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16H64v96H48c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16H64v32c0 17.7 14.3 32 32 32h32c17.7 0 32-14.3 32-32V352h192v32c0 17.7 14.3 32 32 32h32c17.7 0 32-14.3 32-32V352h16c8.8 0 16-7.2 16-16V304c0-8.8-7.2-16-16-16H464V192h16c8.8 0 16-7.2 16-16V144c0-8.8-7.2-16-16-16H448z"></path></svg></div>
                     <div class="stat-trend trend-up">+3.4%</div>
                 </div>
                 <div class="stat-value">{{ number_format($totalCoaches ?? 0) }}</div>
@@ -460,7 +492,7 @@
 
             <div class="stat-card card-subs" style="--leaf-tint:#dff7f1">
                 <div class="stat-top">
-                    <div class="stat-icon">💳</div>
+                    <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg></div>
                     <div class="stat-trend trend-up">+12.6%</div>
                 </div>
                 <div class="stat-value">{{ number_format($activeSubscriptions ?? 0) }}</div>
@@ -474,19 +506,19 @@
             <p>الانتقال المباشر لأكثر الأدوات استخداماً.</p>
             <div class="action-grid">
                 <a href="{{ route('admin.users.manage') }}" class="action-card">
-                    <div class="action-ic">👥</div>
+                    <div class="action-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div>
                     <strong>إدارة المستخدمين</strong>
                     <span>عرض، إضافة أو تعديل الأعضاء</span>
                 </a>
 
                 <a href="{{ route('admin.trainer.manage') }}" class="action-card">
-                    <div class="action-ic">🏋️</div>
+                    <div class="action-ic"><svg viewBox="0 0 512 512" fill="currentColor"><path d="M448 96V64c0-17.7-14.3-32-32-32h-32c-17.7 0-32 14.3-32 32V96H160V64c0-17.7-14.3-32-32-32H96C78.3 32 64 46.3 64 64V96H48c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16H64v96H48c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16H64v32c0 17.7 14.3 32 32 32h32c17.7 0 32-14.3 32-32V352h192v32c0 17.7 14.3 32 32 32h32c17.7 0 32-14.3 32-32V352h16c8.8 0 16-7.2 16-16V304c0-8.8-7.2-16-16-16H464V192h16c8.8 0 16-7.2 16-16V144c0-8.8-7.2-16-16-16H448z"></path></svg></div>
                     <strong>إدارة المدربين</strong>
                     <span>إدارة ملفات المدربين</span>
                 </a>
 
                 <a href="{{ route('admin.login') }}" class="action-card login">
-                    <div class="action-ic">🔑</div>
+                    <div class="action-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg></div>
                     <strong>تسجيل الدخول</strong>
                     <span>الدخول بحساب آخر</span>
                 </a>
@@ -495,7 +527,7 @@
     @csrf
 
     <button type="submit" class="action-card danger">
-        <div class="action-ic">⎋</div>
+        <div class="action-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg></div>
         <strong>تسجيل الخروج</strong>
         <span>إنهاء الجلسة الحالية</span>
     </button>
