@@ -2,12 +2,13 @@
 
 namespace App\Services\Coach;
 
-use App\Repositories\Contracts\CoachRepositoryInterface;
+use App\Helper\ImageHelper;
 use App\Models\CoachProfile;
 use App\Models\User;
+use App\Repositories\Contracts\CoachRepositoryInterface;
 use Exception;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 
 class CoachService
@@ -24,7 +25,7 @@ class CoachService
         return $this->coachRepository->createOrUpdate($userId, $data);
     }
 
-    public function getCoachProfile(int $userId): ?CoachProfile
+    public function getCoachProfile(int $userId)
     {
         return $this->coachRepository->findByUserId($userId);
     }
@@ -39,40 +40,63 @@ class CoachService
         return User::with(['userProfile'])->find($id);
     }
 
-    public function updateProfilePhoto(User $coach, string $photoPath)
+    public function updateProfilePhoto(User $user, UploadedFile $image)
     {
         try {
-            return DB::transaction(function () use ($coach, $photoPath) {
+            return DB::transaction(function () use ($user, $image) {
 
-                $profile = $coach->coachProfile;
+                $profile = $user->coachProfile;
 
                 if (!$profile) {
                     return null;
                 }
 
-                // Delete old profile photo
-                if (
-                    $profile->profile_photo &&
-                    Storage::disk('public')->exists($profile->profile_photo)
-                ) {
-                    Storage::disk('public')->delete($profile->profile_photo);
-                }
+                $photoPath = ImageHelper::update(
+                    $image,
+                    $profile->profile_photo,
+                    'coach_avatar'
+                );
 
-                // Update profile photo
                 $profile->update([
                     'profile_photo' => $photoPath,
                 ]);
 
-                return $profile->fresh();
+                return $user->fresh('coachProfile');
             });
         } catch (Exception $e) {
-
             Log::error(
                 'CoachService Update Profile Photo Error: ' . $e->getMessage()
             );
 
             throw new Exception(
                 'فشلت عملية تحديث صورة الملف الشخصي: ' . $e->getMessage()
+            );
+        }
+    }
+
+    public function deleteProfilePhoto(User $user)
+    {
+        try {
+            $profile = $user->coachProfile;
+
+            if (!$profile) {
+                return null;
+            }
+
+            ImageHelper::delete($profile->profile_photo);
+
+            $profile->update([
+                'profile_photo' => null,
+            ]);
+
+            return $user->fresh('coachProfile');
+        } catch (Exception $e) {
+            Log::error(
+                'CoachService Delete Profile Photo Error: ' . $e->getMessage()
+            );
+
+            throw new Exception(
+                'فشلت عملية حذف صورة الملف الشخصي: ' . $e->getMessage()
             );
         }
     }

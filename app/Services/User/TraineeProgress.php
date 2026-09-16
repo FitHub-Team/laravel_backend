@@ -2,12 +2,15 @@
 
 namespace App\Services\User;
 
+use App\Helper\ImageHelper;
 use App\Models\ProgressExercise;
 use App\Repositories\Contracts\TraineeProgressRepositoryInterface;
+
 use Illuminate\Support\Facades\DB;
 
 class TraineeProgress
 {
+
     public function __construct(
         private TraineeProgressRepositoryInterface $traineeProgressRepository
     ) {}
@@ -45,9 +48,28 @@ class TraineeProgress
             $data,
             $exercises
         ) {
+            // Get current progress
+            $progress = $this->traineeProgressRepository
+                ->findProgress($progressId);
+
+            // Handle progress photo
+            $image = $data['progress_photo'] ?? null;
+
+            unset($data['progress_photo']);
+
+            if ($image) {
+                $data['progress_photo'] = ImageHelper::update(
+                    $image,
+                    $progress->progress_photo,
+                    'progress'
+                );
+            }
+
+            // Update progress
             $progress = $this->traineeProgressRepository
                 ->updateProgress($progressId, $data);
 
+            // Update exercises
             foreach ($exercises as $exercise) {
                 ProgressExercise::updateOrCreate(
                     [
@@ -65,10 +87,5 @@ class TraineeProgress
 
             return $progress->load('exercises.workoutExercise');
         });
-    }
-    public function updateProgressPhoto(int $progressId, string $photoPath)
-    {
-        return $this->traineeProgressRepository
-            ->updateProgressPhoto($progressId, $photoPath);
     }
 }

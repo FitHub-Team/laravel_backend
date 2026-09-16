@@ -23,18 +23,12 @@ class TraineeProgressRepository implements TraineeProgressRepositoryInterface
     public function updateProgress(int $progressId, array $data)
     {
         $progress = TraineeProgress::findOrFail($progressId);
-
         $progress->update($data);
 
         return $progress->load('exercises.workoutExercise');
     }
-
-    public function updateProgressPhoto(int $progressId, string $photoPath)
+    public function findProgress(int $progressId)
     {
-        $progress = TraineeProgress::findOrFail($progressId);
-
-        $progress->update(['progress_photo' => $photoPath]);
-
-        return $progress;
+        return TraineeProgress::findOrFail($progressId);
     }
 }

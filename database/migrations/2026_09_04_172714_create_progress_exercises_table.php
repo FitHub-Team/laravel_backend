@@ -13,28 +13,22 @@ return new class extends Migration
     {
         Schema::create('progress_exercises', function (Blueprint $table) {
             $table->id();
-            
-            $table->foreignId('trainee_progress_id')
-                ->constrained('trainee_progresses')
-                ->onDelete('cascade');
 
+            $table->foreignId('trainee_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('workout_exercise_id')
                 ->constrained('workout_exercises')
                 ->onDelete('cascade');
 
-            $table->boolean('completed')->default(false);
-
-            $table->integer('completed_sets')->nullable();
-            $table->integer('completed_reps')->nullable();
+            $table->boolean('is_completed')->default(false);
 
             $table->text('notes')->nullable();
-
+            $table->integer('sets')->default(1);           // الجولات
+            $table->integer('repetitions')->nullable();    // التكرار
+            $table->decimal('weight', 8, 2)->nullable();   // الوزن (كيلو)
+            $table->integer('duration')->nullable();
+            $table->dateTime('completed_at')->nullable();
             $table->timestamps();
-
-            $table->unique([
-                'trainee_progress_id',
-                'workout_exercise_id'
-            ]);
+            $table->unique(['trainee_id', 'workout_exercise_id']);
         });
     }
 
