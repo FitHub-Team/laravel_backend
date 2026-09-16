@@ -18,33 +18,76 @@ class AuthService
     public function __construct(
         private UserRepositoryInterface $userRepository,
         // private EmailVerificationService $emailVerificationService
-    ) {
-    }
+    ) {}
     public function register(array $data)
     {
         try {
             return DB::transaction(function () use ($data) {
+
                 $data['password'] = Hash::make($data['password']);
-                // $data['role'] = 'user';
+
                 if (User::where('email', $data['email'])->exists()) {
                     throw ValidationException::withMessages([
                         'email' => ['Email already registered'],
                     ]);
                 }
 
-                $user = $this->userRepository->create($data);
+                $user = $this->userRepository->create([
+                    'full_name' => $data['full_name'],
+                    'email' => $data['email'],
+                    'password' => $data['password'],
+                    'role' => $data['role'],
+                ]);
+
+
+                // User registration
+
                 if ($data['role'] === 'user') {
-                    $user->userProfile()->create([
+
+                    $profile = $user->userProfile()->create([
                         'gender' => $data['gender'] ?? null,
                         'date_of_birth' => $data['date_of_birth'] ?? null,
                         'height' => $data['height'] ?? null,
                         'weight' => $data['weight'] ?? null,
-                        'health_goal' => $data['health_goal'] ?? null,
-                        'medical_conditions' => $data['medical_conditions'] ?? null,
-                        'allergies' => $data['allergies'] ?? null,
-                        'dietary_preference' => $data['dietary_preference'] ?? null,
+
+                        'goal_id' => $data['goal_id'] ?? null,
+                        'activity_level_id' => $data['activity_level_id'] ?? null,
+
+                        'health_condition_note' =>
+                        $data['health_condition_note'] ?? null,
+
+                        'dietary_restriction_note' =>
+                        $data['dietary_restriction_note'] ?? null,
+
+                        'training_location_id' =>
+                        $data['training_location_id'] ?? null,
+
+                        'available_days' =>
+                        $data['available_days'] ?? null,
+
+                        'trainer_type' =>
+                        $data['trainer_type'] ?? null,
+
+                        'disclaimer_accepted' =>
+                        $data['disclaimer_accepted'] ?? false,
                     ]);
-                } elseif ($data['role'] === 'coach') {
+
+                    // Multiple health conditions
+                    $profile->healthConditions()->sync(
+                        $data['health_condition_ids'] ?? []
+                    );
+
+                    // Multiple dietary restrictions
+                    $profile->dietaryRestrictions()->sync(
+                        $data['dietary_restriction_ids'] ?? []
+                    );
+                }
+
+
+                // Coach registration
+
+                elseif ($data['role'] === 'coach') {
+
                     $user->coachProfile()->create([
                         'identity_number' => $data['identity_number'] ?? null,
                         'specialization' => $data['specialization'] ?? null,
@@ -52,20 +95,19 @@ class AuthService
                         'location' => $data['location'] ?? null,
                         'certification' => $data['certification'] ?? null,
                         'birth_year' => $data['birth_year'] ?? null,
+                        'price' => $data['price'] ?? null,
                     ]);
                 }
 
-
-                // $this->emailVerificationService->sendVerificationCode($user);
-
-
                 $token = $user->createToken('auth_token')->plainTextToken;
+
                 return [
                     'user' => $user,
                     'token' => $token,
                 ];
             });
         } catch (\Throwable $e) {
+
             Log::error('User registration failed', [
                 'email' => $data['email'] ?? null,
                 'error' => $e->getMessage(),
