@@ -28,7 +28,6 @@ class RegisterRequest extends FormRequest
             'password'  => 'required|string|min:6',
             'role' => 'required|in:user,coach',
             // coach register 
-            // 'identity_number' => 'required_if:role,coach|string|max:50',
             'specialization' => 'sometimes|string|max:150',
             'experience' => 'sometimes|integer|min:0',
             'location' => 'sometimes|string|max:150',

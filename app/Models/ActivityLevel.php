@@ -14,4 +14,9 @@ class ActivityLevel extends Model
     protected $casts = [
         'is_active' => 'boolean',
     ];
+    
+   public function userProfiles()
+    {
+        return $this->hasMany(UserProfile::class);
+    }
 }
