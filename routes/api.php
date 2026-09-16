@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\General\BrowseCoachController;
 use App\Http\Controllers\Api\user\NutritionPlanController as UserNutritionPlanController;
 use App\Http\Controllers\Api\user\RequestSubscriptionController;
 use App\Http\Controllers\Api\user\TraineeProgressController;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Api\user\WorkoutPlanController as UserWorkoutPlanController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -156,3 +157,8 @@ Route::post('/resend-verification', [EmailVerificationController::class, 'resend
 Route::prefix('admin')->group(
     base_path('routes/admin.php')
 );
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/chat/{userId}', [ChatController::class, 'index']); // جلب الرسائل
+    Route::post('/chat/send', [ChatController::class, 'store']);     // إرسال رسالة
+});
