@@ -5,7 +5,7 @@ namespace App\Services\Coach;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
 
-class AvailabilityService
+class CoachAvailabilityService
 {
     public function getAvailabilities(User $coach)
     {
