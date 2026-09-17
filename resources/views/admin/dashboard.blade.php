@@ -8,7 +8,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
- <style>
+    <style>
         :root {
             --teal-950: #0a2f2c;
             --teal-800: #0f6e6e;
@@ -205,7 +205,7 @@
             background: #2ecc71;
         }
 
-        /* ---------- كروت الإحصائيات ---------- */
+        /* ---------- كروت الإحصائيات الدائرية ---------- */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -221,6 +221,9 @@
             box-shadow: 0 6px 20px rgba(15, 110, 110, 0.06);
             position: relative;
             overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 20px;
         }
 
         .stat-card::after {
@@ -233,59 +236,71 @@
             background: var(--leaf-tint, var(--teal-100));
             border-radius: 50%;
             opacity: .5;
+            pointer-events: none;
         }
 
-        .stat-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
+        .stat-chart-container {
             position: relative;
+            width: 84px;
+            height: 84px;
+            flex-shrink: 0;
             z-index: 1;
         }
 
-        .stat-icon {
-            width: 46px;
-            height: 46px;
-            border-radius: 12px;
+        .stat-chart-container svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .stat-chart-bg {
+            fill: none;
+            stroke: var(--line);
+            stroke-width: 8;
+        }
+
+        .stat-chart-fill {
+            fill: none;
+            stroke-width: 8;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 1s ease-in-out;
+        }
+
+        .card-users .stat-chart-fill { stroke: var(--teal-500); }
+        .card-coaches .stat-chart-fill { stroke: var(--teal-800); }
+        .card-subs .stat-chart-fill { stroke: var(--teal-400); }
+
+        .stat-icon-center {
+            position: absolute;
+            inset: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 22px;
-            color: #fff;
+            font-size: 20px;
+            color: var(--teal-950);
         }
 
-        .stat-trend {
-            font-size: 12.5px;
-            font-weight: 700;
-            padding: 4px 9px;
-            border-radius: 20px;
-        }
-
-        .trend-up {
-            background: #e2f9ee;
-            color: #1a9e5c;
+        .stat-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
         }
 
         .stat-value {
-            font-size: 34px;
+            font-size: 32px;
             font-weight: 800;
             color: var(--teal-950);
-            margin-top: 18px;
-            position: relative;
-            z-index: 1;
+            line-height: 1.1;
         }
 
         .stat-label {
             color: var(--ink-soft);
             font-size: 14px;
             margin-top: 4px;
-            position: relative;
-            z-index: 1;
+            font-weight: 600;
         }
-
-        .card-users .stat-icon { background: var(--teal-500); }
-        .card-coaches .stat-icon { background: var(--teal-800); }
-        .card-subs .stat-icon { background: #2ec9b8; }
 
         /* ---------- لوحة الإجراءات ---------- */
         .panel {
@@ -369,9 +384,9 @@
 
         /* أيقونات SVG بديلة الإيموجي */
         .ic svg,
-        .stat-icon svg,
         .action-ic svg,
-        .brand-mark svg {
+        .brand-mark svg,
+        .stat-icon-center svg {
             display: block;
             width: 1em;
             height: 1em;
@@ -448,16 +463,16 @@
             <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg></span> تسجيل الدخول
         </a>
 
- <div class="sidebar-footer">
-    <form action="{{ route('admin.logout') }}" method="POST">
-        @csrf
+        <div class="sidebar-footer">
+            <form action="{{ route('admin.logout') }}" method="POST">
+                @csrf
 
-        <button type="submit" class="nav-btn logout-btn">
-            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg></span>
-            تسجيل الخروج
-        </button>
-    </form>
-</div>
+                <button type="submit" class="nav-btn logout-btn">
+                    <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg></span>
+                    تسجيل الخروج
+                </button>
+            </form>
+        </div>
     </aside>
 
     <!-- المحتوى الرئيسي -->
@@ -470,33 +485,64 @@
             <div class="session-pill"><span class="dot"></span> جلسة المسؤول نشطة</div>
         </div>
 
-        <!-- كروت الأرقام الإحصائية الديناميكية -->
+        @php
+            // محيط الدائرة (نصف القطر = 40 => 2 * π * 40 ≈ 251.2)
+            $circleCircumference = 251.2;
+
+            // النسب المئوية القادمة من الخادم (تُحسب بناءً على البيانات الفعلية:
+            // مثلاً نسبة نمو/نقص عدد المشتركين مقارنة بالفترة السابقة أو نسبتهم من الإجمالي).
+            // في حال عدم توفرها من الكنترولر، تُستخدم قيم افتراضية آمنة.
+            $usersPercentage         = $usersPercentage ?? 25;
+            $coachesPercentage       = $coachesPercentage ?? 60;
+            $subscriptionsPercentage = $subscriptionsPercentage ?? 15;
+
+            // نتأكد أن القيمة محصورة بين 0 و100 حتى لو جاءت نسبة نقص (سالبة) أو زيادة تتجاوز 100
+            $clampPercentage = fn($value) => max(0, min(100, $value));
+
+            $usersOffset         = $circleCircumference - ($circleCircumference * $clampPercentage($usersPercentage) / 100);
+            $coachesOffset       = $circleCircumference - ($circleCircumference * $clampPercentage($coachesPercentage) / 100);
+            $subscriptionsOffset = $circleCircumference - ($circleCircumference * $clampPercentage($subscriptionsPercentage) / 100);
+        @endphp
+
+        <!-- كروت الأرقام الإحصائية المزودة بدوائر تقدم ملونة -->
         <section class="stats-grid">
             <div class="stat-card card-users" style="--leaf-tint:#e3f5f1">
-                <div class="stat-top">
-                    <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div>
-                    <div class="stat-trend trend-up">+8.2%</div>
+                <div class="stat-chart-container">
+                    <svg viewBox="0 0 100 100">
+                        <circle class="stat-chart-bg" cx="50" cy="50" r="40" />
+                        <circle class="stat-chart-fill" cx="50" cy="50" r="40" stroke-dasharray="{{ $circleCircumference }}" stroke-dashoffset="{{ $usersOffset }}" />
+                    </svg>
                 </div>
-                <div class="stat-value">{{ number_format($totalUsers ?? 0) }}</div>
-                <div class="stat-label">إجمالي المستخدمين</div>
+                <div class="stat-content">
+                    <div class="stat-value">{{ number_format($totalUsers ?? 0) }}</div>
+                    <div class="stat-label">إجمالي المستخدمين</div>
+                </div>
             </div>
 
             <div class="stat-card card-coaches" style="--leaf-tint:#dff2ec">
-                <div class="stat-top">
-                    <div class="stat-icon"><svg viewBox="0 0 512 512" fill="currentColor"><path d="M448 96V64c0-17.7-14.3-32-32-32h-32c-17.7 0-32 14.3-32 32V96H160V64c0-17.7-14.3-32-32-32H96C78.3 32 64 46.3 64 64V96H48c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16H64v96H48c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16H64v32c0 17.7 14.3 32 32 32h32c17.7 0 32-14.3 32-32V352h192v32c0 17.7 14.3 32 32 32h32c17.7 0 32-14.3 32-32V352h16c8.8 0 16-7.2 16-16V304c0-8.8-7.2-16-16-16H464V192h16c8.8 0 16-7.2 16-16V144c0-8.8-7.2-16-16-16H448z"></path></svg></div>
-                    <div class="stat-trend trend-up">+3.4%</div>
+                <div class="stat-chart-container">
+                    <svg viewBox="0 0 100 100">
+                        <circle class="stat-chart-bg" cx="50" cy="50" r="40" />
+                        <circle class="stat-chart-fill" cx="50" cy="50" r="40" stroke-dasharray="{{ $circleCircumference }}" stroke-dashoffset="{{ $coachesOffset }}" />
+                    </svg>
                 </div>
-                <div class="stat-value">{{ number_format($totalCoaches ?? 0) }}</div>
-                <div class="stat-label">إجمالي المدربين</div>
+                <div class="stat-content">
+                    <div class="stat-value">{{ number_format($totalCoaches ?? 0) }}</div>
+                    <div class="stat-label">إجمالي المدربين</div>
+                </div>
             </div>
 
             <div class="stat-card card-subs" style="--leaf-tint:#dff7f1">
-                <div class="stat-top">
-                    <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg></div>
-                    <div class="stat-trend trend-up">+12.6%</div>
+                <div class="stat-chart-container">
+                    <svg viewBox="0 0 100 100">
+                        <circle class="stat-chart-bg" cx="50" cy="50" r="40" />
+                        <circle class="stat-chart-fill" cx="50" cy="50" r="40" stroke-dasharray="{{ $circleCircumference }}" stroke-dashoffset="{{ $subscriptionsOffset }}" />
+                    </svg>
                 </div>
-                <div class="stat-value">{{ number_format($activeSubscriptions ?? 0) }}</div>
-                <div class="stat-label">الاشتراكات النشطة</div>
+                <div class="stat-content">
+                    <div class="stat-value">{{ number_format($activeSubscriptions ?? 0) }}</div>
+                    <div class="stat-label">الاشتراكات النشطة</div>
+                </div>
             </div>
         </section>
 
@@ -523,19 +569,18 @@
                     <span>الدخول بحساب آخر</span>
                 </a>
 
-  <form action="{{ route('admin.logout') }}" method="POST">
-    @csrf
+                <form action="{{ route('admin.logout') }}" method="POST">
+                    @csrf
 
-    <button type="submit" class="action-card danger">
-        <div class="action-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg></div>
-        <strong>تسجيل الخروج</strong>
-        <span>إنهاء الجلسة الحالية</span>
-    </button>
-</form>
+                    <button type="submit" class="action-card danger">
+                        <div class="action-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg></div>
+                        <strong>تسجيل الخروج</strong>
+                        <span>إنهاء الجلسة الحالية</span>
+                    </button>
+                </form>
             </div>
         </section>
     </main>
-
 
 <script>
     async function logout() {
@@ -585,8 +630,6 @@
     document.getElementById('logout-action-btn')
         ?.addEventListener('click', logout);
 </script>
-
-
 
 </body>
 

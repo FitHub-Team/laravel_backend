@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\Auth\AuthController;
+use App\Http\Controllers\Api\ProfileOptionController;
 use App\Http\Controllers\Api\user\SettingProfileController as UserSettingProfileController;
 use App\Http\Controllers\Api\coach\SettingProfileController as CoachSettingProfileController;
 use App\Http\Controllers\Api\Auth\EmailVerificationController;
@@ -29,7 +30,7 @@ Route::post('/login/google', [AuthController::class, 'loginWithGoogle']);
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/logout', [AuthController::class, 'logout']);
-    
+
     // Public/Auth Browsing Routes
     Route::get('/coaches', [BrowseCoachController::class, 'index']);
     Route::get('/coaches/{id}', [CoachSettingProfileController::class, 'showPublicProfile']);
@@ -65,31 +66,31 @@ Route::middleware('auth:sanctum')->group(function () {
         });
     });
 
-        // Coach Routes
-        Route::middleware(['coach'])->group(function () {
-            Route::prefix('coach')->group(function () {
-                // Coach Profile
-                Route::prefix('profile/setting')->group(function () {
-                    Route::get('/show', [CoachSettingProfileController::class, 'show']);
-                    Route::post('/update', [CoachSettingProfileController::class, 'update']);
-                    Route::put('/update/avatar', [CoachSettingProfileController::class, 'updateProfilePhoto']);
-                });
-
-        // Request Subscription Routes
-        Route::post('/subscription-request', [RequestSubscriptionController::class, 'requestSubscription']);
-        Route::get('/subscription-requests', [RequestSubscriptionController::class, 'getMyRequests']);
-    });
-
-    // Coach Routes (Protected by auth:sanctum and coach middleware)
+    // Coach Routes
     Route::middleware(['coach'])->group(function () {
         Route::prefix('coach')->group(function () {
-            
-            // Coach Profile Settings
+            // Coach Profile
             Route::prefix('profile/setting')->group(function () {
                 Route::get('/show', [CoachSettingProfileController::class, 'show']);
                 Route::post('/update', [CoachSettingProfileController::class, 'update']);
                 Route::put('/update/avatar', [CoachSettingProfileController::class, 'updateProfilePhoto']);
             });
+
+            // Request Subscription Routes
+            Route::post('/subscription-request', [RequestSubscriptionController::class, 'requestSubscription']);
+            Route::get('/subscription-requests', [RequestSubscriptionController::class, 'getMyRequests']);
+        });
+
+        // Coach Routes (Protected by auth:sanctum and coach middleware)
+        Route::middleware(['coach'])->group(function () {
+            Route::prefix('coach')->group(function () {
+
+                // Coach Profile Settings
+                Route::prefix('profile/setting')->group(function () {
+                    Route::get('/show', [CoachSettingProfileController::class, 'show']);
+                    Route::post('/update', [CoachSettingProfileController::class, 'update']);
+                    Route::put('/update/avatar', [CoachSettingProfileController::class, 'updateProfilePhoto']);
+                });
 
                 // Coach Availabilities (Working Days & Slots)
                 Route::prefix('availabilities')->group(function () {
@@ -117,7 +118,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
             // Trainees & Plans Routes
             Route::prefix('trainees')->group(function () {
-           //     Route::get('/{id}', [CoachSettingProfileController::class, 'showTraineeDetails'])->middleware('trainee.access');
+                //     Route::get('/{id}', [CoachSettingProfileController::class, 'showTraineeDetails'])->middleware('trainee.access');
                 Route::post('/{id}/workout-plan', [WorkoutPlanController::class, 'storeOrUpdate']);
                 Route::post('/{id}/nutrition-plan', [NutritionPlanController::class, 'storeOrUpdate']);
                 Route::get('/{id}/progress', [ProgressController::class, 'show']);
@@ -157,6 +158,11 @@ Route::post('/resend-verification', [EmailVerificationController::class, 'resend
 Route::prefix('admin')->group(
     base_path('routes/admin.php')
 );
+
+Route::prefix('v1')->group(function () {
+    Route::get('/goals', [ProfileOptionController::class, 'getGoals']);
+    Route::get('/activity-levels', [ProfileOptionController::class, 'getActivityLevels']);
+});
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/chat/{userId}', [ChatController::class, 'index']); // جلب الرسائل

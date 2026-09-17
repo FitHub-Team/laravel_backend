@@ -17,17 +17,21 @@
     <div class="login-container">
         <div class="form-section">
             <div class="brand-mark">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 4 13c0-6 6-10 15-11 0 9-3 15-8 18z"></path><path d="M4 13c3 0 6-1 8-3"></path></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M11 20A7 7 0 0 1 4 13c0-6 6-10 15-11 0 9-3 15-8 18z"></path>
+                    <path d="M4 13c3 0 6-1 8-3"></path>
+                </svg>
             </div>
             <h2>تسجيل الدخول - أدمن</h2>
             <p class="sub">أهلاً بعودتك، سجّل دخولك لمتابعة إدارة SuperFit.</p>
 
             @if ($errors->any())
-            <div class="error-box">
-                @foreach ($errors->all() as $error)
-                <p>{{ $error }}</p>
-                @endforeach
-            </div>
+                <div class="error-box">
+                    @foreach ($errors->all() as $error)
+                        <p>{{ $error }}</p>
+                    @endforeach
+                </div>
             @endif
 
             <form action="{{ route('admin.login.submit') }}" method="post">
