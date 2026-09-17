@@ -48,7 +48,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         if (!in_array(request()->getHost(), ['127.0.0.1', 'localhost'])) {
-            \Illuminate\Support\Facades\URL::forceScheme('https');
+            URL::forceScheme('https');
         }
 
         ResetPassword::createUrlUsing(function ($notifiable, $token) {
