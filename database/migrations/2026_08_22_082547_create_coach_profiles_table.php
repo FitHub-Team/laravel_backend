@@ -21,6 +21,7 @@ return new class extends Migration
             $table->text('bio')->nullable();           // البايو
             $table->json('certifications')->nullable(); // الشهادات
             $table->boolean('is_approved')->default(false); // موافقة الأدمن
+            $table->foreignId('skill_id')->nullable()->constrained('coach_skills')->cascadeOnDelete(); // المهارة
             $table->timestamps();
         });
     }

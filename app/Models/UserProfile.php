@@ -11,23 +11,52 @@ class UserProfile extends Model
         'gender',
         'height',
         'weight',
-        'health_goal',
-        'medical_conditions',
-        'allergies',
-        'dietary_preference',
-        'disclaimer_accepted',
         'date_of_birth',
-        'profile_photo'
+        'goal_id',
+        'activity_level_id',
+        'health_condition_note',
+        'dietary_restriction_note',
+        'training_location_id',
+        'profile_photo',
+        'available_days',
+        'trainer_type',
+        'disclaimer_accepted',
     ];
 
     protected $casts = [
-        'weight' => 'float',
-        'height' => 'float',
-        'allergies' => 'array',
+        'available_days' => 'array',
         'disclaimer_accepted' => 'boolean',
     ];
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+    public function goal()
+    {
+        return $this->belongsTo(Goal::class);
+    }
+    public function activityLevel()
+    {
+        return $this->belongsTo(ActivityLevel::class);
+    }
+
+    public function trainingLocation()
+    {
+        return $this->belongsTo(TrainingLocation::class);
+    }
+    public function dietaryRestrictions()
+    {
+        return $this->belongsToMany(
+            dietary_restrictions::class,
+            'dietary_restriction_user_profile'
+        );
+    }
+
+    public function healthConditions()
+    {
+        return $this->belongsToMany(
+            health_conditions::class,
+            'health_condition_user_profile'
+        );
     }
 }

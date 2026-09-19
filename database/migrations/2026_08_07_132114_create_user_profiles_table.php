@@ -12,22 +12,39 @@ return new class extends Migration {
     {
         Schema::create('user_profiles', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+
+            $table->foreignId('user_id')
+                ->constrained()
+                ->cascadeOnDelete();
             $table->enum('gender', ['male', 'female'])->nullable();
-          
             $table->date('date_of_birth')->nullable();
-          //  $table->unsignedInteger('age')->nullable();
             $table->decimal('height', 5, 2)->nullable();
             $table->decimal('weight', 5, 2)->nullable();
-            $table->enum('health_goal', [
-                'weight_loss',        // خسارة وزن
-                'muscle_building',    // زيادة الكتلة العضلية
-                'maintain_weight',    // الحفاظ على الوزن
-                'improve_endurance'   // تحسين التحمل
-            ])->nullable();
-            $table->text('medical_conditions')->nullable();
-            $table->timestamps();
+            // الهدف من جدول health_goals
+            $table->foreignId('goal_id')
+                ->nullable()
+                ->constrained('goals')
+                ->nullOnDelete();
+
+            $table->foreignId('activity_level_id')
+                ->nullable()
+                ->constrained('activity_levels')
+                ->nullOnDelete();
+            $table->text('health_condition_note')->nullable();
+            $table->text('dietary_restriction_note')->nullable();
+            $table->boolean('disclaimer_accepted')->default(false);
+
+            $table->foreignId('training_location_id')
+                ->nullable()
+                ->constrained('training_locations')
+                ->nullOnDelete();
             $table->string('profile_photo')->nullable();
+
+            // days available for training
+            $table->json('available_days')->nullable();
+            // choose between ai or human trainer
+            $table->enum('trainer_type', ['ai', 'human'])->nullable();
+            $table->timestamps();
         });
     }
 

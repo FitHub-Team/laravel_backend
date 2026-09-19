@@ -34,4 +34,13 @@ class CoachProfile extends Model
     {
         return $this->belongsTo(User::class);
     }
+    public function skills()
+    {
+        return $this->belongsToMany(
+            Skill::class,
+            'coach_skills',
+            'coach_profile_id',
+            'skill_id'
+        );
+    }
 }
