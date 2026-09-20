@@ -4,18 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class dietary_restrictions extends Model
+class HealthCondition extends Model
 {
-     protected $fillable = [
+    protected $fillable = [
         'name',
-        'type',
+        'description',
         'is_active'
-     ];
-      public function userProfiles()
+    ];
+     public function userProfiles()
     {
         return $this->belongsToMany(
             UserProfile::class,
-            'dietary_restriction_user_profile'
+            'health_condition_user_profile'
         );
     }
 }

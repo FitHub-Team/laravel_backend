@@ -47,7 +47,7 @@ class UserProfile extends Model
     public function dietaryRestrictions()
     {
         return $this->belongsToMany(
-            dietary_restrictions::class,
+            DietaryRestriction::class,
             'dietary_restriction_user_profile'
         );
     }
@@ -55,7 +55,7 @@ class UserProfile extends Model
     public function healthConditions()
     {
         return $this->belongsToMany(
-            health_conditions::class,
+            HealthCondition::class,
             'health_condition_user_profile'
         );
     }

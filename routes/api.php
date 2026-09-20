@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AI\NutritionPlanController as AINutritionPlanController;
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\ProfileOptionController;
 use App\Http\Controllers\Api\user\SettingProfileController as UserSettingProfileController;
@@ -64,6 +65,8 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/', [TraineeProgressController::class, 'store']);
             Route::put('/{id}/upload-photo', [TraineeProgressController::class, 'updatePhoto']);
         });
+        // ai 
+        Route::post('/ai/nutrition-plan', [AINutritionPlanController::class, 'generate']);
     });
 
     // Coach Routes

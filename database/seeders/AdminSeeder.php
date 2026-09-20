@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\Admin;
 //use Hash;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash as FacadesHash;
 

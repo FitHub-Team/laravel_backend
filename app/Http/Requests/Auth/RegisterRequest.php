@@ -37,18 +37,38 @@ class RegisterRequest extends FormRequest
             'role' => ['required', 'in:user,coach'],
 
             // Coach registration
+            'specialization' => [
+                'sometimes',
+                'exclude_unless:role,coach',
+                'string',
+                'max:150',
+            ],
 
-            'specialization' => ['sometimes', 'string', 'max:150'],
-            'experience' => ['sometimes', 'integer', 'min:0',],
-            'location' => ['sometimes', 'string', 'max:150',],
+            'experience' => [
+                'sometimes',
+                'exclude_unless:role,coach',
+                'integer',
+                'min:0',
+            ],
+
+            'location' => [
+                'sometimes',
+                'exclude_unless:role,coach',
+                'string',
+                'max:150',
+            ],
+
             'birth_year' => [
                 'sometimes',
+                'exclude_unless:role,coach',
                 'integer',
                 'min:1900',
                 'max:' . date('Y'),
             ],
+
             'price' => [
                 'sometimes',
+                'exclude_unless:role,coach',
                 'numeric',
                 'min:0',
             ],
@@ -81,7 +101,7 @@ class RegisterRequest extends FormRequest
             'available_days.*' => ['string',],
             'trainer_type' => ['sometimes', 'in:ai,human',],
             'disclaimer_accepted' => ['sometimes', 'boolean',],
-            'profile_photo' => ['sometimes', 'image', 'mimes:jpg,jpeg,png', 'max:2048',],
+            
         ];
     }
     public function messages(): array
