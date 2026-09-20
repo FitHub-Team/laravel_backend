@@ -94,13 +94,13 @@ class RegisterRequest extends FormRequest
                 'integer',
                 'exists:dietary_restrictions,id',
             ],
-            'health_condition_note' => ['sometimes', 'nullable', 'text',],
-            'dietary_restriction_note' => ['sometimes', 'nullable', 'text',],
+            'health_condition_note' => ['sometimes', 'nullable'],
+            'dietary_restriction_note' => ['sometimes', 'nullable'],
             'training_location_id' => ['sometimes', 'integer', 'exists:training_locations,id',],
             'available_days' => ['sometimes', 'array',],
             'available_days.*' => ['string',],
             'trainer_type' => ['sometimes', 'in:ai,human',],
-            'disclaimer_accepted' => ['sometimes', 'boolean',],
+            'disclaimer_accepted' => ['sometimes', 'boolean',]
             
         ];
     }
