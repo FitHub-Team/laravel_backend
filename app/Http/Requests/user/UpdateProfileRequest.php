@@ -23,25 +23,34 @@ class UpdateProfileRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'full_name' => ['required', 'string', 'max:100'],
+            'gender' => ['sometimes', 'in:male,female'],
+            'date_of_birth' => ['sometimes', 'date'],
+            'height' => ['sometimes', 'numeric', 'min:0', 'max:999.99'],
+            'weight' => ['sometimes', 'numeric', 'min:0', 'max:999.99'],
+            'goal_id' => ['sometimes', 'integer', 'exists:goals,id'],
+            'activity_level_id' => ['sometimes', 'integer', 'exists:activity_levels,id'],
+            'health_condition_ids' => ['sometimes', 'array'],
+            'health_condition_ids.*' => [
+                'integer',
+                'exists:health_conditions,id'
+            ],
+            'dietary_restriction_ids' => [
+                'sometimes',
+                'array'
+            ],
+            'dietary_restriction_ids.*' => [
+                'integer',
+                'exists:dietary_restrictions,id'
+            ],
+            'health_condition_note' => ['sometimes', 'nullable'],
+            'dietary_restriction_note' => ['sometimes', 'nullable'],
+            'training_location_id' => ['sometimes', 'integer', 'exists:training_locations,id'],
+            'available_days' => ['sometimes', 'array'],
+            'available_days.*' => ['string'],
+            'trainer_type' => ['sometimes', 'in:ai,human'],
+            'disclaimer_accepted' => ['sometimes', 'boolean'],
 
-            'gender' => 'sometimes|in:male,female',
-            'height' => 'sometimes|numeric|min:50|max:250',
-            'weight' => 'sometimes|numeric|min:20|max:300',
-
-            'health_goal' => 'sometimes|in:weight_loss,muscle_building,maintain_weight,improve_endurance',
-
-            'medical_conditions' => 'sometimes|nullable|string',
-
-            'allergies' => 'sometimes|nullable|array',
-            'allergies.*' => 'string',
-
-            'dietary_preference' => 'sometimes|nullable|string',
-
-            'disclaimer_accepted' => 'sometimes|boolean',
-
-            'profile_photo' => 'sometimes|nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
-
-            'date_of_birth' => 'sometimes|date|before:today',
         ];
     }
 }

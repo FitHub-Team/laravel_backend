@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\user\UpdateProfileRequest;
 use App\Services\User\ProfileService;
 use App\Helper\ImageHelper;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 
@@ -21,28 +22,71 @@ class SettingProfileController extends Controller
     public function show(Request $request)
     {
         try {
-            $profile = $this->profileService->show(
-                $request->user()
-            );
-            if (!$profile) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'الملف الشخصي للمستخدم غير موجود.',
-                ], 404);
-            }
+            $user = $request->user();
+
+            $profile = $user->userProfile()->with([
+                'goal',
+                'activityLevel',
+                'healthConditions',
+                'dietaryRestrictions',
+                'trainingLocation',
+            ])->first();
+
+            $age = $profile?->date_of_birth
+                ? Carbon::parse($profile->date_of_birth)->age
+                : null;
+
             return response()->json([
-                'status' => true,
-                'message' => 'تم جلب بيانات الملف الشخصي بنجاح',
-                'data' => $profile,
-            ], 200);
-        } catch (Exception $e) {
+                'message' => 'User profile data',
+
+
+                'data' => [
+
+                    'fullname' => $user->full_name,
+
+                    'email' => $user->email,
+
+                    'age' => $age,
+
+                    'gender' => $profile?->gender,
+
+                    'height' => $profile?->height,
+
+                    'weight' => $profile?->weight,
+
+                    'goal' => $profile?->goal?->title,
+
+                    'activity_level' => $profile?->activityLevel?->title,
+
+                    'health_conditions' => $profile?->healthConditions?->pluck('title'),
+
+                    'dietary_restrictions' => $profile?->dietaryRestrictions?->pluck('title'),
+
+                    'training_location' => $profile?->trainingLocation?->title,
+
+                    'available_days' => $profile?->available_days,
+
+                    'trainer_type' => $profile?->trainer_type,
+
+                    'health_condition_note' => $profile?->health_condition_note,
+
+                    'dietary_restriction_note' => $profile?->dietary_restriction_note,
+
+                    'disclaimer_accepted' => $profile?->disclaimer_accepted,
+
+                    'profile_photo' => $profile?->profile_photo,
+
+                ],
+            ]);
+        } catch (\Exception $e) {
+
             return response()->json([
-                'status' => false,
-                'message' => 'حدث خطأ اثناء جلب الملف الشخصي',
+                'message' => 'Error fetching user profile data',
                 'error' => $e->getMessage(),
             ], 500);
         }
     }
+
 
     public function update(UpdateProfileRequest $request)
     {

@@ -27,14 +27,17 @@ class UserProfile extends Model
         'available_days' => 'array',
         'disclaimer_accepted' => 'boolean',
     ];
+
     public function user()
     {
         return $this->belongsTo(User::class);
     }
+
     public function goal()
     {
         return $this->belongsTo(Goal::class);
     }
+
     public function activityLevel()
     {
         return $this->belongsTo(ActivityLevel::class);
@@ -44,23 +47,25 @@ class UserProfile extends Model
     {
         return $this->belongsTo(TrainingLocation::class);
     }
+
     public function dietaryRestrictions()
     {
         return $this->belongsToMany(
-            dietary_restrictions::class,
+            DietaryRestriction::class,
             'dietary_restriction_user_profile',
-            'user_profile_id',       // المفتاح الخاص ببروفايل المستخدم
-            'dietary_restriction_id' // المفتاح الخاص بالقيود الغذائية (بصيغة المفرد)
+            'user_profile_id',
+            'dietary_restriction_id'
         );
     }
 
     public function healthConditions()
     {
         return $this->belongsToMany(
-            health_conditions::class,
+            HealthCondition::class,
             'health_condition_user_profile',
-            'user_profile_id',      // المفتاح الخاص ببروفايل المستخدم
-            'health_condition_id'   // المفتاح الخاص بالحالات الصحية (بصيغة المفرد)
+            'user_profile_id',
+            'health_condition_id'
         );
     }
 }
+
