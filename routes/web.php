@@ -4,9 +4,11 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Api\Admin\GoalController;
 use App\Http\Controllers\Api\Admin\ActivityLevelController;
 use App\Http\Controllers\Api\Admin\AdminAuthController;
+use App\Http\Controllers\Api\Admin\HealthRestrictionController;
+use App\Http\Controllers\Api\Admin\HeathRestrictionController;
 use App\Http\Controllers\Api\Admin\TrainerController;
 use App\Http\Controllers\Api\Admin\AdminUserController;
-
+use App\Http\Controllers\Api\Admin\UsersDetailsController;
 use Illuminate\Support\Facades\Route;
 
 // ==========================================
@@ -56,6 +58,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/activity-level', [ActivityLevelController::class, 'store'])->name('activity-level.store');
     Route::patch('/activity-level/{activityLevel}/toggle', [ActivityLevelController::class, 'toggleActive'])->name('activity-level.toggle');
     Route::delete('/activity-level/{activityLevel}', [ActivityLevelController::class, 'destroy'])->name('activity-level.destroy');
+    Route::put('/activity-level/{activityLevel}', [ActivityLevelController::class, 'update'])->name('activity-level.update');
 
     // Goals Management
     Route::get('/goals', [GoalController::class, 'index'])->name('goals.manage');
@@ -63,10 +66,27 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::patch('/goals/{goal}/toggle', [GoalController::class, 'toggleActive'])->name('goals.toggle');
     Route::delete('/goals/{goal}', [GoalController::class, 'destroy'])->name('goals.destroy');
 
-    // باقي الشاشات مؤقتاً لحين تجهيز Controllers خاصة بها
-    Route::get('/health-restrictions', function () {
-        return view('admin.health-restrictionsManage');
-    })->name('health-restrictions.manage');
+    // Users Resource Routes (CRUD)
+    Route::resource('users', UsersDetailsController::class);
+
+    // Users Details Page Linked to Controller
+
+    Route::get('/usersDetails', [UsersDetailsController::class, 'index'])->name('users-details');
+
+    Route::get('/users-manage', [UsersDetailsController::class, 'index'])->name('users.manage');
+
+    // Health Restrictions Management
+    Route::get('/health-restrictions', [HealthRestrictionController::class, 'index'])
+        ->name('health-restrictions.manage');
+
+    Route::post('/health-restrictions/store', [HealthRestrictionController::class, 'store'])
+        ->name('health-restrictions.store');
+
+    Route::delete('/user-profiles/{userProfile}/health-restrictions/{healthRestriction}', [HealthRestrictionController::class, 'destroy'])
+        ->name('health-restrictions.destroy');
+
+    Route::delete('/user-profiles/{userProfile}/health-restrictions/{healthRestriction}', [HealthRestrictionController::class, 'destroy'])
+        ->name('health-restrictions.destroy');
 
     Route::get('/preferences', function () {
         return view('admin.preferencesManage');

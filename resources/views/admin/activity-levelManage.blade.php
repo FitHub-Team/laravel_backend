@@ -1,79 +1,150 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مستويات النشاط</title>
-    <link rel="stylesheet" href="{{ asset('front/css/activity-levelStyle.css') }}">
 
+    <title>إدارة النشاط — SuperFit</title>
+
+    <link rel="stylesheet" href="{{ asset('front/css/activity-levelStyle.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;600;700;800&display=swap" rel="stylesheet">
 </head>
+
 <body>
+
 <div class="wrap">
+
+    {{-- Header --}}
     <div class="top">
         <div class="brand">
-            <span class="kicker">SuperFit · لوحة المحتوى</span>
-            <h1>مستويات النشاط</h1>
-            <p>إدارة مستويات النشاط المتاحة للمستخدمين وتحديد حالتها.</p>
+            <span class="kicker">SUPERFIT ADMIN</span>
+            <h1>إدارة مستويات النشاط</h1>
+            <p>عرض وإدارة مستويات النشاط البدني المتاحة في النظام.</p>
         </div>
 
         <div class="actions-wrapper">
-            <a href="{{ route('admin.dashboard') }}" class="btn-dashboard">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="m15 18-6-6 6-6"/>
+            {{-- زر إضافة مستوى نشاط --}}
+            <button type="button" class="btn-add" onclick="openModal('addModal')">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                 </svg>
-                لوحة التحكم
-            </a>
-
-            <button class="btn-add" onclick="openAddModal()">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-                مستوى جديد
+                إضافة مستوى نشاط
             </button>
+
+            {{-- العودة للداشبورد --}}
+            <a href="{{ route('admin.dashboard') }}" class="btn-dashboard">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+                Dashboard
+            </a>
         </div>
     </div>
 
+    {{-- الخط الزخرفي --}}
     <div class="strip"></div>
 
+    {{-- Success Message --}}
     @if(session('success'))
-        <div class="alert-success">{{ session('success') }}</div>
+        <div class="alert-success">
+            <span class="alert-icon">✓</span>
+            <span>{{ session('success') }}</span>
+        </div>
     @endif
 
+    {{-- Errors --}}
+    @if($errors->any())
+        <div class="alert-success" style="background: var(--danger-bg); border-color: #f0cccc; color: var(--danger-dark);">
+            <span class="alert-icon" style="background: #ffe0e0; color: var(--danger-dark);">!</span>
+            <div>
+                @foreach($errors->all() as $error)
+                    <div style="margin-bottom: 3px;">{{ $error }}</div>
+                @endforeach
+            </div>
+        </div>
+    @endif
+
+    {{-- Table Card --}}
     <div class="table-card">
+
+        <div class="table-header">
+            <div>
+                <h2>مستويات النشاط</h2>
+                <p>قائمة بمستويات النشاط البدني المسجلة</p>
+            </div>
+
+            <div class="levels-count">
+                {{ isset($activityLevels) ?$activityLevels->total() : 0 }} مستوى
+            </div>
+        </div>
+
+        {{-- Table --}}
         <div class="table-scroll">
             <table>
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>اسم المستوى</th>
-                        <th>الحالة / التفعيل</th>
-                        <th>الإجراءات</th>
+                        <th class="name-col">المستوى</th>
+                        <th class="activity-cell">الحالة</th>
+                        <th class="actions-cell">الإجراءات</th>
                     </tr>
                 </thead>
+
                 <tbody>
                     @forelse($activityLevels as $level)
                         <tr>
-                            <td>{{ $level->id }}</td>
-                            <td class="name-col">
-                                <span class="goal-text">{{ $level->title }}</span>
+                            {{-- ID --}}
+                            <td>
+                                <span class="id-badge">#{{ $level->id }}</span>
                             </td>
+
+                            {{-- Title --}}
+                            <td class="name-col">
+                                <div class="level-name-wrapper">
+                                    <div class="level-icon">
+                                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-6z"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <span class="name-text">{{ $level->title }}</span>
+                                    </div>
+                                </div>
+                            </td>
+
+                            {{-- Is Active (Toggle Switch) --}}
                             <td class="activity-cell">
-                                <form action="{{ route('admin.activity-level.toggle', $level->id) }}" method="POST">
+                                <form action="{{ route('admin.activity-level.toggle', $level->id) }}" method="POST" id="toggle-form-{{ $level->id }}">
                                     @csrf
                                     @method('PATCH')
-                                    <label class="activity-label" style="cursor: pointer;">
-                                        <span class="switch">
-                                            <input type="checkbox" onchange="this.form.submit()" {{ $level->is_active ? 'checked' : '' }}>
+                                    <div class="activity-label">
+                                        <label class="switch">
+                                            <input type="checkbox" {{ $level->is_active ? 'checked' : '' }} onchange="document.getElementById('toggle-form-{{ $level->id }}').submit()">
                                             <span class="track"></span>
                                             <span class="thumb"></span>
+                                        </label>
+                                        <span class="activity-text">
+                                            {{ $level->is_active ? 'مفعل' : 'غير مفعل' }}
                                         </span>
-                                        <span class="activity-text">{{ $level->is_active ? 'مفعل' : 'غير مفعل' }}</span>
-                                    </label>
+                                    </div>
                                 </form>
                             </td>
+
+                            {{-- Actions --}}
                             <td class="actions-cell">
-                                <form action="{{ route('admin.activity-level.destroy', $level->id) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('هل أنت تأكد من عملية الحذف؟');">
+                                {{-- زر التعديل --}}
+                                <button type="button" class="btn-delete" style="background:var(--teal-50); border-color:rgba(18,143,137,.20); color:var(--teal-800);" onclick="openEditModal({{ $level }})">
+                                    تعديل
+                                </button>
+
+                                {{-- زر الحذف --}}
+                                <form action="{{ route('admin.activity-level.destroy', $level->id) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('هل أنت تأكد من رغبتك في حذف هذا المستوى؟');">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn-delete">حذف</button>
+                                    <button type="submit" class="btn-delete">
+                                        حذف
+                                    </button>
                                 </form>
                             </td>
                         </tr>
@@ -81,9 +152,11 @@
                         <tr>
                             <td colspan="4">
                                 <div class="empty-state">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg>
-                                    <strong>لا توجد مستويات نشاط بعد</strong>
-                                    اضغط على "مستوى جديد" لإضافة أول مستوى نشاط.
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                    <strong>لا توجد مستويات نشاط حالياً</strong>
+                                    <span>قم بإضافة مستوى نشاط جديد للبدء.</span>
                                 </div>
                             </td>
                         </tr>
@@ -91,40 +164,107 @@
                 </tbody>
             </table>
         </div>
+
+        {{-- Pagination --}}
+        @if(isset($activityLevels) && method_exists($activityLevels, 'hasPages') &&$activityLevels->hasPages())
+            <div style="padding:18px 22px; background:#f8fcfb; border-top:1px solid var(--line);">
+                {{ $activityLevels->links() }}
+            </div>
+        @endif
+
     </div>
 </div>
 
-<!-- Modal إضافة مستوى جديد -->
-<div id="addModal" class="modal">
+{{-- Modal: إضافة --}}
+<div class="modal" id="addModal">
     <div class="modal-content">
-        <h2>إضافة مستوى نشاط جديد</h2>
+        <div class="modal-header">
+            <div>
+                <span class="modal-kicker">جديد</span>
+                <h2>إضافة مستوى نشاط</h2>
+                <p>أدخل بيانات مستوى النشاط الجديد</p>
+            </div>
+            <button type="button" class="modal-close" onclick="closeModal('addModal')">&times;</button>
+        </div>
+
         <form action="{{ route('admin.activity-level.store') }}" method="POST">
             @csrf
             <div class="form-group">
-                <label for="title">اسم مستوى النشاط</label>
-                <input type="text" name="title" id="title" required placeholder="مثال: نشاط متوسط">
+                <label for="add_title">عنوان المستوى</label>
+                <input type="text" name="title" id="add_title" required placeholder="مثال: نشاط متوسط">
             </div>
-            <div class="form-group">
+
+            <div class="active-option">
                 <label>
                     <input type="checkbox" name="is_active" value="1" checked>
-                    تفعيل المستوى تلقائياً
+                    تفعيل المستوى مباشرة
                 </label>
             </div>
+
             <div class="modal-actions">
-                <button type="button" onclick="closeAddModal()" class="btn-dashboard">إلغاء</button>
-                <button type="submit" class="btn-add">حفظ البيانات</button>
+                <button type="button" class="btn-cancel" onclick="closeModal('addModal')">إلغاء</button>
+                <button type="submit" class="btn-add">حفظ</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{-- Modal: تعديل --}}
+<div class="modal" id="editModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div>
+                <span class="modal-kicker">تعديل</span>
+                <h2>تعديل مستوى النشاط</h2>
+                <p>تحديث البيانات الحالية لمستوى النشاط</p>
+            </div>
+            <button type="button" class="modal-close" onclick="closeModal('editModal')">&times;</button>
+        </div>
+
+        <form id="editForm" method="POST">
+            @csrf
+            @method('PUT')
+            <div class="form-group">
+                <label for="edit_title">عنوان المستوى</label>
+                <input type="text" name="title" id="edit_title" required>
+            </div>
+
+            <div class="active-option">
+                <label>
+                    <input type="checkbox" name="is_active" id="edit_is_active" value="1">
+                    تفعيل المستوى
+                </label>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeModal('editModal')">إلغاء</button>
+                <button type="submit" class="btn-add">حفظ التغييرات</button>
             </div>
         </form>
     </div>
 </div>
 
 <script>
-    function openAddModal() {
-        document.getElementById('addModal').style.display = 'flex';
+    function openModal(id) {
+        document.getElementById(id).style.display = 'flex';
+        document.body.classList.add('modal-open');
     }
-    function closeAddModal() {
-        document.getElementById('addModal').style.display = 'none';
+
+    function closeModal(id) {
+        document.getElementById(id).style.display = 'none';
+        document.body.classList.remove('modal-open');
+    }
+
+    function openEditModal(level) {
+        let form = document.getElementById('editForm');
+        form.action = `/admin/activity-level/${level.id}`;
+
+        document.getElementById('edit_title').value = level.title;
+        document.getElementById('edit_is_active').checked = level.is_active == 1;
+
+        openModal('editModal');
     }
 </script>
+
 </body>
 </html>

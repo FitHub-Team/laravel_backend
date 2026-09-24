@@ -16,7 +16,7 @@ class UserProfile extends Model
         'activity_level_id',
         'health_condition_note',
         'dietary_restriction_note',
-        'training_location_id',
+        // 'training_location_id',
         'profile_photo',
         'available_days',
         'trainer_type',
@@ -48,7 +48,9 @@ class UserProfile extends Model
     {
         return $this->belongsToMany(
             dietary_restrictions::class,
-            'dietary_restriction_user_profile'
+            'dietary_restriction_user_profile',
+            'user_profile_id',       // المفتاح الخاص ببروفايل المستخدم
+            'dietary_restriction_id' // المفتاح الخاص بالقيود الغذائية (بصيغة المفرد)
         );
     }
 
@@ -56,7 +58,9 @@ class UserProfile extends Model
     {
         return $this->belongsToMany(
             health_conditions::class,
-            'health_condition_user_profile'
+            'health_condition_user_profile',
+            'user_profile_id',      // المفتاح الخاص ببروفايل المستخدم
+            'health_condition_id'   // المفتاح الخاص بالحالات الصحية (بصيغة المفرد)
         );
     }
 }
