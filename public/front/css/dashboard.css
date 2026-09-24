@@ -1,0 +1,778 @@
+/* =========================================================
+   SuperFit Dashboard
+   Login Page Theme
+   ========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+}
+
+body {
+    font-family: "Cairo", Arial, Tahoma, sans-serif;
+    background: #f5faf8;
+    color: #173f36;
+    direction: rtl;
+    overflow-x: hidden;
+}
+
+/* =========================================================
+   Background
+   ========================================================= */
+
+.bg-wave {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.bg-wave::before,
+.bg-wave::after {
+    content: "";
+    position: absolute;
+    width: 420px;
+    height: 420px;
+    border-radius: 50%;
+    filter: blur(70px);
+    opacity: 0.28;
+}
+
+.bg-wave::before {
+    top: -180px;
+    right: -120px;
+    background: #8ed8c5;
+}
+
+.bg-wave::after {
+    bottom: -180px;
+    left: -120px;
+    background: #b7eadc;
+}
+
+.bg-wave svg {
+    width: 100%;
+    height: 100%;
+    opacity: 0.35;
+}
+
+/* =========================================================
+   Sidebar
+   ========================================================= */
+
+.sidebar {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    bottom: 24px;
+
+    width: 285px;
+
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid rgba(36, 122, 104, 0.08);
+
+    border-radius: 28px;
+
+    box-shadow:
+        0 20px 60px rgba(25, 93, 78, 0.08),
+        0 4px 16px rgba(25, 93, 78, 0.04);
+
+    padding: 24px 18px;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+
+    z-index: 10;
+}
+
+.sidebar::-webkit-scrollbar {
+    width: 5px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: #b9ded4;
+    border-radius: 10px;
+}
+
+/* =========================================================
+   Brand
+   ========================================================= */
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 4px 8px 24px;
+
+    margin-bottom: 8px;
+
+    border-bottom: 1px solid #edf5f2;
+}
+
+.brand-mark {
+    width: 46px;
+    height: 46px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 14px;
+
+    color: white;
+
+    background: linear-gradient(135deg,
+            #2fa889,
+            #197c67);
+
+    box-shadow:
+        0 10px 22px rgba(37, 145, 119, 0.22);
+}
+
+.brand-mark svg {
+    width: 25px;
+    height: 25px;
+}
+
+.brand-name {
+    font-size: 23px;
+    font-weight: 800;
+    color: #176b59;
+    letter-spacing: -0.5px;
+}
+
+/* =========================================================
+   Navigation Sections
+   ========================================================= */
+
+.nav-section {
+    margin-top: 18px;
+}
+
+.nav-section-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 8px 10px;
+
+    cursor: pointer;
+
+    color: #7a9890;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    user-select: none;
+}
+
+.nav-section-title {
+    font-weight: 800;
+}
+
+.nav-section-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition: transform 0.25s ease;
+}
+
+.nav-section-arrow svg {
+    width: 15px;
+    height: 15px;
+}
+
+.nav-section.open .nav-section-arrow {
+    transform: rotate(180deg);
+}
+
+.nav-section-items {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+
+    margin-top: 5px;
+}
+
+.nav-section.open .nav-section-items {
+    display: flex;
+}
+
+/* =========================================================
+   Navigation Buttons
+   ========================================================= */
+
+.nav-btn {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    gap: 11px;
+
+    min-height: 46px;
+
+    padding: 10px 13px;
+
+    border: 0;
+    border-radius: 13px;
+
+    background: transparent;
+
+    color: #53736b;
+
+    text-decoration: none;
+
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.nav-btn:hover {
+    background: #eef8f5;
+    color: #197c67;
+}
+
+.nav-btn.active {
+    color: #14765f;
+    background: #e4f5ef;
+
+    font-weight: 800;
+
+    box-shadow:
+        inset 3px 0 0 #2da487;
+}
+
+.nav-btn .ic {
+    width: 20px;
+    height: 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    color: currentColor;
+}
+
+.nav-btn .ic svg {
+    width: 19px;
+    height: 19px;
+}
+
+/* =========================================================
+   Sidebar Footer
+   ========================================================= */
+
+.sidebar-footer {
+    margin-top: 5px;
+}
+
+.logout-btn {
+    color: #b05c61;
+}
+
+.logout-btn:hover {
+    color: #a3474e;
+    background: #fff1f2;
+}
+
+/* =========================================================
+   Main Content
+   ========================================================= */
+
+.main {
+    margin-right: 333px;
+
+    min-height: 100vh;
+
+    padding: 42px 38px 50px;
+}
+
+/* =========================================================
+   Topbar
+   ========================================================= */
+
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 25px;
+
+    margin-bottom: 30px;
+}
+
+.topbar h1 {
+    margin: 0;
+
+    color: #164c40;
+
+    font-size: 31px;
+    font-weight: 800;
+
+    letter-spacing: -0.8px;
+}
+
+.topbar p {
+    margin: 8px 0 0;
+
+    color: #77938c;
+
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.session-pill {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    padding: 10px 16px;
+
+    background: rgba(255, 255, 255, 0.88);
+
+    border: 1px solid #e4f0ed;
+
+    border-radius: 999px;
+
+    color: #4c746b;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    box-shadow: 0 8px 25px rgba(25, 93, 78, 0.05);
+}
+
+.session-pill .dot {
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+
+    background: #35b58e;
+
+    box-shadow: 0 0 0 4px #e2f7ef;
+}
+
+/* =========================================================
+   Statistics
+   ========================================================= */
+
+.stats-grid {
+    display: grid;
+
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 20px;
+
+    margin-bottom: 26px;
+}
+
+.stat-card {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+
+    min-height: 175px;
+
+    padding: 25px;
+
+    overflow: hidden;
+
+    background: #ffffff;
+
+    border: 1px solid #e5f0ed;
+
+    border-radius: 28px;
+
+    box-shadow:
+        0 15px 45px rgba(25, 93, 78, 0.06),
+        0 3px 10px rgba(25, 93, 78, 0.025);
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+.stat-card::before {
+    content: "";
+
+    position: absolute;
+
+    width: 160px;
+    height: 160px;
+
+    border-radius: 50%;
+
+    left: -65px;
+    bottom: -75px;
+
+    background: var(--leaf-tint);
+
+    opacity: 0.75;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 20px 50px rgba(25, 93, 78, 0.09),
+        0 5px 15px rgba(25, 93, 78, 0.04);
+}
+
+.stat-chart-container {
+    position: relative;
+
+    width: 105px;
+    height: 105px;
+
+    flex-shrink: 0;
+
+    margin-left: 22px;
+}
+
+.stat-chart-container svg {
+    width: 100%;
+    height: 100%;
+
+    transform: rotate(-90deg);
+}
+
+.stat-chart-bg {
+    fill: none;
+
+    stroke: #eaf3f0;
+
+    stroke-width: 8;
+}
+
+.stat-chart-fill {
+    fill: none;
+
+    stroke: #31a989;
+
+    stroke-width: 8;
+
+    stroke-linecap: round;
+
+    transition: stroke-dashoffset 0.8s ease;
+}
+
+.card-coaches .stat-chart-fill {
+    stroke: #3caa91;
+}
+
+.card-subs .stat-chart-fill {
+    stroke: #55bca3;
+}
+
+.stat-content {
+    position: relative;
+    z-index: 2;
+}
+
+.stat-value {
+    color: #164c40;
+
+    font-size: 31px;
+    font-weight: 800;
+
+    line-height: 1.2;
+}
+
+.stat-label {
+    margin-top: 7px;
+
+    color: #78938c;
+
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* =========================================================
+   Panels
+   ========================================================= */
+
+.panel {
+    background: rgba(255, 255, 255, 0.94);
+
+    border: 1px solid #e5f0ed;
+
+    border-radius: 28px;
+
+    padding: 28px;
+
+    box-shadow:
+        0 15px 45px rgba(25, 93, 78, 0.05),
+        0 3px 10px rgba(25, 93, 78, 0.025);
+}
+
+.panel h2 {
+    margin: 0;
+
+    color: #174e41;
+
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.panel>p {
+    margin: 7px 0 22px;
+
+    color: #809a93;
+
+    font-size: 13px;
+}
+
+/* =========================================================
+   Quick Actions
+   ========================================================= */
+
+.action-grid {
+    display: grid;
+
+    grid-template-columns: repeat(4, 1fr);
+
+    gap: 14px;
+}
+
+.action-card {
+    min-height: 150px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+
+    padding: 20px;
+
+    border: 1px solid #e6f1ee;
+
+    border-radius: 20px;
+
+    background: #fbfefd;
+
+    color: #20574b;
+
+    text-decoration: none;
+
+    font-family: inherit;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.22s ease,
+        border-color 0.22s ease,
+        background 0.22s ease,
+        box-shadow 0.22s ease;
+}
+
+.action-card:hover {
+    transform: translateY(-3px);
+
+    background: #f2faf7;
+
+    border-color: #cde8df;
+
+    box-shadow:
+        0 12px 30px rgba(25, 93, 78, 0.07);
+}
+
+.action-ic {
+    width: 45px;
+    height: 45px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-bottom: 13px;
+
+    border-radius: 14px;
+
+    background: #e4f5ef;
+
+    color: #21856e;
+}
+
+.action-ic svg {
+    width: 22px;
+    height: 22px;
+}
+
+.action-card strong {
+    color: #21584d;
+
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.action-card span {
+    margin-top: 5px;
+
+    color: #839b95;
+
+    font-size: 11px;
+    font-weight: 500;
+
+    line-height: 1.7;
+}
+
+.action-card.login .action-ic {
+    background: #e8f7f2;
+    color: #258b73;
+}
+
+.action-card.danger .action-ic {
+    background: #fff0f1;
+    color: #b45c63;
+}
+
+.action-card.danger {
+    color: #8f4e54;
+}
+
+.action-card.danger:hover {
+    background: #fff7f7;
+    border-color: #f0d6d8;
+}
+
+/* =========================================================
+   Responsive
+   ========================================================= */
+
+@media (max-width: 1200px) {
+    .sidebar {
+        width: 255px;
+    }
+
+    .main {
+        margin-right: 285px;
+        padding: 35px 25px 45px;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .action-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 850px) {
+    .sidebar {
+        position: relative;
+
+        top: auto;
+        right: auto;
+        bottom: auto;
+
+        width: calc(100% - 32px);
+
+        margin: 16px;
+
+        max-height: none;
+    }
+
+    .main {
+        margin-right: 0;
+
+        padding: 15px 16px 35px;
+    }
+
+    .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .action-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 550px) {
+    .sidebar {
+        border-radius: 22px;
+        padding: 18px 14px;
+    }
+
+    .main {
+        padding: 10px 12px 30px;
+    }
+
+    .topbar h1 {
+        font-size: 25px;
+    }
+
+    .topbar p {
+        font-size: 12px;
+    }
+
+    .session-pill {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .stat-card {
+        min-height: 145px;
+        padding: 20px;
+        border-radius: 23px;
+    }
+
+    .stat-chart-container {
+        width: 85px;
+        height: 85px;
+        margin-left: 16px;
+    }
+
+    .stat-value {
+        font-size: 25px;
+    }
+
+    .stat-label {
+        font-size: 12px;
+    }
+
+    .panel {
+        padding: 20px;
+        border-radius: 23px;
+    }
+
+    .action-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .action-card {
+        min-height: 125px;
+    }
+}

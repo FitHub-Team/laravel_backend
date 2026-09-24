@@ -16,7 +16,7 @@ class UserProfile extends Model
         'activity_level_id',
         'health_condition_note',
         'dietary_restriction_note',
-        'training_location_id',
+        // 'training_location_id',
         'profile_photo',
         'available_days',
         'trainer_type',
@@ -27,14 +27,17 @@ class UserProfile extends Model
         'available_days' => 'array',
         'disclaimer_accepted' => 'boolean',
     ];
+
     public function user()
     {
         return $this->belongsTo(User::class);
     }
+
     public function goal()
     {
         return $this->belongsTo(Goal::class);
     }
+
     public function activityLevel()
     {
         return $this->belongsTo(ActivityLevel::class);
@@ -44,11 +47,14 @@ class UserProfile extends Model
     {
         return $this->belongsTo(TrainingLocation::class);
     }
+
     public function dietaryRestrictions()
     {
         return $this->belongsToMany(
             DietaryRestriction::class,
-            'dietary_restriction_user_profile'
+            'dietary_restriction_user_profile',
+            'user_profile_id',
+            'dietary_restriction_id'
         );
     }
 
@@ -56,7 +62,10 @@ class UserProfile extends Model
     {
         return $this->belongsToMany(
             HealthCondition::class,
-            'health_condition_user_profile'
+            'health_condition_user_profile',
+            'user_profile_id',
+            'health_condition_id'
         );
     }
 }
+
