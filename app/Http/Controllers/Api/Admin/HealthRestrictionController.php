@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\dietary_restrictions;
+use App\Models\DietaryRestriction;
 use App\Models\User;
 use App\Models\UserProfile;
 use Illuminate\Http\Request;
@@ -16,7 +16,7 @@ class HealthRestrictionController extends Controller
 
         $users = User::with('profile.dietaryRestrictions')->paginate(10);
 
-        $dietaryRestrictions = dietary_restrictions::all();
+        $dietaryRestrictions = DietaryRestriction::all();
 
         return view('admin.health-restrictionsManage', compact('users', 'dietaryRestrictions'));
     }
@@ -42,12 +42,11 @@ class HealthRestrictionController extends Controller
         return redirect()->back()->with('success', 'تم إضافة القيد الصحي بنجاح!');
     }
 
-    public function destroy($userProfileId, $healthRestrictionId)
+    public function destroy(UserProfile $userProfile, DietaryRestriction $dietaryRestriction)
     {
-        $userProfile = UserProfile::findOrFail($userProfileId);
+        // فك ارتباط القيد عن الملف الشخصي للمستخدم
+        $userProfile->dietaryRestrictions()->detach($dietaryRestriction->id);
 
-        $userProfile->dietaryRestrictions()->detach($healthRestrictionId);
-
-        return redirect()->back()->with('success', 'تم حذف القيد الصحي بنجاح!');
+        return redirect()->back()->with('success', 'تم إزالة القيد بنجاح!');
     }
 }

@@ -6,12 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class DietaryRestriction extends Model
 {
-     protected $fillable = [
+    protected $fillable = [
         'name',
         'type',
         'is_active'
-     ];
-      public function userProfiles()
+    ];
+    public function userProfiles()
     {
         return $this->belongsToMany(
             UserProfile::class,

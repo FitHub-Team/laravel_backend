@@ -79,7 +79,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/health-restrictions/store', [HealthRestrictionController::class, 'store'])
         ->name('health-restrictions.store');
 
-    Route::delete('/user-profiles/{userProfile}/health-restrictions/{healthRestriction}', [HealthRestrictionController::class, 'destroy'])
+    Route::delete('/user-profiles/{userProfile}/dietary-restrictions/{dietaryRestriction}', [HealthRestrictionController::class, 'destroy'])
         ->name('health-restrictions.destroy');
 
 

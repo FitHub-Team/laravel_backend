@@ -261,36 +261,19 @@
 
                                                     {{ $restriction->name }}
 
-                                                    <form
-                                                        action="{{ route('admin.health-restrictions.destroy', ['userProfile' => $user->profile->id, 'healthRestriction' => $restriction->id]) }}"
-                                                        method="POST"
-                                                        style="display:inline;"
-                                                        onsubmit="return confirm('هل تريد إزالة هذا القيد عن المستخدم؟');">
+                                                   <form action="{{ route('admin.health-restrictions.destroy', ['userProfile' => $user->profile->id, 'dietaryRestriction' => $restriction->id]) }}"
+      method="POST"
+      style="display:inline;"
+      onsubmit="return confirm('هل تريد إزالة هذا القيد عن المستخدم؟');">
+    @csrf
+    @method('DELETE')
 
-                                                        @csrf
-
-                                                        @method('DELETE')
-
-                                                        <button
-                                                            type="submit"
-                                                            class="remove-restriction"
-                                                            title="إزالة القيد">
-
-                                                            <svg fill="none"
-                                                                 stroke="currentColor"
-                                                                 viewBox="0 0 24 24">
-
-                                                                <path stroke-linecap="round"
-                                                                      stroke-linejoin="round"
-                                                                      stroke-width="2"
-                                                                      d="M6 18L18 6M6 6l12 12">
-                                                                </path>
-
-                                                            </svg>
-
-                                                        </button>
-
-                                                    </form>
+    <button type="submit" class="remove-restriction" title="إزالة القيد">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+    </button>
+</form>
 
                                                 </span>
 
