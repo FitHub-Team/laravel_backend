@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use App\Models\DietaryRestriction;
 
 class UsersDetailsController extends Controller
 {
@@ -27,7 +28,7 @@ class UsersDetailsController extends Controller
         $goals = Goal::all();
         $activityLevels = ActivityLevel::all();
         $locations = TrainingLocation::all();
-        $dietaryRestrictions = \App\Models\dietary_restrictions::all();
+        $dietaryRestrictions = DietaryRestriction::all();
 
         return view('admin.usersDetails', compact(
             'users',

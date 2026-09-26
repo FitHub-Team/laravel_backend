@@ -11,7 +11,7 @@ class HealthCondition extends Model
         'description',
         'is_active'
     ];
-     public function userProfiles()
+    public function userProfiles()
     {
         return $this->belongsToMany(
             UserProfile::class,
