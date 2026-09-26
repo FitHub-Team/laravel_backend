@@ -36,7 +36,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.page');
 
     // Users Management
-    Route::get('/users', [AdminUserController::class, 'userManage'])->name('users.manage');
+    Route::get('/users', [AdminUserController::class, 'userManage'])->name('users-manage');
 
     // Trainers Management
     Route::get('/trainers', [TrainerController::class, 'trainerManage'])->name('trainer.manage');
@@ -67,17 +67,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::delete('/goals/{goal}', [GoalController::class, 'destroy'])->name('goals.destroy');
 
     // Users Resource Routes (CRUD)
-    Route::resource('users', UsersDetailsController::class);
-
-    // Users Details Page Linked to Controller
-
     Route::get('/usersDetails', [UsersDetailsController::class, 'index'])->name('users-details');
-
-    Route::get('/users-manage', [UsersDetailsController::class, 'index'])->name('users.manage');
+    Route::post('/users', [UsersDetailsController::class, 'store'])->name('users.store');
+    Route::put('/users/{user}', [UsersDetailsController::class, 'update'])->name('users.update');
+    Route::delete('/users/{user}', [UsersDetailsController::class, 'destroy'])->name('users.destroy');
 
     // Health Restrictions Management
-    Route::get('/health-restrictions', [HealthRestrictionController::class, 'index'])
-        ->name('health-restrictions.manage');
+    Route::get('/health-restrictions', [HealthRestrictionController::class, 'index'])->name('health-restrictions.manage');
+
 
     Route::post('/health-restrictions/store', [HealthRestrictionController::class, 'store'])
         ->name('health-restrictions.store');
@@ -85,8 +82,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::delete('/user-profiles/{userProfile}/health-restrictions/{healthRestriction}', [HealthRestrictionController::class, 'destroy'])
         ->name('health-restrictions.destroy');
 
-    Route::delete('/user-profiles/{userProfile}/health-restrictions/{healthRestriction}', [HealthRestrictionController::class, 'destroy'])
-        ->name('health-restrictions.destroy');
 
     Route::get('/preferences', function () {
         return view('admin.preferencesManage');
