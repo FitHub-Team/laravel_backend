@@ -65,6 +65,11 @@ class CoachRepository implements CoachRepositoryInterface
 
     public function findByUserId(int $userId): ?CoachProfile
     {
-        return CoachProfile::where('user_id', $userId)->first();
+        return CoachProfile::with([
+            'skills',
+            'certifications',
+        ])
+            ->where('user_id', $userId)
+            ->first();
     }
 }
