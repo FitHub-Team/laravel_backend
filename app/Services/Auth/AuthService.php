@@ -59,8 +59,8 @@ class AuthService
                         'dietary_restriction_note' =>
                         $data['dietary_restriction_note'] ?? null,
 
-                        'training_location_id' =>
-                        $data['training_location_id'] ?? null,
+                        'training_location' =>
+                        $data['training_location'] ?? null,
 
                         'available_days' =>
                         $data['available_days'] ?? null,

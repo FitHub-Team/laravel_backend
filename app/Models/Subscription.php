@@ -28,6 +28,12 @@ class Subscription extends Model
     {
         return $this->belongsTo(User::class, 'coach_id');
     }
-
- 
+    // search 
+    public function scopeSearch($query, $search)
+    {
+        return $query->whereHas('trainee', function ($q) use ($search) {
+            $q->where('full_name', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%");
+        });
+    }
 }

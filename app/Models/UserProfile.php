@@ -16,7 +16,7 @@ class UserProfile extends Model
         'activity_level_id',
         'health_condition_note',
         'dietary_restriction_note',
-        // 'training_location_id',
+        'training_location',
         'profile_photo',
         'available_days',
         'trainer_type',
@@ -58,14 +58,15 @@ class UserProfile extends Model
         );
     }
 
-    public function healthConditions()
-    {
-        return $this->belongsToMany(
-            HealthCondition::class,
-            'health_condition_user_profile',
-            'user_profile_id',
-            'health_condition_id'
-        );
-    }
+   public function healthConditions()
+{
+    return $this->belongsToMany(
+        HealthCondition::class,
+        'health_condition_user_profile',
+        'user_profile_id',
+        'health_condition_id'
+    );
 }
 
+function workoutPlan() {}
+}

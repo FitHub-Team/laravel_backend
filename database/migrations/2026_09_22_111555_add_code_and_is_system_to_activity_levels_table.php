@@ -11,8 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('trainee_progresses', function (Blueprint $table) {
-            $table->renameColumn('notes', 'trainee_notes');
+        Schema::table('activity_levels', function (Blueprint $table) {
+            $table->string('code')->nullable()->unique()->after('title');
+            $table->boolean('is_system')->default(false)->after('code');
         });
     }
 
@@ -21,8 +22,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('trainee_progresses', function (Blueprint $table) {
-            $table->renameColumn('trainee_notes', 'notes');
+        Schema::table('activity_levels', function (Blueprint $table) {
+                $table->dropColumn(['code', 'is_system']);
         });
     }
 };

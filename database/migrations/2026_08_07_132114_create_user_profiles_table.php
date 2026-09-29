@@ -34,10 +34,11 @@ return new class extends Migration {
             $table->text('dietary_restriction_note')->nullable();
             $table->boolean('disclaimer_accepted')->default(false);
 
-            $table->foreignId('training_location_id')
-                ->nullable()
-                ->constrained('training_locations')
-                ->nullOnDelete();
+            $table->enum('training_location', [
+                'home',
+                'outdoor',
+                'home_with_equipment',
+            ])->nullable();
             $table->string('profile_photo')->nullable();
 
             // days available for training

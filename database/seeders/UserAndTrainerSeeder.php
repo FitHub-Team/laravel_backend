@@ -14,10 +14,10 @@ class UserAndTrainerSeeder extends Seeder
     {
         // Static User
         $user = User::updateOrCreate(
-            ['email' => 'testuser@example.com'],
+            ['email' => 'nesma.test@gmail.com'],
             [
                 'full_name' => 'Test User',
-                'password' => Hash::make('12345678'),
+                'password' => Hash::make('Test@12345'),
                 'role' => 'user',
                 'email_verified_at' => now(),
             ]
@@ -25,15 +25,25 @@ class UserAndTrainerSeeder extends Seeder
 
         UserProfile::updateOrCreate(
             ['user_id' => $user->id],
-            []
+            [
+                'gender' => 'female',
+                'height' => 165,
+                'weight' => 60,
+                'date_of_birth' => '2003-08-25',
+                'activity_level_id' => 1,
+                'goal_id' => 1,
+                'training_location' => 'home_with_equipment',
+                'trainer_type' => 'ai',
+                'disclaimer_accepted' => true,
+            ]
         );
 
         // Static Coach
         $coach = User::updateOrCreate(
-            ['email' => 'coach@example.com'],
+            ['email' => 'nesmaalsousy@gmail.com'],
             [
                 'full_name' => 'Test Coach',
-                'password' => Hash::make('12345678'),
+                'password' => Hash::make('String@2026'),
                 'role' => 'coach',
                 'email_verified_at' => now(),
             ]

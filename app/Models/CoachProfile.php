@@ -25,8 +25,6 @@ class CoachProfile extends Model
     ];
 
     protected $casts = [
-
-        'certifications' => 'array',
         'is_approved' => 'boolean',
     ];
 
@@ -34,13 +32,19 @@ class CoachProfile extends Model
     {
         return $this->belongsTo(User::class);
     }
+
     public function skills()
     {
         return $this->belongsToMany(
-            Skill::class,
+            skill::class,
             'coach_skills',
-            'coach_profile_id',
+            'coach_id',
             'skill_id'
         );
+    }
+
+    public function certifications()
+    {
+        return $this->hasMany(Certification::class, 'coach_id');
     }
 }

@@ -55,8 +55,6 @@ class User extends Authenticatable implements MustVerifyEmail
             ->first();
     }
 
-
-
     public function availabilities()
     {
         return $this->hasMany(CoachAvailability::class, 'coach_id');
@@ -66,5 +64,14 @@ class User extends Authenticatable implements MustVerifyEmail
     public function profile()
     {
         return $this->userProfile();
+    }
+    public function workoutPlans()
+    {
+        return $this->hasMany(WorkoutPlan::class, 'trainee_id');
+    }
+
+    public function traineeProgresses()
+    {
+        return $this->hasMany(TraineeProgress::class, 'trainee_id');
     }
 }

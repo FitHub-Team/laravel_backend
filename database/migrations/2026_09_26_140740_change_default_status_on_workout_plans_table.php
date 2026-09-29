@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -11,11 +12,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('trainee_progresses', function (Blueprint $table) {
-            $table->integer('workouts_completed')->default(0);
-             $table->text('coach_notes')->nullable();   
-              $table->decimal('height', 5, 2)->nullable();
-        });
+         DB::statement("ALTER TABLE workout_plans ALTER COLUMN status SET DEFAULT 'draft'");
     }
 
     /**
@@ -23,6 +20,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        DB::statement("ALTER TABLE workout_plans ALTER COLUMN status SET DEFAULT 'active'");
     }
 };
