@@ -51,7 +51,6 @@ class UpdateProfileRequest extends FormRequest
 ],
             'available_days' => ['sometimes', 'array'],
             'available_days.*' => ['string'],
-            'trainer_type' => ['sometimes', 'in:ai,human'],
             'disclaimer_accepted' => ['sometimes', 'boolean'],
 
         ];

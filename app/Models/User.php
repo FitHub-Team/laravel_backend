@@ -74,4 +74,16 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(TraineeProgress::class, 'trainee_id');
     }
+
+   //تقييم المدرب
+public function reviews()
+{
+    return $this->hasMany(CoachReview::class, 'coach_id');
+}
+// علاقة اشتراكات الكوتش مباشرة
+public function subscriptions()
+{
+    return $this->hasMany(Subscription::class, 'coach_id');
+}
+
 }

@@ -33,13 +33,12 @@ class UserAndTrainerSeeder extends Seeder
                 'activity_level_id' => 1,
                 'goal_id' => 1,
                 'training_location' => 'home_with_equipment',
-                'trainer_type' => 'ai',
                 'disclaimer_accepted' => true,
             ]
         );
 
-        // Static Coach
-        $coach = User::updateOrCreate(
+        // --- Static Coach 1 ---
+        $coach1 = User::updateOrCreate(
             ['email' => 'nesmaalsousy@gmail.com'],
             [
                 'full_name' => 'Test Coach',
@@ -50,13 +49,61 @@ class UserAndTrainerSeeder extends Seeder
         );
 
         CoachProfile::updateOrCreate(
-            ['user_id' => $coach->id],
+            ['user_id' => $coach1->id],
             [
                 'specialization' => 'Fitness',
                 'experience' => 5,
                 'location' => 'Gaza',
                 'birth_year' => 1995,
                 'price' => 50,
+                'status' => 'active',
+                'is_approved' => true,
+            ]
+        );
+
+        // --- Static Coach 2 ---
+        $coach2 = User::updateOrCreate(
+            ['email' => 'sarah.coach@gmail.com'],
+            [
+                'full_name' => 'Sarah Coach',
+                'password' => Hash::make('String@2026'),
+                'role' => 'coach',
+                'email_verified_at' => now(),
+            ]
+        );
+
+        CoachProfile::updateOrCreate(
+            ['user_id' => $coach2->id],
+            [
+                'specialization' => 'Yoga & Pilates',
+                'experience' => 4,
+                'location' => 'Ramallah',
+                'birth_year' => 1998,
+                'price' => 40,
+                'status' => 'active',
+                'is_approved' => true,
+            ]
+        );
+
+        // --- Static Coach 3 ---
+        $coach3 = User::updateOrCreate(
+            ['email' => 'mohammad.coach@gmail.com'],
+            [
+                'full_name' => 'Mohammad Coach',
+                'password' => Hash::make('String@2026'),
+                'role' => 'coach',
+                'email_verified_at' => now(),
+            ]
+        );
+
+        CoachProfile::updateOrCreate(
+            ['user_id' => $coach3->id],
+            [
+                'specialization' => 'Bodybuilding & Strength',
+                'experience' => 7,
+                'location' => 'Nablus',
+                'birth_year' => 1992,
+                'price' => 60,
                 'status' => 'active',
                 'is_approved' => true,
             ]

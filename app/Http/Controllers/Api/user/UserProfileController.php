@@ -51,8 +51,6 @@ class UserProfileController extends Controller
 
                     'available_days' => $profile?->available_days,
 
-                    'trainer_type' => $profile?->trainer_type,
-
                     'health_condition_note' => $profile?->health_condition_note,
 
                     'dietary_restriction_note' => $profile?->dietary_restriction_note,
@@ -74,16 +72,16 @@ class UserProfileController extends Controller
     }
     // public function getCoaches(User $user)
     // {
-    //     try {
-    //         $coaches = $user->coaches()->get();
-    //         return response()->json([
-    //             'message' => 'User coaches data',
-    //             'data' => $coaches,
-    //         ]);
-    //     } catch (\Exception $e) {
-    //         return response()->json([
-    //             'message' => 'Error fetching user coaches data',
-    //         ], 500);
-    //     }
+    //      try {
+    //          $coaches = $user->coaches()->get();
+    //          return response()->json([
+    //              'message' => 'User coaches data',
+    //              'data' => $coaches,
+    //          ]);
+    //      } catch (\Exception $e) {
+    //          return response()->json([
+    //              'message' => 'Error fetching user coaches data',
+    //          ], 500);
+    //      }
     // }
 }

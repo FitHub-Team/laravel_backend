@@ -43,8 +43,6 @@ return new class extends Migration {
 
             // days available for training
             $table->json('available_days')->nullable();
-            // choose between ai or human trainer
-            $table->enum('trainer_type', ['ai', 'human'])->nullable();
             $table->timestamps();
         });
     }
