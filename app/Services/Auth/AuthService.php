@@ -65,9 +65,6 @@ class AuthService
                         'available_days' =>
                         $data['available_days'] ?? null,
 
-                        'trainer_type' =>
-                        $data['trainer_type'] ?? null,
-
                         'disclaimer_accepted' =>
                         $data['disclaimer_accepted'] ?? false,
                     ]);

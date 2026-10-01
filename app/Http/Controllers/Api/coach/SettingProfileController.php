@@ -115,6 +115,7 @@ class SettingProfileController extends Controller
             ], 500);
         }
     }
+    
     public function deleteProfilePhoto(Request $request)
     {
         try {
@@ -140,5 +141,40 @@ class SettingProfileController extends Controller
                 'error' => $e->getMessage(),
             ], 500);
         }
+    }
+
+    // --- الإضافات الجديدة الخاصة بالتقييمات وحالة الاشتراك ---
+
+    public function reviews($id): JsonResponse
+    {
+        $coach = \App\Models\User::where('role', 'coach')->findOrFail($id);
+        
+        $reviews = $coach->reviews()
+            ->with('trainee:id,full_name')
+            ->latest()
+            ->paginate(10);
+
+        return response()->json([
+            'status' => true,
+            'data' => $reviews
+        ], 200);
+    }
+
+    public function subscriptionStatus(Request $request, $id): JsonResponse
+    {
+        $traineeId = $request->user()->id;
+
+        $subscription = \App\Models\Subscription::where('trainee_id', $traineeId)
+            ->where('coach_id', $id)
+            ->latest()
+            ->first();
+
+        return response()->json([
+            'status' => true,
+            'data' => [
+                'is_subscribed' => $subscription && $subscription->status === 'accepted',
+                'status' => $subscription ? $subscription->status : 'not_subscribed',
+            ]
+        ], 200);
     }
 }

@@ -60,7 +60,6 @@ class UsersDetailsController extends Controller
             'dietary_restriction_note' => 'nullable|string|max:1000',
             'profile_photo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             'available_days' => 'nullable|string|max:255',
-            'trainer_type' => 'nullable|in:ai,human,AI,بشري,ذكاء اصطناعي',
             'disclaimer_accepted' => 'nullable|boolean',
             'notes' => 'nullable|string|max:1000',
         ]);
@@ -90,21 +89,7 @@ class UsersDetailsController extends Controller
             $gender = $genderMap[$request->gender] ?? $request->gender;
 
             // ==========================================
-            // 3. تحويل نوع المدرب
-            // ==========================================
-            $trainerTypeMap = [
-                'بشري' => 'human',
-                'ذكاء اصطناعي' => 'ai',
-                'human' => 'human',
-                'ai' => 'ai',
-                'AI' => 'ai',
-            ];
-
-            $trainerType = $trainerTypeMap[$request->trainer_type]
-                ?? $request->trainer_type;
-
-            // ==========================================
-            // 4. رفع الصورة
+            // 3. رفع الصورة
             // ==========================================
             if ($request->hasFile('profile_photo')) {
                 $validated['profile_photo'] = $request
@@ -113,7 +98,7 @@ class UsersDetailsController extends Controller
             }
 
             // ==========================================
-            // 5. إنشاء Profile
+            // 4. إنشاء Profile
             // ==========================================
             $user->profile()->create([
                 'gender' => $gender,
@@ -127,7 +112,6 @@ class UsersDetailsController extends Controller
                 'dietary_restriction_note' => $validated['dietary_restriction_note'] ?? null,
                 'profile_photo' => $validated['profile_photo'] ?? null,
                 'available_days' => $validated['available_days'] ?? null,
-                'trainer_type' => $trainerType,
                 'disclaimer_accepted' => $request->has('disclaimer_accepted') ? 1 : 0,
                 'notes' => $validated['notes'] ?? null,
             ]);
@@ -149,7 +133,6 @@ class UsersDetailsController extends Controller
             'password' => 'nullable|string|min:8',
             'role' => 'required|in:user,coach,User,Coach',
             'gender' => 'nullable|in:ذكر,أنثى,male,female',
-            'trainer_type' => 'nullable|in:ai,human,AI,بشري,ذكاء اصطناعي',
             'date_of_birth' => 'nullable|date',
             'height' => 'nullable|numeric|min:0',
             'weight' => 'nullable|numeric|min:0',
@@ -196,21 +179,7 @@ class UsersDetailsController extends Controller
             $gender = $genderMap[$request->gender] ?? $request->gender;
 
             // ==========================================
-            // 3. تحويل نوع المدرب
-            // ==========================================
-            $trainerTypeMap = [
-                'بشري' => 'human',
-                'ذكاء اصطناعي' => 'ai',
-                'human' => 'human',
-                'ai' => 'ai',
-                'AI' => 'ai',
-            ];
-
-            $trainerType = $trainerTypeMap[$request->trainer_type]
-                ?? $request->trainer_type;
-
-            // ==========================================
-            // 4. الصورة
+            // 3. الصورة
             // ==========================================
             $profilePhotoPath = $user->profile?->profile_photo;
 
@@ -227,7 +196,7 @@ class UsersDetailsController extends Controller
             }
 
             // ==========================================
-            // 5. تحديث الـ Profile
+            // 4. تحديث الـ Profile
             // ==========================================
             $user->profile()->updateOrCreate(
                 [
@@ -235,7 +204,6 @@ class UsersDetailsController extends Controller
                 ],
                 [
                     'gender' => $gender,
-                    'trainer_type' => $trainerType,
                     'date_of_birth' => $request->date_of_birth,
                     'height' => $request->height,
                     'weight' => $request->weight,

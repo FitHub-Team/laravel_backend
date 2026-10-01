@@ -97,12 +97,11 @@ class RegisterRequest extends FormRequest
             'health_condition_note' => ['sometimes', 'nullable'],
             'dietary_restriction_note' => ['sometimes', 'nullable'],
            'training_location' => [
-    'sometimes',
-    'in:home,outdoor,home_with_equipment',
-],
+                'sometimes',
+                'in:home,outdoor,home_with_equipment',
+            ],
             'available_days' => ['sometimes', 'array',],
             'available_days.*' => ['string',],
-            'trainer_type' => ['sometimes', 'in:ai,human',],
             'disclaimer_accepted' => ['sometimes', 'boolean',]
             
         ];
@@ -160,12 +159,8 @@ class RegisterRequest extends FormRequest
             'health_condition_note.string' => 'ملاحظات الحالة الصحية يجب أن تكون نصًا.',
             'dietary_restriction_note.string' => 'ملاحظات القيود الغذائية يجب أن تكون نصًا.',
 
-       
-
             'available_days.array' => 'أيام التوفر يجب أن تكون قائمة.',
             'available_days.*.string' => 'يوم التوفر يجب أن يكون نصًا.',
-
-            'trainer_type.in' => 'نوع المدرب غير صالح.',
 
             'disclaimer_accepted.boolean' => 'قيمة الموافقة يجب أن تكون صحيحة أو خاطئة.',
 

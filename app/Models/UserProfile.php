@@ -19,7 +19,6 @@ class UserProfile extends Model
         'training_location',
         'profile_photo',
         'available_days',
-        'trainer_type',
         'disclaimer_accepted',
     ];
 

@@ -66,8 +66,6 @@ class SettingProfileController extends Controller
 
                     'available_days' => $profile?->available_days,
 
-                    'trainer_type' => $profile?->trainer_type,
-
                     'health_condition_note' => $profile?->health_condition_note,
 
                     'dietary_restriction_note' => $profile?->dietary_restriction_note,
