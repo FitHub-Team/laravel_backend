@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\Admin\ActivityLevelController;
 use App\Http\Controllers\Api\Admin\AdminAuthController;
 use App\Http\Controllers\Api\Admin\HealthRestrictionController;
 use App\Http\Controllers\Api\Admin\HeathRestrictionController;
+use App\Http\Controllers\Api\Admin\SkillController;
 use App\Http\Controllers\Api\Admin\TrainerController;
 use App\Http\Controllers\Api\Admin\AdminUserController;
 use App\Http\Controllers\Api\Admin\UsersDetailsController;
@@ -87,9 +88,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
         return view('admin.preferencesManage');
     })->name('preferences.manage');
 
-    Route::get('/skills', function () {
-        return view('admin.skillsManage');
-    })->name('skills.manage');
+    // Skills Management
+    Route::get('/skills', [SkillController::class, 'index'])->name('skills.index');
+    Route::get('/skills/create', [SkillController::class, 'create'])->name('skills.create');
+    Route::post('/skills', [SkillController::class, 'store'])->name('skills.store');
+    Route::get('/skills/{skill}/edit', [SkillController::class, 'edit'])->name('skills.edit');
+    Route::put('/skills/{skill}', [SkillController::class, 'update'])->name('skills.update');
+    Route::patch('/skills/{skill}/toggle', [SkillController::class, 'toggleActive'])->name('skills.toggle');
+    Route::delete('/skills/{skill}', [SkillController::class, 'destroy'])->name('skills.destroy');
 
 });
 

@@ -9,9 +9,28 @@ use Storage;
 
 class GoalController extends Controller
 {
-    // عرض قائمة الأهداف
-    public function index()
+    public function index(Request $request)
     {
+        // فحص مباشر وصريح لمُحتوى الـ Header
+        if ($request->header('Accept') === 'application/json' || $request->wantsJson()) {
+            $goals = Goal::where('is_active', true)->latest()->get();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Goals retrieved successfully',
+                'data' => $goals->map(function ($goal) {
+                    return [
+                        'id' => $goal->id,
+                        'title' => $goal->title,
+                        'description' => $goal->description,
+                        'image' => $goal->image ? asset('storage/' . $goal->image) : null,
+                        'is_active' => (bool) $goal->is_active,
+                    ];
+                })
+            ], 200);
+        }
+
+        // إذا كان الطلب عادي من المتصفح لرؤية لوحة التحكم
         $goals = Goal::latest()->get();
         return view('admin.goalsManage', compact('goals'));
     }
