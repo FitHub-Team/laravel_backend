@@ -9,7 +9,7 @@ class Subscription extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
+   protected $fillable = [
         'trainee_id',
         'coach_id',
         'package_id',
@@ -17,6 +17,10 @@ class Subscription extends Model
         'notes',
         'start_date',
         'end_date',
+        'auto_renew',
+    ];
+    protected $casts = [
+        'auto_renew' => 'boolean',
     ];
 
     public function trainee()
