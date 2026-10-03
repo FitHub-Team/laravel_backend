@@ -45,10 +45,12 @@ class UpdateProfileRequest extends FormRequest
             ],
             'health_condition_note' => ['sometimes', 'nullable'],
             'dietary_restriction_note' => ['sometimes', 'nullable'],
-            'training_location_id' => ['sometimes', 'integer', 'exists:training_locations,id'],
+           'training_location' => [
+    'sometimes',
+    'in:home,outdoor,home_with_equipment',
+],
             'available_days' => ['sometimes', 'array'],
             'available_days.*' => ['string'],
-            'trainer_type' => ['sometimes', 'in:ai,human'],
             'disclaimer_accepted' => ['sometimes', 'boolean'],
 
         ];

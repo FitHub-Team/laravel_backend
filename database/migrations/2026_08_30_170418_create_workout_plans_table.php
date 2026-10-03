@@ -12,11 +12,15 @@ return new class extends Migration
             $table->id();
             $table->foreignId('coach_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('trainee_id')->constrained('users')->onDelete('cascade');
-            $table->string('title');
-            $table->text('description')->nullable();
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
-            $table->string('status')->default('active'); 
+            $table->enum('status', [
+                'draft',
+                'active',
+                'completed',
+                'cancelled',
+            ])->default('active');
+            $table->unsignedInteger('version')->default(1);
             $table->timestamps();
         });
     }

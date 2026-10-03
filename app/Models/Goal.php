@@ -11,6 +11,8 @@ class Goal extends Model
         'description',
         'image',
         'is_active',
+        'code',
+        'is_system',
     ];
 
     protected $casts = [

@@ -15,9 +15,9 @@ class WorkoutPlanController extends Controller
         $this->workoutPlanService = $workoutPlanService;
     }
 
-    public function showByTrainee(Request $request, $trainee_id)
+    public function index(Request $request, $traineeId)
     {
-        $plan = $this->workoutPlanService->getPlanByTrainee($request->user()->id, $trainee_id);
+        $plan = $this->workoutPlanService->getPlanByTrainee($request->user()->id, $traineeId);
 
         return response()->json([
             'status' => true,

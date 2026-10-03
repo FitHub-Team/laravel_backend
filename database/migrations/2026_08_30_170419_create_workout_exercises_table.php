@@ -12,10 +12,11 @@ return new class extends Migration
             $table->id();
             $table->foreignId('workout_plan_id')->constrained('workout_plans')->onDelete('cascade');
             $table->foreignId('exercise_id')->constrained('exercises')->onDelete('cascade');
-            $table->string('day_of_week')->nullable();
+            $table->string('day_of_week');
             $table->integer('sets')->default(3);
             $table->integer('reps')->default(12);
             $table->string('rest_time')->nullable();
+          
             $table->timestamps();
         });
     }

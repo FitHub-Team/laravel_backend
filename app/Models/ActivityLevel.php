@@ -9,6 +9,8 @@ class ActivityLevel extends Model
     protected $fillable = [
         'title',
         'is_active',
+        'code',
+        'is_system',
     ];
 
     protected $casts = [

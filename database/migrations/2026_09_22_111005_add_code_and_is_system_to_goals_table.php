@@ -11,11 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-       
-        
-        Schema::table('workout_exercises', function (Blueprint $table) {
-            $table->string('duration')->nullable();
-            $table->string('equipment')->nullable();
+        Schema::table('goals', function (Blueprint $table) {
+            $table->string('code')->nullable()->unique()->after('title');
+            $table->boolean('is_system')->default(false)->after('code');
         });
     }
 
@@ -24,8 +22,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('workout_exercises', function (Blueprint $table) {
-            $table->dropColumn(['duration', 'equipment']);
+        Schema::table('goals', function (Blueprint $table) {
+               $table->dropColumn(['code', 'is_system']);
         });
     }
 };

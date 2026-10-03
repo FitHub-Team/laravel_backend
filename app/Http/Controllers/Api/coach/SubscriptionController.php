@@ -18,7 +18,7 @@ class SubscriptionController extends Controller
     // عرض قائمة طلبات الاشتراك قيد الانتظار الواردة من المتدربين
     public function pendingRequests(Request $request)
     {
-        $requests = $this->subscriptionService->getPendingRequests($request->user()->id);
+        $requests = $this->subscriptionService->getPendingRequests($request->user()->id,  $request->query('search'));
 
         return response()->json([
             'status' => true,
@@ -29,7 +29,7 @@ class SubscriptionController extends Controller
     // قبول طلب الاشتراك
     public function acceptRequest(Request $request, $id)
     {
-        $subscription = $this->subscriptionService->acceptSubscription($id, $request->user()->id);
+        $subscription = $this->subscriptionService->acceptSubscription($id, $request->user()->id,);
 
         return response()->json([
             'status' => true,
@@ -46,8 +46,8 @@ class SubscriptionController extends Controller
         ]);
 
         $subscription = $this->subscriptionService->rejectSubscription(
-            $id, 
-            $request->user()->id, 
+            $id,
+            $request->user()->id,
             $request->notes
         );
 
@@ -61,7 +61,7 @@ class SubscriptionController extends Controller
     // عرض قائمة المتدربين المشتركين حاليا مع الكوتش
     public function myTrainees(Request $request)
     {
-        $trainees = $this->subscriptionService->getAcceptedTrainees($request->user()->id);
+        $trainees = $this->subscriptionService->getAcceptedTrainees($request->user()->id,  $request->query('search'));
 
         return response()->json([
             'status' => true,
@@ -73,7 +73,7 @@ class SubscriptionController extends Controller
     public function showTraineeDetails(Request $request, $trainee_id)
     {
         $trainee = $this->subscriptionService->verifyAndGetTraineeDetails(
-            $request->user()->id, 
+            $request->user()->id,
             $trainee_id
         );
 

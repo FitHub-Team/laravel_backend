@@ -12,16 +12,22 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('specialization')->nullable();         // التخصص الجامعي
-            $table->integer('experience')->nullable();  
-                 // سنوات الخبرة
-             $table->unsignedSmallInteger('birth_year')->nullable();
-                       // تاريخ الميلاد
+            $table->integer('experience')->nullable();
+            // سنوات الخبرة
+            $table->unsignedSmallInteger('birth_year')->nullable();
+            // تاريخ الميلاد
             $table->string('location')->nullable();               // السكن / الإقامة
             $table->string('national_id')->nullable();            // الهوية
             $table->text('bio')->nullable();           // البايو
-            $table->json('certifications')->nullable(); // الشهادات
             $table->boolean('is_approved')->default(false); // موافقة الأدمن
-            $table->foreignId('skill_id')->nullable()->constrained('coach_skills')->cascadeOnDelete(); // المهارة
+            $table->foreignId('skill_id')->nullable()->constrained('coach_skills')
+                ->cascadeOnDelete(); // المهارة
+            $table->enum('status', ['active', 'inactive'])
+                ->default('active')
+                ->after('is_approved');
+            $table->text('rejection_reason')->nullable();
+            $table->decimal('price', 10, 2)->nullable(); // سعر الخدمة
+            $table->string('profile_photo')->nullable();
             $table->timestamps();
         });
     }

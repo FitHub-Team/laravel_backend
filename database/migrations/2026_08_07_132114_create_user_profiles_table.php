@@ -34,16 +34,15 @@ return new class extends Migration {
             $table->text('dietary_restriction_note')->nullable();
             $table->boolean('disclaimer_accepted')->default(false);
 
-            $table->foreignId('training_location_id')
-                ->nullable()
-                ->constrained('training_locations')
-                ->nullOnDelete();
+            $table->enum('training_location', [
+                'home',
+                'outdoor',
+                'home_with_equipment',
+            ])->nullable();
             $table->string('profile_photo')->nullable();
 
             // days available for training
             $table->json('available_days')->nullable();
-            // choose between ai or human trainer
-            $table->enum('trainer_type', ['ai', 'human'])->nullable();
             $table->timestamps();
         });
     }

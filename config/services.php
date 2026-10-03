@@ -20,8 +20,11 @@ return [
     'google' => [
         'client_id' => env('GOOGLE_WEB_CLIENT_ID'),
     ],
-    
 
+    'ai' => [
+        'base_url' => env('AI_BASE_URL'),
+        'api_key' => env('AI_API_KEY')
+    ],
     'postmark' => [
         'key' => env('POSTMARK_API_KEY'),
     ],

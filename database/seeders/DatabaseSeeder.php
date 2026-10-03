@@ -17,9 +17,12 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
         $this->call([
-            UserAndTrainerSeeder::class,
-            AdminSeeder::class,
-        ]);
 
+            AdminSeeder::class,
+            GoalSeeder::class,
+            activity_levels::class,
+            UserAndTrainerSeeder::class,
+            ExerciseSeeder::class
+        ]);
     }
 }

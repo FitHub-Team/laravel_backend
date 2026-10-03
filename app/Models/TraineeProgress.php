@@ -35,4 +35,8 @@ class TraineeProgress extends Model
     {
         return $this->hasMany(ProgressExercise::class);
     }
+    public function progressExercises()
+{
+    return $this->hasMany(ProgressExercise::class, 'trainee_progress_id');
+}
 }
