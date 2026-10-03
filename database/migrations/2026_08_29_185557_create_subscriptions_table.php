@@ -13,9 +13,10 @@ return new class extends Migration
             $table->foreignId('trainee_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('coach_id')->constrained('users')->onDelete('cascade');
             $table->enum('status', ['pending', 'accepted', 'rejected', 'expired'])->default('pending');
-            $table->text('notes')->nullable(); //سبب الرفض 
+            $table->text('notes')->nullable(); // سبب الرفض 
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
+            $table->boolean('auto_renew')->default(true); // ا للتجديد التلقائي
             $table->timestamps();
         });
     }

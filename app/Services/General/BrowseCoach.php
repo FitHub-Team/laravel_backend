@@ -17,7 +17,6 @@ class BrowseCoach
         ->where('role', 'coach')
         ->whereHas('coachProfile', function ($q) {
             $q->where('is_approved', true);
-            // تم إزالة ->where('status', 'active') مؤقتاً لضمان ظهور كل المدربين المعتمدين لد فريق الفلاتر
         })
         ->with([
             'coachProfile:id,user_id,specialization,experience,location,price,profile_photo',

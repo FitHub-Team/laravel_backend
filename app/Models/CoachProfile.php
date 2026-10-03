@@ -36,7 +36,7 @@ class CoachProfile extends Model
     public function skills()
     {
         return $this->belongsToMany(
-            skill::class,
+            Skill::class, 
             'coach_skills',
             'coach_id',
             'skill_id'

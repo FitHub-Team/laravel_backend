@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\coach;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CoachDetailsResource;
 use App\Http\Requests\StoreCoachProfileRequest;
 use App\Services\Coach\CoachService;
 
@@ -44,21 +45,22 @@ class SettingProfileController extends Controller
         return response()->json(['data' => $profile], 200);
     }
 
-    public function showPublicProfile($id): JsonResponse
-    {
-        $coach = $this->coachService->getPublicProfile($id);
+  public function showPublicProfile($id): JsonResponse
+{
+    $coach = $this->coachService->getPublicProfile($id);
 
-        if (!$coach) {
-            return response()->json([
-                'message' => 'Coach not found'
-            ], 404);
-        }
-
+    if (!$coach) {
         return response()->json([
-            'status' => true,
-            'data' => $coach
-        ], 200);
+            'status' => false,
+            'message' => 'Coach not found'
+        ], 404);
     }
+
+    return response()->json([
+        'status' => true,
+        'data' => new CoachDetailsResource($coach) 
+    ], 200);
+}
 
     public function showTraineeDetails($id): JsonResponse
     {
@@ -160,21 +162,37 @@ class SettingProfileController extends Controller
         ], 200);
     }
 
-    public function subscriptionStatus(Request $request, $id): JsonResponse
-    {
-        $traineeId = $request->user()->id;
+public function subscriptionStatus(Request $request, $id): JsonResponse
+{
+    $traineeId = $request->user()->id;
 
-        $subscription = \App\Models\Subscription::where('trainee_id', $traineeId)
-            ->where('coach_id', $id)
-            ->latest()
-            ->first();
+    $coach = \App\Models\User::where('role', 'coach')
+        ->with(['coachProfile.skills'])
+        ->findOrFail($id);
 
-        return response()->json([
-            'status' => true,
-            'data' => [
-                'is_subscribed' => $subscription && $subscription->status === 'accepted',
-                'status' => $subscription ? $subscription->status : 'not_subscribed',
-            ]
-        ], 200);
-    }
+    $subscription = \App\Models\Subscription::where('trainee_id', $traineeId)
+        ->where('coach_id', $id)
+        ->latest()
+        ->first();
+
+    return response()->json([
+        'status' => true,
+        'data' => [
+            'id' => $coach->id,
+            'full_name' => $coach->full_name,
+            'profile_photo' => $coach->coachProfile?->profile_photo,
+            'bio' => $coach->coachProfile?->bio,
+            'price' => $coach->coachProfile?->price ?? '0.00',
+            'skills' => $coach->coachProfile && $coach->coachProfile->skills ? $coach->coachProfile->skills->map(function ($skill) {
+                return [
+                    'id' => $skill->id,
+                    'name' => $skill->name,
+                ];
+            }) : [],
+            
+            // فقط الحقل اللازم للزر في واجهة تفاصيل الاشتراك
+            'auto_renew' => $subscription ? (bool) $subscription->auto_renew : true,
+        ]
+    ], 200);
+}
 }

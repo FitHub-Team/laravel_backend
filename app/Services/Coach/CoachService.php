@@ -30,9 +30,31 @@ class CoachService
         return $this->coachRepository->findByUserId($userId);
     }
 
-    public function getPublicProfile(int $id): ?User
+   public function getPublicProfile(int $id): ?User
     {
-        return User::with(['coachProfile'])->find($id);
+        return User::query()
+            ->where('role', 'coach')
+            ->where('id', $id)
+            ->with([
+                'coachProfile.skills:id,name',
+                'coachProfile.certifications:id,coach_id,title,issuer,year',
+                'reviews' => function ($q) {
+                    $q->latest()->take(10);
+                },
+              'reviews.trainee:id,full_name',
+            ])
+            ->withCount([
+                'subscriptions as active_subscribers_count' => function ($q) {
+                    $q->where('status', 'accepted');
+                },
+                'reviews as reviews_count'
+            ])
+            ->withAvg([
+                'reviews as average_rating' => function ($q) {
+                    $q->select('rating');
+                }
+            ], 'rating')
+            ->first();
     }
 
     public function getTraineeDetails(int $id): ?User
