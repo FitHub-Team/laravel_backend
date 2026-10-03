@@ -47,7 +47,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Trainee Routes
     Route::prefix('trainee')->middleware(['user'])->group(function () {
-        
+
         // Dashboard Route (مضاف حديثاً)
         Route::get('/dashboard', [UserDashboardController::class, 'index']);
 
@@ -78,11 +78,8 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/', [TraineeProgressController::class, 'store']);
             Route::put('/{id}/upload-photo', [TraineeProgressController::class, 'updatePhoto']);
         });
-<<<<<<< HEAD
         // ai
         // Route::post('/ai/nutrition-plan', [AINutritionPlanController::class, 'generate']);
-=======
->>>>>>> origin/main
     });
 
     // Coach Routes
@@ -96,7 +93,7 @@ Route::middleware('auth:sanctum')->group(function () {
                 Route::post('/update', [CoachSettingProfileController::class, 'update']);
                 Route::put('/update/avatar', [CoachSettingProfileController::class, 'updateProfilePhoto']);
             });
-            // ai 
+            // ai
             Route::prefix('ai/generate/')->group(function () {
                 Route::post('/nutrition-plan', [AINutritionPlanController::class, 'generateNutrition']);
                 Route::post('/workout-plan/{trainee}', [AIWorkoutPlanController::class, 'generateWorkout']);
@@ -117,7 +114,7 @@ Route::middleware('auth:sanctum')->group(function () {
                     Route::get('/show', [CoachSettingProfileController::class, 'show']);
                     Route::post('/update', [CoachSettingProfileController::class, 'update']);
                     Route::put('/update/avatar', [CoachSettingProfileController::class, 'updateProfilePhoto']);
-                    
+
                 });
 
                 // Coach Availabilities (Working Days & Slots)
@@ -199,11 +196,4 @@ Route::prefix('v1')->group(function () {
         Route::post('/skills/update', [ProfileOptionController::class, 'updateCoachSkills']);
     });
 
-<<<<<<< HEAD
 });
-=======
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/chat/{userId}', [ChatController::class, 'index']); // جلب الرسائل
-    Route::post('/chat/send', [ChatController::class, 'store']);     // إرسال رسالة
-});
->>>>>>> origin/main
