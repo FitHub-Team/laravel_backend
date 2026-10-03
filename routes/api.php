@@ -72,25 +72,84 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/', [TraineeProgressController::class, 'store']);
             Route::put('/{id}/upload-photo', [TraineeProgressController::class, 'updatePhoto']);
         });
+        // ai
+        // Route::post('/ai/nutrition-plan', [AINutritionPlanController::class, 'generate']);
     });
 
-    // Coach Routes (Protected by auth:sanctum and coach middleware)
-    Route::middleware(['coach'])->prefix('coach')->group(function () {
-        // Dashboard
-        Route::get('dashboard', [DashboardController::class, 'index']);
-        
-        // Coach Profile Settings
-        Route::prefix('profile/setting')->group(function () {
-            Route::get('/show', [CoachSettingProfileController::class, 'show']);
-            Route::post('/update', [CoachSettingProfileController::class, 'update']);
-            Route::put('/update/avatar', [CoachSettingProfileController::class, 'updateProfilePhoto']);
+    // Coach Routes
+    Route::middleware(['coach'])->group(function () {
+        Route::prefix('coach')->group(function () {
+            //Dashboard
+            Route::get('dashboard', [DashboardController::class, 'index']);
+            // Coach Profile
+            Route::prefix('profile/setting')->group(function () {
+                Route::get('/show', [CoachSettingProfileController::class, 'show']);
+                Route::post('/update', [CoachSettingProfileController::class, 'update']);
+                Route::put('/update/avatar', [CoachSettingProfileController::class, 'updateProfilePhoto']);
+            });
+            // ai
+            Route::prefix('ai/generate/')->group(function () {
+                Route::post('/nutrition-plan', [AINutritionPlanController::class, 'generateNutrition']);
+                Route::post('/workout-plan/{trainee}', [AIWorkoutPlanController::class, 'generateWorkout']);
+                Route::post('/calculate-calories', [AiCalculateCalories::class, 'generateCalculate']);
+            });
+
+            // Request Subscription Routes
+            Route::post('/subscription-request', [RequestSubscriptionController::class, 'requestSubscription']);
+            Route::get('/subscription-requests', [RequestSubscriptionController::class, 'getMyRequests']);
         });
 
-        // AI Routes
-        Route::prefix('ai/generate')->group(function () {
-            Route::post('/nutrition-plan', [AINutritionPlanController::class, 'generateNutrition']);
-            Route::post('/workout-plan/{trainee}', [AIWorkoutPlanController::class, 'generateWorkout']);
-            Route::post('/calculate-calories', [AiCalculateCalories::class, 'generateCalculate']);
+        // Coach Routes (Protected by auth:sanctum and coach middleware)
+        Route::middleware(['coach'])->group(function () {
+            Route::prefix('coach')->group(function () {
+
+                // Coach Profile Settings
+                Route::prefix('profile/setting')->group(function () {
+                    Route::get('/show', [CoachSettingProfileController::class, 'show']);
+                    Route::post('/update', [CoachSettingProfileController::class, 'update']);
+                    Route::put('/update/avatar', [CoachSettingProfileController::class, 'updateProfilePhoto']);
+
+                });
+
+                // Coach Availabilities (Working Days & Slots)
+                Route::prefix('availabilities')->group(function () {
+                    Route::get('/', [AvailabilityController::class, 'index']);
+                    Route::post('/', [AvailabilityController::class, 'store']);
+                });
+                // Trainees & Plans Routes
+                Route::prefix('trainees')->group(function () {
+                    //-----
+                    Route::get('/{id}', [CoachSettingProfileController::class, 'showTraineeDetails'])->middleware('trainee.access');
+                    Route::post('/{id}/workout-plan', [WorkoutPlanController::class, 'storeOrUpdate']);
+                    Route::post('/{id}/nutrition-plan', [NutritionPlanController::class, 'storeOrUpdate']);
+                    Route::get('/{id}/progress', [ProgressController::class, 'show']);
+                });
+                // Subscription & Trainees Management
+                Route::get('/subscriptions/pending', [CoachSubscriptionController::class, 'pendingRequests']);
+                Route::put('/subscriptions/{id}/accept', [CoachSubscriptionController::class, 'acceptRequest']);
+                Route::put('/subscriptions/{id}/reject', [CoachSubscriptionController::class, 'rejectRequest']);
+                Route::get('/trainees', [CoachSubscriptionController::class, 'myTrainees']);
+
+                Route::get('/trainees/{trainee_id}', [CoachSubscriptionController::class, 'showTraineeDetails'])->middleware('trainee.access');
+                Route::prefix('trainees')->group(function () {
+                    Route::get('/{traineeId}/workout-plan', [WorkoutPlanController::class, 'index']);
+                    Route::post('/{id}/workout-plan/update', [WorkoutPlanController::class, 'storeOrUpdate']);
+                    Route::post('/{id}/nutrition-plan', [NutritionPlanController::class, 'storeOrUpdate']);
+                    Route::get('/{id}/progress', [ProgressController::class, 'show']);
+                });
+            });
+
+
+
+            // Trainees & Plans Routes
+
+
+            // Subscription & Trainees Management
+            Route::get('/subscriptions/pending', [CoachSubscriptionController::class, 'pendingRequests']);
+            Route::put('/subscriptions/{id}/accept', [CoachSubscriptionController::class, 'acceptRequest']);
+            Route::put('/subscriptions/{id}/reject', [CoachSubscriptionController::class, 'rejectRequest']);
+            Route::get('/trainees', [CoachSubscriptionController::class, 'myTrainees']);
+            Route::get('/trainees/{trainee_id}', [CoachSubscriptionController::class, 'showTraineeDetails'])->middleware('trainee.access');
         });
 
         // Coach Availabilities
@@ -144,11 +203,15 @@ Route::prefix('admin')->group(
 );
 
 Route::prefix('v1')->group(function () {
+
     Route::get('/goals', [ProfileOptionController::class, 'getGoals']);
     Route::get('/activity-levels', [ProfileOptionController::class, 'getActivityLevels']);
-});
+    Route::get('/skills', [ProfileOptionController::class, 'getSkills']); // -> /api/v1/skills
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/chat/{userId}', [ChatController::class, 'index']);
-    Route::post('/chat/send', [ChatController::class, 'store']);
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/chat/{userId}', [ChatController::class, 'index']);
+        Route::post('/chat/send', [ChatController::class, 'store']);
+        Route::post('/skills/update', [ProfileOptionController::class, 'updateCoachSkills']);
+    });
+
 });
