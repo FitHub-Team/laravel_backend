@@ -20,6 +20,7 @@ use App\Http\Controllers\Api\General\BrowseCoachController;
 use App\Http\Controllers\Api\user\NutritionPlanController as UserNutritionPlanController;
 use App\Http\Controllers\Api\user\RequestSubscriptionController;
 use App\Http\Controllers\Api\user\TraineeProgressController;
+use App\Http\Controllers\Api\user\DashboardController as UserDashboardController; // تمت إضافة استيراد داشبورد المتدرب هنا
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Api\user\WorkoutPlanController as UserWorkoutPlanController;
 use Illuminate\Http\Request;
@@ -46,6 +47,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Trainee Routes
     Route::prefix('trainee')->middleware(['user'])->group(function () {
+        
+        // Dashboard Route (مضاف حديثاً)
+        Route::get('/dashboard', [UserDashboardController::class, 'index']);
+
         // User Profile Settings
         Route::prefix('profile/setting')->group(function () {
             Route::get('/show', [UserSettingProfileController::class, 'show']);
