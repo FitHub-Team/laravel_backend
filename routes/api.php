@@ -20,7 +20,7 @@ use App\Http\Controllers\Api\General\BrowseCoachController;
 use App\Http\Controllers\Api\user\NutritionPlanController as UserNutritionPlanController;
 use App\Http\Controllers\Api\user\RequestSubscriptionController;
 use App\Http\Controllers\Api\user\TraineeProgressController;
-use App\Http\Controllers\Api\user\DashboardController as UserDashboardController; // تمت إضافة استيراد داشبورد المتدرب هنا
+use App\Http\Controllers\Api\user\DashboardController as UserDashboardController; 
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Api\user\WorkoutPlanController as UserWorkoutPlanController;
 use Illuminate\Http\Request;
@@ -39,19 +39,13 @@ Route::middleware('auth:sanctum')->group(function () {
     // Public/Auth Browsing Routes
     Route::get('/coaches', [BrowseCoachController::class, 'index']);
     Route::get('/coaches/{id}', [CoachSettingProfileController::class, 'showPublicProfile']);
-
-
     Route::get('/coaches/{id}/reviews', [CoachSettingProfileController::class, 'reviews']);
     Route::get('/coaches/{id}/subscription-status', [CoachSettingProfileController::class, 'subscriptionStatus']);
 
-
     // Trainee Routes
     Route::prefix('trainee')->middleware(['user'])->group(function () {
-
-        // Dashboard Route (مضاف حديثاً)
         Route::get('/dashboard', [UserDashboardController::class, 'index']);
 
-        // User Profile Settings
         Route::prefix('profile/setting')->group(function () {
             Route::get('/show', [UserSettingProfileController::class, 'show']);
             Route::put('/update', [UserSettingProfileController::class, 'update']);
@@ -59,7 +53,6 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::delete('/update/avatar/delete', [UserSettingProfileController::class, 'deleteProfilePhoto']);
         });
 
-        // Public User Profile & Coaches
         Route::prefix('profile')->group(function () {
             Route::get('/', [UserProfileController::class, 'index']);
             Route::get('/{user}/coaches', [UserProfileController::class, 'getCoaches']);
@@ -67,12 +60,13 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::post('/subscription-request', [RequestSubscriptionController::class, 'requestSubscription']);
         Route::get('/subscription-requests', [RequestSubscriptionController::class, 'getMyRequests']);
-        // workout plan (show)
+        
         Route::prefix('workout-plans')->group(function () {
             Route::get('/', [UserWorkoutPlanController::class, 'index']);
         });
-        // Nutrition plans (show)
+
         Route::get('/nutrition-plans', [UserNutritionPlanController::class, 'index']);
+        
         Route::prefix('progress')->group(function () {
             Route::get('/', [TraineeProgressController::class, 'index']);
             Route::post('/', [TraineeProgressController::class, 'store']);
@@ -157,6 +151,32 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/trainees', [CoachSubscriptionController::class, 'myTrainees']);
             Route::get('/trainees/{trainee_id}', [CoachSubscriptionController::class, 'showTraineeDetails'])->middleware('trainee.access');
         });
+
+        // Coach Availabilities
+        Route::prefix('availabilities')->group(function () {
+            Route::get('/', [AvailabilityController::class, 'index']);
+            Route::post('/', [AvailabilityController::class, 'store']);
+        });
+
+        // Trainees & Plans Routes
+        Route::prefix('trainees')->group(function () {
+            Route::get('/{id}', [CoachSettingProfileController::class, 'showTraineeDetails'])->middleware('trainee.access');
+            Route::post('/{id}/workout-plan', [WorkoutPlanController::class, 'storeOrUpdate']);
+            Route::post('/{id}/nutrition-plan', [NutritionPlanController::class, 'storeOrUpdate']);
+            Route::get('/{id}/progress', [ProgressController::class, 'show']);
+            Route::get('/{traineeId}/workout-plan', [WorkoutPlanController::class, 'index']);
+            Route::post('/{id}/workout-plan/update', [WorkoutPlanController::class, 'storeOrUpdate']);
+        });
+
+        // Subscription & Trainees Management
+        Route::get('/subscriptions/pending', [CoachSubscriptionController::class, 'pendingRequests']);
+        Route::put('/subscriptions/{id}/accept', [CoachSubscriptionController::class, 'acceptRequest']);
+        Route::put('/subscriptions/{id}/reject', [CoachSubscriptionController::class, 'rejectRequest']);
+        Route::get('/trainees', [CoachSubscriptionController::class, 'myTrainees']);
+        Route::get('/trainees/{trainee_id}', [CoachSubscriptionController::class, 'showTraineeDetails'])->middleware('trainee.access');
+
+        // Certifications Route (المسار المطلوب)
+        Route::get('/certifications', [CoachSubscriptionController::class, 'getCertifications']);
     });
 
     Route::get('/user', function (Request $request) {
@@ -166,7 +186,6 @@ Route::middleware('auth:sanctum')->group(function () {
         ]);
     });
 });
-
 
 // Verification & Password Reset Routes
 Route::post('/email/verification-notification', [EmailVerificationController::class, 'resend']);
@@ -178,8 +197,7 @@ Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class, 've
 Route::post('/verify-email', [EmailVerificationController::class, 'verifyEmail']);
 Route::post('/resend-verification', [EmailVerificationController::class, 'resend']);
 
-
-// admin
+// Admin
 Route::prefix('admin')->group(
     base_path('routes/admin.php')
 );
