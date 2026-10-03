@@ -65,8 +65,8 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/', [TraineeProgressController::class, 'store']);
             Route::put('/{id}/upload-photo', [TraineeProgressController::class, 'updatePhoto']);
         });
-        // ai 
-        Route::post('/ai/nutrition-plan', [AINutritionPlanController::class, 'generate']);
+        // ai
+        // Route::post('/ai/nutrition-plan', [AINutritionPlanController::class, 'generate']);
     });
 
     // Coach Routes
@@ -163,11 +163,15 @@ Route::prefix('admin')->group(
 );
 
 Route::prefix('v1')->group(function () {
+
     Route::get('/goals', [ProfileOptionController::class, 'getGoals']);
     Route::get('/activity-levels', [ProfileOptionController::class, 'getActivityLevels']);
-});
+    Route::get('/skills', [ProfileOptionController::class, 'getSkills']); // -> /api/v1/skills
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/chat/{userId}', [ChatController::class, 'index']); // جلب الرسائل
-    Route::post('/chat/send', [ChatController::class, 'store']);     // إرسال رسالة
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/chat/{userId}', [ChatController::class, 'index']);
+        Route::post('/chat/send', [ChatController::class, 'store']);
+        Route::post('/skills/update', [ProfileOptionController::class, 'updateCoachSkills']);
+    });
+
 });

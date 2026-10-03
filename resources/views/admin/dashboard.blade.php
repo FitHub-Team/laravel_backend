@@ -407,7 +407,7 @@
 
                 <!-- التفضيلات -->
 
-                <a href="{{ route('admin.preferences.manage') }}"
+                {{-- <a href="{{ route('admin.preferences.manage') }}"
                    class="nav-btn {{ request()->routeIs('admin.preferences.manage') ? 'active' : '' }}">
 
                     <span class="ic">
@@ -443,13 +443,13 @@
 
                     تفضيلات
 
-                </a>
+                </a> --}}
 
 
                 <!-- المهارات -->
 
-                <a href="{{ route('admin.skills.manage') }}"
-                   class="nav-btn {{ request()->routeIs('admin.skills.manage') ? 'active' : '' }}">
+                <a href="{{ route('admin.skills.index') }}"
+                   class="nav-btn {{ request()->routeIs('admin.skills.index') ? 'active' : '' }}">
 
                     <span class="ic">
 
