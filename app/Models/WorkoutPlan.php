@@ -11,12 +11,11 @@ class WorkoutPlan extends Model
 
     protected $fillable = [
         'coach_id',
-        'trainee_id',
-        'title',
-        'description',
-        'start_date',
-        'end_date',
-        'status'
+    'trainee_id',
+   
+    'start_date',
+    'end_date',
+    'status',
     ];
 
     public function workoutExercises()
@@ -38,6 +37,7 @@ class WorkoutPlan extends Model
             'sets',
             'reps',
             'rest_time',
+            'notes'
         ])->withTimestamps();
     }
 

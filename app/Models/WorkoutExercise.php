@@ -9,15 +9,18 @@ class WorkoutExercise extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'workout_plan_id', 
-        'exercise_id',
-        'day_of_week', 
-        'sets', 
-        'reps', 
-        'rest_time', 
-    
-    ];
+   protected $fillable = [
+    'workout_plan_id',
+    'exercise_id',
+    'day_of_week',
+    'sets',
+    'reps',
+    'rest_time',
+    'notes',
+    'exercise_name',
+    'target_muscle',
+    'equipment',
+];
 
     public function workoutPlan()
     {
