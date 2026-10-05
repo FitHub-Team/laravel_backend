@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\coach;
+namespace App\Http\Controllers\Api\coach\WorkoutPlan;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Coach\WorkoutPlanRequest;
