@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\General;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BrowseCoachRequest;
+use App\Http\Resources\CoachResource;
 use App\Services\General\BrowseCoach;
 use App\Http\Resources\CoachIndexResource;
 use App\Http\Resources\CoachSubscriptionResource;
@@ -24,19 +25,7 @@ class BrowseCoachController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => CoachIndexResource::collection($coaches), 
+            'data' => CoachResource::collection($coaches),
         ]);
-    }
-
-    public function showSubscriptionDetails($id)
-    {
-        $coach = User::where('role', 'coach')
-            ->with(['coachProfile.skills'])
-            ->findOrFail($id);
-
-        return response()->json([
-            'success' => true,
-            'data' => new CoachSubscriptionResource($coach)
-        ], 200);
     }
 }
