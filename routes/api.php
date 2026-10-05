@@ -28,7 +28,11 @@ use App\Http\Controllers\Api\coach\WorkoutPlan\ExerciseController;
 use App\Http\Controllers\Api\coach\WorkoutPlan\CustomExerciseController;
 use App\Http\Controllers\Api\coach\WorkoutPlan\WorkoutPlanController ;
 use App\Http\Controllers\Api\General\BrowseCoachController;
-
+use App\Http\Controllers\Api\user\NutritionPlanController as UserNutritionPlanController;
+use App\Http\Controllers\Api\user\TraineeProgressController;
+use App\Http\Controllers\Api\user\DashboardController as UserDashboardController; 
+use App\Http\Controllers\Api\user\HealthInformationController;
+use App\Http\Controllers\Api\user\TraineeGoalController; // <--- Controller الأهداف والمعلومات الشخصية
 use App\Http\Controllers\ChatController;
 
 use Illuminate\Http\Request;
@@ -76,10 +80,24 @@ Route::middleware('auth:sanctum')->group(function () {
         [CoachSettingProfileController::class, 'showPublicProfile']
     );
 
-    Route::get(
-        '/',
-        [CoachSettingProfileController::class, 'show']
-    );
+        // Health Information Routes
+        Route::prefix('health-information')->group(function () {
+            Route::get('/', [HealthInformationController::class, 'show']);
+            Route::put('/update', [HealthInformationController::class, 'update']);
+        });
+
+        // Goal Information Routes (مسارات الأهداف الجديدة)
+        Route::prefix('goal-information')->group(function () {
+            Route::get('/', [TraineeGoalController::class, 'show']);
+            Route::put('/update', [TraineeGoalController::class, 'update']);
+        });
+
+        Route::post('/subscription-request', [RequestSubscriptionController::class, 'requestSubscription']);
+        Route::get('/subscription-requests', [RequestSubscriptionController::class, 'getMyRequests']);
+        
+        Route::prefix('workout-plans')->group(function () {
+            Route::get('/', [UserWorkoutPlanController::class, 'index']);
+        });
 
 
     /*

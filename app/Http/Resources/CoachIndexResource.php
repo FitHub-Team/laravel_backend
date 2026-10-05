@@ -17,7 +17,7 @@ class CoachIndexResource extends JsonResource
             'active_subscribers_count' => $this->active_subscribers_count, // عدد المتدربين النشطين
             'price' => $this->coachProfile?->price, // السعر
             'average_rating' => round($this->average_rating, 1), // التقييم
-            'specialties' => $this->coachProfile?->skills->pluck('name'), // التخصصات/المهارات كـ Tags
+           'specialization' => $this->coachProfile?->specialization, //   // التخصصات/المهارات  
         ];
     }
 }

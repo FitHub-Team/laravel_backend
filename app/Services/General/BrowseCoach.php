@@ -15,8 +15,17 @@ class BrowseCoach
             'email'
         ])
         ->where('role', 'coach')
-        ->whereHas('coachProfile', function ($q) {
+        ->whereHas('coachProfile', function ($q) use ($filters) {
             $q->where('is_approved', true);
+
+            // 1. الفلترة حسب السعر (أقصى سعر / أو نطاق السعر)
+            if (!empty($filters['max_price'])) {
+                $q->where('price', '<=', $filters['max_price']);
+            }
+
+            if (!empty($filters['min_price'])) {
+                $q->where('price', '>=', $filters['min_price']);
+            }
         })
         ->with([
             'coachProfile:id,user_id,specialization,experience,location,price,profile_photo',
@@ -33,12 +42,12 @@ class BrowseCoach
             }
         ], 'rating');
 
-    // البحث باسم الكوتش
+    // 2. البحث باسم الكوتش
     if (!empty($filters['search'])) {
         $query->where('full_name', 'like', '%' . $filters['search'] . '%');
     }
 
-    // الفلترة حسب التخصص / المهارة    
+    // 3. الفلترة حسب التخصص / المهارة     
     if (!empty($filters['skill_id'])) {
         $query->whereHas('coachProfile.skills', function ($q) use ($filters) {
             $q->where('skills.id', $filters['skill_id']);
@@ -51,19 +60,17 @@ class BrowseCoach
     /**
      * جلب تفاصيل الكوتش الكاملة برقم الـ ID لصفحة البروفايل (النبذة، الشهادات، والمراجعات)
      */
-    public function getCoachDetails($coachId)
+   public function getCoachDetails($coachId)
     {
         return User::query()
-            ->select(['id', 'full_name', 'email'])
+            ->select(['id', 'full_name', 'email', 'last_seen_at'])
             ->where('role', 'coach')
             ->where('id', $coachId)
             ->with([
-                // جلب تفاصيل الملف الشخصي شاملة النبذة (bio) والسعر والصورة
                 'coachProfile:id,user_id,specialization,experience,location,price,bio,profile_photo',
                 'coachProfile.skills:id,name',
                 'coachProfile.certifications:id,coach_id,title,issuer,year',
                 
-                // جلب أحدث المراجعات والتقييمات مع صورة واسم المتدرب
                 'reviews' => function ($q) {
                     $q->latest()->take(10);
                 },
