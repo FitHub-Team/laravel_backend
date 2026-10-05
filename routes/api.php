@@ -21,6 +21,8 @@ use App\Http\Controllers\Api\General\BrowseCoachController;
 use App\Http\Controllers\Api\user\NutritionPlanController as UserNutritionPlanController;
 use App\Http\Controllers\Api\user\TraineeProgressController;
 use App\Http\Controllers\Api\user\DashboardController as UserDashboardController; 
+use App\Http\Controllers\Api\user\HealthInformationController;
+use App\Http\Controllers\Api\user\TraineeGoalController; // <--- Controller الأهداف والمعلومات الشخصية
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Api\user\WorkoutPlanController as UserWorkoutPlanController;
 use Illuminate\Http\Request;
@@ -60,6 +62,18 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::prefix('profile')->group(function () {
             Route::get('/', [UserProfileController::class, 'index']);
             Route::get('/{user}/coaches', [UserProfileController::class, 'getCoaches']);
+        });
+
+        // Health Information Routes
+        Route::prefix('health-information')->group(function () {
+            Route::get('/', [HealthInformationController::class, 'show']);
+            Route::put('/update', [HealthInformationController::class, 'update']);
+        });
+
+        // Goal Information Routes (مسارات الأهداف الجديدة)
+        Route::prefix('goal-information')->group(function () {
+            Route::get('/', [TraineeGoalController::class, 'show']);
+            Route::put('/update', [TraineeGoalController::class, 'update']);
         });
 
         Route::post('/subscription-request', [RequestSubscriptionController::class, 'requestSubscription']);

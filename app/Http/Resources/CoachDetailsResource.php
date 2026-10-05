@@ -15,6 +15,10 @@ class CoachDetailsResource extends JsonResource
             'profile_photo' => $this->coachProfile?->profile_photo,
             'experience' => $this->coachProfile?->experience,
             'is_approved' => $this->coachProfile?->is_approved,
+            
+            // إضافة خاصية متصل الآن
+            'is_online' => $this->last_seen_at ? now()->diffInMinutes($this->last_seen_at) < 2 : false,
+            
             'location' => $this->coachProfile?->location,
             'bio' => $this->coachProfile?->bio,
             'price' => $this->coachProfile?->price,
@@ -29,13 +33,7 @@ class CoachDetailsResource extends JsonResource
                         'id' => $skill->id,
                         'name' => $skill->name,
                     ];
-                }) 
-                : ($this->coachProfile && $this->coachProfile->skills ? $this->coachProfile->skills->map(function ($skill) {
-                    return [
-                        'id' => $skill->id,
-                        'name' => $skill->name,
-                    ];
-                }) : []),
+                }) : [],
             
             // الشهادات الموثقة
             'certifications' => $this->coachProfile && $this->coachProfile->certifications 
@@ -45,8 +43,7 @@ class CoachDetailsResource extends JsonResource
                         'issuer' => $cert->issuer,
                         'year' => $cert->year,
                     ];
-                }) 
-                : [],
+                }) : [],
 
             // مراجعات المتدربين السابقين
             'reviews' => $this->reviews 
@@ -57,8 +54,7 @@ class CoachDetailsResource extends JsonResource
                         'rating' => $review->rating,
                         'comment' => $review->comment,
                     ];
-                }) 
-                : [],
+                }) : [],
         ];
     }
 }
