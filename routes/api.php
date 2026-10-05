@@ -16,6 +16,9 @@ use App\Http\Controllers\Api\user\NutritionPlanController as UserNutritionPlanCo
 use App\Http\Controllers\Api\user\RequestSubscriptionController;
 use App\Http\Controllers\Api\user\TraineeProgressController;
 use App\Http\Controllers\Api\user\WorkoutPlanController as UserWorkoutPlanController;
+use App\Http\Controllers\Api\user\DashboardController as UserDashboardController; 
+use App\Http\Controllers\Api\user\HealthInformationController;
+use App\Http\Controllers\Api\user\TraineeGoalController;
 
 use App\Http\Controllers\Api\coach\SettingProfileController as CoachSettingProfileController;
 use App\Http\Controllers\Api\coach\AvailabilityController;
@@ -26,13 +29,8 @@ use App\Http\Controllers\Api\coach\SubscriptionController as CoachSubscriptionCo
 
 use App\Http\Controllers\Api\coach\WorkoutPlan\ExerciseController;
 use App\Http\Controllers\Api\coach\WorkoutPlan\CustomExerciseController;
-use App\Http\Controllers\Api\coach\WorkoutPlan\WorkoutPlanController ;
+use App\Http\Controllers\Api\coach\WorkoutPlan\WorkoutPlanController;
 use App\Http\Controllers\Api\General\BrowseCoachController;
-use App\Http\Controllers\Api\user\NutritionPlanController as UserNutritionPlanController;
-use App\Http\Controllers\Api\user\TraineeProgressController;
-use App\Http\Controllers\Api\user\DashboardController as UserDashboardController; 
-use App\Http\Controllers\Api\user\HealthInformationController;
-use App\Http\Controllers\Api\user\TraineeGoalController; // <--- Controller الأهداف والمعلومات الشخصية
 use App\Http\Controllers\ChatController;
 
 use Illuminate\Http\Request;
