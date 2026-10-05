@@ -80,16 +80,20 @@ class SettingProfileController extends Controller
 
     public function updateProfilePhoto(Request $request): JsonResponse
     {
-        $request->validate([
-            'profile_photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
-
         try {
+            $request->validate([
+                'profile_photo' => [
+                    'required',
+                    'image',
+                    'mimes:jpeg,png,jpg,gif,webp',
+                    'max:2048',
+                ],
+            ]);
+
             $profile = $this->coachService->updateProfilePhoto(
                 $request->user(),
                 $request->file('profile_photo')
             );
-            // dd($profile);
 
             if (!$profile) {
                 return response()->json([
@@ -102,17 +106,18 @@ class SettingProfileController extends Controller
                 'status' => true,
                 'message' => 'تم تحديث صورة الملف الشخصي بنجاح',
                 'data' => [
-
                     'profile_photo' => $profile->coachProfile->profile_photo
-                        ? asset('storage/' . $profile->coachProfile->profile_photo)
+                        ? asset(
+                            'storage/' .
+                                $profile->coachProfile->profile_photo
+                        )
                         : null,
-
                 ],
             ], 200);
         } catch (Exception $e) {
             return response()->json([
                 'status' => false,
-                'message' => 'حدث خطأ اثناء تحديث صورة الملف الشخصي',
+                'message' => 'حدث خطأ أثناء تحديث صورة الملف الشخصي',
                 'error' => $e->getMessage(),
             ], 500);
         }

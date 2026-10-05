@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Api\coach;
+namespace App\Http\Controllers\Api\coach\WorkoutPlan;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Coach\WorkoutPlanRequest;
 use App\Services\Coach\WorkoutPlanService;
 use Illuminate\Http\Request;
 
@@ -25,25 +26,13 @@ class WorkoutPlanController extends Controller
         ], 200);
     }
 
-    public function storeOrUpdate(Request $request, $trainee_id)
+    public function storeOrUpdate(WorkoutPlanRequest $request, $trainee_id)
     {
-        $validatedData = $request->validate([
-            'title' => 'required|string',
-            'description' => 'nullable|string',
-            'start_date' => 'nullable|date',
-            'end_date' => 'nullable|date',
-            'exercises' => 'required|array',
-            'exercises.*.day_of_week' => 'required|string',
-            'exercises.*.exercise_id' => 'required|exists:exercises,id',
-            'exercises.*.sets' => 'required|integer',
-            'exercises.*.reps' => 'required|integer',
-            'exercises.*.rest_time' => 'nullable|string',
-            'exercises.*.notes' => 'nullable|string',
-        ]);
+        $validatedData = $request->validated();
 
         $plan = $this->workoutPlanService->saveOrUpdatePlan(
-            $request->user()->id, 
-            $trainee_id, 
+            $request->user()->id,
+            $trainee_id,
             $validatedData
         );
 

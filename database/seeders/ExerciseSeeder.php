@@ -2,51 +2,63 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-
 use Illuminate\Support\Facades\DB;
 
 class ExerciseSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        $path = database_path('data/exercises.json');
-        //  dd(file_exists($path), $path);
-        $json = file_get_contents($path);
-        $exercises = json_decode($json, true);
-        foreach ($exercises as $exercise) {
+        $path = database_path('data/exercises.csv');
+
+        if (!file_exists($path)) {
+            $this->command->error("Exercises file not found: {$path}");
+            return;
+        }
+
+        $handle = fopen($path, 'r');
+
+        // Skip header
+        fgetcsv($handle);
+
+        $count = 0;
+
+        while (($row = fgetcsv($handle)) !== false) {
+
+            if (count($row) < 9) {
+                continue;
+            }
+
             DB::table('exercises')->insert([
-                'name' => $exercise['name'],
+                // ID القادم من Dataset
+                'id' => (int) $row[0],
 
-                'description' => implode("\n", $exercise['instructions']),
+                'name' => trim($row[1]),
+                'description' => trim($row[2]),
+                'type' => trim($row[3]),
+                'muscle_group' => trim($row[4]),
+                'equipment' => trim($row[5]),
+                'difficulty_level' => trim($row[6]),
 
-                'muscle_group' => implode(
-                    ', ',
-                    array_column($exercise['muscleGroups'], 'name')
-                ),
+                'rating' => $row[7] !== ''
+                    ? (float) $row[7]
+                    : null,
 
-                'equipment' => implode(
-                    ', ',
-                    array_column($exercise['equipment'], 'name')
-                ),
-
-                'difficulty_level' => $exercise['difficultyLevel'],
-
-                'mechanics' => $exercise['mechanics'],
-
-                'category' => $exercise['category'],
-
-                'image' => null,
-
-                'force_type' => $exercise['forceType'],
+                'rating_description' => $row[8] !== ''
+                    ? trim($row[8])
+                    : null,
 
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
+
+            $count++;
         }
+
+        fclose($handle);
+
+        $this->command->info(
+            "Successfully imported {$count} exercises."
+        );
     }
 }

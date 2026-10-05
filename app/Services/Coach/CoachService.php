@@ -5,7 +5,7 @@ namespace App\Services\Coach;
 use App\Helper\ImageHelper;
 use App\Models\CoachProfile;
 use App\Models\User;
-use App\Repositories\Contracts\CoachRepositoryInterface;
+use App\Models\skill;
 use Exception;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
@@ -13,25 +13,111 @@ use Illuminate\Support\Facades\Log;
 
 class CoachService
 {
-    protected CoachRepositoryInterface $coachRepository;
-
-    public function __construct(CoachRepositoryInterface $coachRepository)
-    {
-        $this->coachRepository = $coachRepository;
-    }
-
     public function saveCoachProfile(int $userId, array $data): CoachProfile
     {
-        return $this->coachRepository->createOrUpdate($userId, $data);
+        dd($data);
+        return DB::transaction(function () use ($userId, $data) {
+
+            $hasSkills = array_key_exists('skills', $data);
+            $hasCertifications = array_key_exists('certifications', $data);
+
+            $skills = $data['skills'] ?? [];
+            $certifications = $data['certifications'] ?? [];
+
+            // لا نرسل العلاقات إلى updateOrCreate
+            unset($data['skills'], $data['certifications']);
+
+            $profile = CoachProfile::updateOrCreate(
+                ['user_id' => $userId],
+                $data
+            );
+
+            /*
+            |--------------------------------------------------------------------------
+            | Skills
+            |--------------------------------------------------------------------------
+            |
+            | نعدل الـ skills فقط إذا كانت موجودة في الـ request.
+            | إذا لم يتم إرسال skills، نحافظ على البيانات القديمة.
+            |
+            */
+
+            if ($hasSkills) {
+
+                $skillIds = collect($skills)
+                    ->map(function ($skillData) {
+
+                        // Skill موجودة مسبقًا
+                        if (!empty($skillData['id'])) {
+                            return $skillData['id'];
+                        }
+
+                        // Skill جديدة
+                        if (!empty($skillData['name'])) {
+                            return skill::firstOrCreate([
+                                'name' => $skillData['name'],
+                            ])->id;
+                        }
+
+                        return null;
+                    })
+                    ->filter()
+                    ->values()
+                    ->toArray();
+
+                $profile->skills()->sync($skillIds);
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Certifications
+            |--------------------------------------------------------------------------
+            |
+            | نحذف ونعيد إنشاء الشهادات فقط إذا certifications
+            | تم إرسالها في الـ request.
+            |
+            */
+
+            if ($hasCertifications) {
+
+                $profile->certifications()->delete();
+
+                foreach ($certifications as $certification) {
+
+                    if (empty($certification['title'])) {
+                        continue;
+                    }
+
+                    $profile->certifications()->create([
+                        'title' => $certification['title'],
+                        'issuer' => $certification['issuer'] ?? null,
+                        'year' => $certification['year'] ?? null,
+                    ]);
+                }
+            }
+
+            return $profile->fresh([
+                'user',
+                'skills',
+                'certifications',
+            ]);
+        });
     }
 
-    public function getCoachProfile(int $userId)
+    public function getCoachProfile(int $userId): ?CoachProfile
     {
-        return $this->coachRepository->findByUserId($userId);
+        return CoachProfile::with([
+            'user',
+            'skills',
+            'certifications',
+        ])
+            ->where('user_id', $userId)
+            ->first();
     }
 
    public function getPublicProfile(int $id): ?User
     {
+<<<<<<< HEAD
         return User::query()
             ->where('role', 'coach')
             ->where('id', $id)
@@ -55,16 +141,27 @@ class CoachService
                 }
             ], 'rating')
             ->first();
+=======
+        return User::with([
+            'coachProfile.skills',
+            'coachProfile.certifications',
+        ])->find($id);
+>>>>>>> 5749912 (backup before breeze auth migration)
     }
 
     public function getTraineeDetails(int $id): ?User
     {
-        return User::with(['userProfile'])->find($id);
+        return User::with([
+            'userProfile',
+        ])->find($id);
     }
 
-    public function updateProfilePhoto(User $user, UploadedFile $image)
-    {
+    public function updateProfilePhoto(
+        User $user,
+        UploadedFile $image
+    ) {
         try {
+
             return DB::transaction(function () use ($user, $image) {
 
                 $profile = $user->coachProfile;
@@ -85,13 +182,17 @@ class CoachService
 
                 return $user->fresh('coachProfile');
             });
+
         } catch (Exception $e) {
+
             Log::error(
-                'CoachService Update Profile Photo Error: ' . $e->getMessage()
+                'CoachService Update Profile Photo Error: ' .
+                $e->getMessage()
             );
 
             throw new Exception(
-                'فشلت عملية تحديث صورة الملف الشخصي: ' . $e->getMessage()
+                'فشلت عملية تحديث صورة الملف الشخصي: ' .
+                $e->getMessage()
             );
         }
     }
@@ -99,6 +200,7 @@ class CoachService
     public function deleteProfilePhoto(User $user)
     {
         try {
+
             $profile = $user->coachProfile;
 
             if (!$profile) {
@@ -112,13 +214,17 @@ class CoachService
             ]);
 
             return $user->fresh('coachProfile');
+
         } catch (Exception $e) {
+
             Log::error(
-                'CoachService Delete Profile Photo Error: ' . $e->getMessage()
+                'CoachService Delete Profile Photo Error: ' .
+                $e->getMessage()
             );
 
             throw new Exception(
-                'فشلت عملية حذف صورة الملف الشخصي: ' . $e->getMessage()
+                'فشلت عملية حذف صورة الملف الشخصي: ' .
+                $e->getMessage()
             );
         }
     }

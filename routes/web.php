@@ -107,3 +107,8 @@ Route::get('/clear-all-cache', function () {
     \Illuminate\Support\Facades\Artisan::call('route:clear');
     return 'Done! All cache cleared successfully.';
 });
+Route::get('/coach-app/{any?}', function () {
+    return view('react');
+})->where('any', '.*');
+
+
