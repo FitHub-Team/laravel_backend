@@ -21,10 +21,12 @@ use App\Http\Controllers\Api\coach\AvailabilityController;
 use App\Http\Controllers\Api\coach\DashboardController;
 use App\Http\Controllers\Api\coach\WorkoutPlanController;
 use App\Http\Controllers\Api\coach\NutritionPlanController as CoachNutritionPlanController;
+use App\Http\Controllers\Api\coach\NutritionPlanController;
 use App\Http\Controllers\Api\coach\ProgressController;
 use App\Http\Controllers\Api\coach\SubscriptionController as CoachSubscriptionController;
 use App\Http\Controllers\Api\coach\WorkoutPlan\ExerciseController;
 use App\Http\Controllers\Api\coach\WorkoutPlan\CustomExerciseController;
+use App\Http\Controllers\Api\coach\WorkoutPlan\WorkoutPlanController;
 use App\Http\Controllers\Api\General\BrowseCoachController;
 use App\Http\Controllers\ChatController;
 use Illuminate\Http\Request;
@@ -223,7 +225,7 @@ Route::middleware('auth:sanctum')->group(function () {
                 Route::post('/{id}/workout-plan', [WorkoutPlanController::class, 'storeOrUpdate']);
                 Route::post('/{id}/workout-plan/update', [WorkoutPlanController::class, 'storeOrUpdate']);
                 Route::post('/{id}/nutrition-plan', [CoachNutritionPlanController::class, 'storeOrUpdate']);
-                Route::get('/{id}/progress', [ProgressController::class, 'show']);
+                Route::get('/{id}/progress', [ProgressController::class, 'show']);ٍ
             });
 
             /*

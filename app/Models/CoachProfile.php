@@ -17,7 +17,7 @@ class CoachProfile extends Model
         'location',
         'national_id',
         'bio',
-        'certifications',
+       
         'is_approved',
         'rejection_reason',
         'price',
@@ -30,8 +30,9 @@ class CoachProfile extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
+    
 
     public function skills()
     {

@@ -11,6 +11,7 @@ class WorkoutPlanDay extends Model
         'workout_plan_id',
         'date',
         'day',
+        'focus',
     ];
 
     protected $casts = [

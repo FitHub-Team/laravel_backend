@@ -66,6 +66,7 @@ class CoachRepository implements CoachRepositoryInterface
     public function findByUserId(int $userId): ?CoachProfile
     {
         return CoachProfile::with([
+            'user',
             'skills',
             'certifications',
         ])
