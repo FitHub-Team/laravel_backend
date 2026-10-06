@@ -19,6 +19,8 @@ use App\Http\Controllers\Api\user\TraineeGoalController;
 use App\Http\Controllers\Api\coach\SettingProfileController as CoachSettingProfileController;
 use App\Http\Controllers\Api\coach\AvailabilityController;
 use App\Http\Controllers\Api\coach\DashboardController;
+use App\Http\Controllers\Api\coach\WorkoutPlanController;
+use App\Http\Controllers\Api\coach\NutritionPlanController as CoachNutritionPlanController;
 use App\Http\Controllers\Api\coach\NutritionPlanController;
 use App\Http\Controllers\Api\coach\ProgressController;
 use App\Http\Controllers\Api\coach\SubscriptionController as CoachSubscriptionController;
@@ -222,8 +224,8 @@ Route::middleware('auth:sanctum')->group(function () {
                 Route::get('/{traineeId}/workout-plan', [WorkoutPlanController::class, 'index']);
                 Route::post('/{id}/workout-plan', [WorkoutPlanController::class, 'storeOrUpdate']);
                 Route::post('/{id}/workout-plan/update', [WorkoutPlanController::class, 'storeOrUpdate']);
-                Route::post('/{id}/nutrition-plan', [NutritionPlanController::class, 'storeOrUpdate']);
-                Route::get('/{id}/progress', [ProgressController::class, 'show']);
+                Route::post('/{id}/nutrition-plan', [CoachNutritionPlanController::class, 'storeOrUpdate']);
+                Route::get('/{id}/progress', [ProgressController::class, 'show']);ٍ
             });
 
             /*
