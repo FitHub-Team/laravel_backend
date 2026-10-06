@@ -115,9 +115,8 @@ class CoachService
             ->first();
     }
 
-   public function getPublicProfile(int $id): ?User
+    public function getPublicProfile(int $id): ?User
     {
-<<<<<<< HEAD
         return User::query()
             ->where('role', 'coach')
             ->where('id', $id)
@@ -127,26 +126,20 @@ class CoachService
                 'reviews' => function ($q) {
                     $q->latest()->take(10);
                 },
-              'reviews.trainee:id,full_name',
+                'reviews.trainee:id,full_name',
             ])
             ->withCount([
                 'subscriptions as active_subscribers_count' => function ($q) {
                     $q->where('status', 'accepted');
                 },
-                'reviews as reviews_count'
+                'reviews as reviews_count',
             ])
             ->withAvg([
                 'reviews as average_rating' => function ($q) {
                     $q->select('rating');
-                }
+                },
             ], 'rating')
             ->first();
-=======
-        return User::with([
-            'coachProfile.skills',
-            'coachProfile.certifications',
-        ])->find($id);
->>>>>>> 5749912 (backup before breeze auth migration)
     }
 
     public function getTraineeDetails(int $id): ?User
@@ -182,17 +175,16 @@ class CoachService
 
                 return $user->fresh('coachProfile');
             });
-
         } catch (Exception $e) {
 
             Log::error(
                 'CoachService Update Profile Photo Error: ' .
-                $e->getMessage()
+                    $e->getMessage()
             );
 
             throw new Exception(
                 'فشلت عملية تحديث صورة الملف الشخصي: ' .
-                $e->getMessage()
+                    $e->getMessage()
             );
         }
     }
@@ -214,17 +206,16 @@ class CoachService
             ]);
 
             return $user->fresh('coachProfile');
-
         } catch (Exception $e) {
 
             Log::error(
                 'CoachService Delete Profile Photo Error: ' .
-                $e->getMessage()
+                    $e->getMessage()
             );
 
             throw new Exception(
                 'فشلت عملية حذف صورة الملف الشخصي: ' .
-                $e->getMessage()
+                    $e->getMessage()
             );
         }
     }

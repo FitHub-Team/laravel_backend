@@ -20,8 +20,6 @@ return new class extends Migration
             $table->string('national_id')->nullable();            // الهوية
             $table->text('bio')->nullable();           // البايو
             $table->boolean('is_approved')->default(false); // موافقة الأدمن
-            $table->foreignId('skill_id')->nullable()->constrained('coach_skills')
-                ->cascadeOnDelete(); // المهارة
             $table->enum('status', ['active', 'inactive'])
                 ->default('active')
                 ->after('is_approved');
