@@ -13,7 +13,7 @@ use App\Http\Controllers\Api\coach\AvailabilityController;
 use App\Http\Controllers\Api\coach\DashboardController;
 use App\Http\Controllers\Api\user\RequestSubscriptionController;
 use App\Http\Controllers\Api\coach\WorkoutPlanController;
-use App\Http\Controllers\Api\coach\NutritionPlanController;
+use App\Http\Controllers\Api\coach\NutritionPlanController as CoachNutritionPlanController;
 use App\Http\Controllers\Api\coach\ProgressController;
 use App\Http\Controllers\Api\user\UserProfileController;
 use App\Http\Controllers\Api\coach\SubscriptionController as CoachSubscriptionController;
@@ -22,7 +22,7 @@ use App\Http\Controllers\Api\user\NutritionPlanController as UserNutritionPlanCo
 use App\Http\Controllers\Api\user\TraineeProgressController;
 use App\Http\Controllers\Api\user\DashboardController as UserDashboardController; 
 use App\Http\Controllers\Api\user\HealthInformationController;
-use App\Http\Controllers\Api\user\TraineeGoalController; // <--- Controller الأهداف والمعلومات الشخصية
+use App\Http\Controllers\Api\user\TraineeGoalController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Api\user\WorkoutPlanController as UserWorkoutPlanController;
 use Illuminate\Http\Request;
@@ -116,7 +116,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::prefix('trainees')->group(function () {
             Route::get('/{id}', [CoachSettingProfileController::class, 'showTraineeDetails'])->middleware('trainee.access');
             Route::post('/{id}/workout-plan', [WorkoutPlanController::class, 'storeOrUpdate']);
-            Route::post('/{id}/nutrition-plan', [NutritionPlanController::class, 'storeOrUpdate']);
+            Route::post('/{id}/nutrition-plan', [CoachNutritionPlanController::class, 'storeOrUpdate']);
             Route::get('/{id}/progress', [ProgressController::class, 'show']);
             Route::get('/{traineeId}/workout-plan', [WorkoutPlanController::class, 'index']);
             Route::post('/{id}/workout-plan/update', [WorkoutPlanController::class, 'storeOrUpdate']);
