@@ -365,21 +365,7 @@ function CoachProfile() {
       {/* =====================================================
           Rejection Reason
       ====================================================== */}
-      {profile?.rejection_reason && (
-        <div className="mt-5 rounded-xl border border-red-100 bg-red-50 p-4">
-          <div className="flex items-start gap-3">
-            <XCircle size={20} className="mt-0.5 shrink-0 text-red-500" />
-
-            <div>
-              <h4 className="text-sm font-bold text-red-700">سبب الرفض</h4>
-
-              <p className="mt-1 text-xs leading-relaxed text-red-600">
-                {profile.rejection_reason}
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
+      
 
       {/* =====================================================
           Edit Profile Modal

@@ -1,5 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { Save, Send, ChevronDown, Search } from "lucide-react";
+import {
+  Save,
+  Send,
+  ChevronDown,
+  Search,
+  UserRound,
+} from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 
 import Button from "../../../components/common/Button";
@@ -163,7 +169,7 @@ const WorkoutPlan = () => {
   const filteredTrainees = trainees.filter((subscription) =>
     subscription.trainee?.full_name
       ?.toLowerCase()
-      .includes(traineeSearch.toLowerCase())
+      .includes(traineeSearch.toLowerCase()),
   );
 
   useEffect(() => {
@@ -216,7 +222,7 @@ const WorkoutPlan = () => {
       console.log("AI WEEK:", result?.weeks?.[0]);
       console.log(
         "AI WEEK JSON:",
-        JSON.stringify(result?.weeks?.[0], null, 2)
+        JSON.stringify(result?.weeks?.[0], null, 2),
       );
 
       alert("تم توليد خطة التمارين بنجاح");
@@ -226,7 +232,7 @@ const WorkoutPlan = () => {
       alert(
         error.response?.data?.message ||
           error.message ||
-          "حدث خطأ أثناء توليد خطة التمارين"
+          "حدث خطأ أثناء توليد خطة التمارين",
       );
     }
   };
@@ -419,7 +425,7 @@ const WorkoutPlan = () => {
                     items-center
                     justify-center
                     bg-green-50
-                    text-green-700
+                    text-[#407437]
                     px-3
                     py-1
                     rounded-full
@@ -438,27 +444,52 @@ const WorkoutPlan = () => {
 
             {/* ================= الأزرار ================= */}
 
-            <div className="flex items-center gap-3 w-full md:w-auto justify-end">
-              <Button
-                title="حفظ كمسودة"
-                Icon={Save}
-                onClick={handleSaveDraft}
-                disabled={isSaving || !exercises.length}
-                color="bg-green-700 text-white"
-              />
+            {selectedTrainee && (
+              <div className="flex items-center gap-3 w-full md:w-auto justify-end">
+                <Button
+                  title="حفظ كمسودة"
+                  Icon={Save}
+                  onClick={handleSaveDraft}
+                  disabled={isSaving || !exercises.length}
+                  color="bg-[#407437] text-white"
+                />
 
-              <Button
-                title="إرسال الخطة للمشترك"
-                Icon={Send}
-                onClick={handleSendPlan}
-                disabled={isSaving || !exercises.length}
-                color="bg-green-700 text-white"
-              />
-            </div>
+                <Button
+                  title="إرسال الخطة للمشترك"
+                  Icon={Send}
+                  onClick={handleSendPlan}
+                  disabled={isSaving || !exercises.length}
+                  color="bg-[#407437] text-white"
+                />
+              </div>
+            )}
           </div>
         </div>
 
         {/* ================= محتوى الخطة ================= */}
+
+        {!selectedTrainee && (
+          <div className="bg-white rounded-xl border border-gray-200 min-h-[420px] flex items-center justify-center">
+            <div className="text-center px-6">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-50 flex items-center justify-center">
+                <UserRound
+                  size={30}
+                  strokeWidth={1.8}
+                  className="text-green-600"
+                />
+              </div>
+
+              <h3 className="text-lg font-bold text-gray-800 mb-2">
+                اختر مشتركًا لعرض خطته
+              </h3>
+
+              <p className="text-sm text-gray-500 max-w-md leading-6">
+                قم باختيار أحد المشتركين من القائمة بالأعلى لعرض خطة التمارين
+                والتغذية الخاصة به أو إنشاء خطة جديدة.
+              </p>
+            </div>
+          </div>
+        )}
 
         {selectedTrainee && (
           <>
@@ -506,7 +537,7 @@ const WorkoutPlan = () => {
               />
             )}
 
-            {/* 
+            {/*
             {activeSection === "nutrition" && <NutritionTable />}
             {activeSection === "versions" && <WorkoutVersions />}
             */}

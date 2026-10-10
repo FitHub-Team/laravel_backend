@@ -13,7 +13,7 @@ use App\Http\Controllers\Api\user\NutritionPlanController as UserNutritionPlanCo
 use App\Http\Controllers\Api\user\RequestSubscriptionController;
 use App\Http\Controllers\Api\user\TraineeProgressController;
 use App\Http\Controllers\Api\user\WorkoutPlanController as UserWorkoutPlanController;
-use App\Http\Controllers\Api\user\DashboardController as UserDashboardController; 
+use App\Http\Controllers\Api\user\DashboardController as UserDashboardController;
 use App\Http\Controllers\Api\user\HealthInformationController;
 use App\Http\Controllers\Api\user\TraineeGoalController;
 use App\Http\Controllers\Api\coach\SettingProfileController as CoachSettingProfileController;
@@ -30,12 +30,13 @@ use App\Http\Controllers\Api\General\BrowseCoachController;
 use App\Http\Controllers\ChatController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\Api\coach\RecipeController;
 /*
 |--------------------------------------------------------------------------
 | Authentication Routes
 |--------------------------------------------------------------------------
 */
+
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/login/google', [AuthController::class, 'loginWithGoogle']);
@@ -75,7 +76,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/subscription-request', [RequestSubscriptionController::class, 'requestSubscription']);
     Route::get('/subscription-requests', [RequestSubscriptionController::class, 'getMyRequests']);
-    
+
     Route::prefix('workout-plans')->group(function () {
         Route::get('/', [UserWorkoutPlanController::class, 'index']);
     });
@@ -161,11 +162,7 @@ Route::middleware('auth:sanctum')->group(function () {
             */
             Route::get('/dashboard', [DashboardController::class, 'index']);
 
-            /*
-            |----------------------------------------------------------------------
-            | Coach Profile Settings
-            |----------------------------------------------------------------------
-            */
+            // Coach Profile Settings
             Route::prefix('profile/setting')->group(function () {
                 Route::get('/show', [CoachSettingProfileController::class, 'show']);
                 Route::post('/update', [CoachSettingProfileController::class, 'update']);
@@ -173,11 +170,7 @@ Route::middleware('auth:sanctum')->group(function () {
                 Route::delete('/delete/avatar', [CoachSettingProfileController::class, 'deleteProfilePhoto']);
             });
 
-            /*
-            |----------------------------------------------------------------------
-            | AI
-            |----------------------------------------------------------------------
-            */
+            // ai
             Route::prefix('ai/generate')->group(function () {
                 Route::post('/nutrition-plan', [AINutritionPlanController::class, 'generateNutrition']);
                 Route::post('/workout-plan/{trainee}', [AIWorkoutPlanController::class, 'generateWorkout']);
@@ -202,11 +195,7 @@ Route::middleware('auth:sanctum')->group(function () {
                 Route::post('/', [AvailabilityController::class, 'store']);
             });
 
-            /*
-            |----------------------------------------------------------------------
-            | Subscription & Trainees Management
-            |----------------------------------------------------------------------
-            */
+            // Subscription & Trainees Management
             Route::get('/subscriptions/pending', [CoachSubscriptionController::class, 'pendingRequests']);
             Route::put('/subscriptions/{id}/accept', [CoachSubscriptionController::class, 'acceptRequest']);
             Route::put('/subscriptions/{id}/reject', [CoachSubscriptionController::class, 'rejectRequest']);
@@ -240,6 +229,17 @@ Route::middleware('auth:sanctum')->group(function () {
             |----------------------------------------------------------------------
             */
             Route::apiResource('custom-exercises', CustomExerciseController::class);
+
+            //custom mael
+            Route::get('/recipes', [RecipeController::class, 'index']);
+
+            Route::post('/recipes', [RecipeController::class, 'store']);
+
+            Route::get('/recipes/{id}', [RecipeController::class, 'show']);
+
+            Route::put('/recipes/{id}', [RecipeController::class, 'update']);
+
+            Route::delete('/recipes/{id}', [RecipeController::class, 'destroy']);
         });
 
     /*

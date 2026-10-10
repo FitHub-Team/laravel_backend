@@ -20,10 +20,11 @@ return new class extends Migration
             $table->string('national_id')->nullable();            // الهوية
             $table->text('bio')->nullable();           // البايو
             $table->boolean('is_approved')->default(false); // موافقة الأدمن
+         
             $table->enum('status', ['active', 'inactive'])
                 ->default('active')
                 ->after('is_approved');
-            $table->text('rejection_reason')->nullable();
+       
             $table->decimal('price', 10, 2)->nullable(); // سعر الخدمة
             $table->string('profile_photo')->nullable();
             $table->timestamps();

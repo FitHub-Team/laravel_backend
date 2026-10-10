@@ -20,7 +20,7 @@ class WorkoutPlan extends Model
 
     public function workoutExercises()
     {
-        return $this->hasMany(WorkoutExercise::class);
+        return $this->hasMany(WorkoutExercise::class,'workout_plan_id');
     }
 
 

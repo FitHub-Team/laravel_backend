@@ -177,7 +177,7 @@ const ExerciseLibraryModal = ({
                   flex
                   items-center
                   justify-center
-                  text-green-700
+                  text-[#407437]
                   bg-green-50
                   hover:bg-green-100
                   hover:text-green-800
@@ -195,7 +195,7 @@ const ExerciseLibraryModal = ({
                 w-11
                 h-11
                 rounded-2xl
-                bg-green-700
+                bg-[#407437]
                 flex
                 items-center
                 justify-center
@@ -297,7 +297,7 @@ const ExerciseLibraryModal = ({
                       h-10
                       border-[3px]
                       border-green-100
-                      border-t-green-700
+                      border-t-[#407437]
                       rounded-full
                       animate-spin
                     "
@@ -400,7 +400,7 @@ const ExerciseLibraryModal = ({
                   border
                   border-green-200
                   bg-white
-                  text-green-700
+                  text-[#407437]
                   text-sm
                   font-semibold
                   hover:bg-green-50

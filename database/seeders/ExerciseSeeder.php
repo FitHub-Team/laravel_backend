@@ -18,7 +18,12 @@ class ExerciseSeeder extends Seeder
 
         $handle = fopen($path, 'r');
 
-        // Skip header
+        if ($handle === false) {
+            $this->command->error("Unable to open exercises.csv");
+            return;
+        }
+
+        // Skip CSV header
         fgetcsv($handle);
 
         $count = 0;
@@ -29,28 +34,30 @@ class ExerciseSeeder extends Seeder
                 continue;
             }
 
-            DB::table('exercises')->insert([
-                // ID القادم من Dataset
-                'id' => (int) $row[0],
+            DB::table('exercises')->updateOrInsert(
+                [
+                    'id' => (int) $row[0],
+                ],
+                [
+                    'name' => trim($row[1]),
+                    'description' => trim($row[2]),
+                    'type' => trim($row[3]),
+                    'muscle_group' => trim($row[4]),
+                    'equipment' => trim($row[5]),
+                    'difficulty_level' => trim($row[6]),
 
-                'name' => trim($row[1]),
-                'description' => trim($row[2]),
-                'type' => trim($row[3]),
-                'muscle_group' => trim($row[4]),
-                'equipment' => trim($row[5]),
-                'difficulty_level' => trim($row[6]),
+                    'rating' => $row[7] !== ''
+                        ? (float) $row[7]
+                        : null,
 
-                'rating' => $row[7] !== ''
-                    ? (float) $row[7]
-                    : null,
+                    'rating_description' => $row[8] !== ''
+                        ? trim($row[8])
+                        : null,
 
-                'rating_description' => $row[8] !== ''
-                    ? trim($row[8])
-                    : null,
-
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]
+            );
 
             $count++;
         }

@@ -12,6 +12,9 @@ import WorkoutPlan from "../pages/coach/workout/WorkoutPlan";
 import CoachProfile from "../pages/coach/profile/CoachProfile";
 import CustomExercises from "../pages/coach/workout/CustomExercises";
 
+import TraineeProfile from "../pages/coach/trainees/TraineeProfile";
+import RecipeLibrary from "../pages/coach/recipes/RecipeLibrary";
+
 // Components
 import ProtectedRoute from "../components/common/ProtectedRoute";
 import DashboardLayout from "../layouts/DashboardLayout";
@@ -39,10 +42,7 @@ const AppRoutes = () => {
                 <Route index element={<Dashboard />} />
 
                 {/* Trainees */}
-                <Route
-                    path="subscribers"
-                    element={<SubscribersTable />}
-                />
+                <Route path="subscribers" element={<SubscribersTable />} />
 
                 <Route
                     path="subscribers-request"
@@ -50,22 +50,15 @@ const AppRoutes = () => {
                 />
 
                 {/* Workout */}
-                <Route
-                    path="workout-plan"
-                    element={<WorkoutPlan />}
-                />
+                <Route path="workout-plan" element={<WorkoutPlan />} />
 
                 {/* Custom Exercises */}
-                <Route
-                    path="exercises"
-                    element={<CustomExercises />}
-                />
+                <Route path="exercises" element={<CustomExercises />} />
 
                 {/* Coach Profile */}
-                <Route
-                    path="coach/profile"
-                    element={<CoachProfile />}
-                />
+                <Route path="coach/profile" element={<CoachProfile />} />
+                <Route path="trainees/:id" element={<TraineeProfile />} />
+                <Route path="recipes" element={<RecipeLibrary />} />
             </Route>
         </Routes>
     );

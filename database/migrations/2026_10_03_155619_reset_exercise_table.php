@@ -8,11 +8,11 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::disableForeignKeyConstraints();
+        Schema::table('workout_exercises', function (Blueprint $table) {
+            $table->dropForeign(['exercise_id']);
+        });
 
         Schema::dropIfExists('exercises');
-
-        Schema::enableForeignKeyConstraints();
 
         Schema::create('exercises', function (Blueprint $table) {
             $table->id();
@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('muscle_group')->nullable();
             $table->string('equipment')->nullable();
             $table->string('difficulty_level')->nullable();
-            $table->decimal('rating', 3, 1)->nullable();
+            $table->decimal('rating', 3, 1)->default(0);
             $table->text('rating_description')->nullable();
             $table->timestamps();
         });
@@ -30,10 +30,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::disableForeignKeyConstraints();
-
         Schema::dropIfExists('exercises');
-
-        Schema::enableForeignKeyConstraints();
     }
 };

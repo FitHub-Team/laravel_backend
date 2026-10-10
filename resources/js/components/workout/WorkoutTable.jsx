@@ -83,7 +83,7 @@ const Table = ({
             onClick={() => setIsModalOpen(true)}
             title="إضافة تمرين من المكتبة"
             Icon={Plus}
-            color="bg-green-700 text-white"
+            color="bg-[#407437] text-white"
             className="border border-gray-200"
           />
 

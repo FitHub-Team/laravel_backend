@@ -10,7 +10,7 @@ import {
     Bell,
     LogOut,
     User,
-    Settings,Dumbbell
+    Settings,Dumbbell,Utensils 
 } from "lucide-react";
 
 import logo from "../../assets/logo-dashboard.png";
@@ -57,7 +57,7 @@ function Sidebar({ dashboardData }) {
                     {/* Profile Card */}
                     <div className="p-4 flex items-center justify-between rounded-xl border border-gray-100 bg-[#F8F9FA]">
                         <div className="flex items-center gap-3 w-full">
-                            <div className="w-12 h-12 shrink-0 rounded-full border-2 border-green-700 overflow-hidden">
+                            <div className="w-12 h-12 shrink-0 rounded-full border-2 border-[#407437] overflow-hidden">
                                 <img
                                     src={
                                         dashboardData?.coach?.profile_photo ??
@@ -107,14 +107,20 @@ function Sidebar({ dashboardData }) {
                     <NavItem
                         icon={<FileText size={20} />}
                         label="الخطط"
-                        to="/dashboard/workoutPlan"
-                        active={location.pathname === "/dashboard/workoutPlan"}
+                        to="/dashboard/workout-plan"
+                        active={location.pathname === "/dashboard/workout-plan"}
                     />
                     <NavItem
                         to="/dashboard/exercises"
                         icon={<Dumbbell size={20} />} // استخدم نفس نوع الأيقونات المستخدمة في باقي العناصر
                         label="تماريني الخاصة"
                         active={location.pathname === "/dashboard/exercises"}
+                    />
+                    <NavItem
+                        to="/dashboard/recipes"
+                        icon={<Utensils size={20} />} // استخدم نفس نوع الأيقونات المستخدمة في باقي العناصر
+                        label="مكتبة الوصفات"
+                        active={location.pathname === "/dashboard/recipes"}
                     />
                    
 

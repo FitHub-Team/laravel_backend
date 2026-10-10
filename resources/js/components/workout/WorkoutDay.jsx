@@ -20,7 +20,7 @@ const Day = ({
             <div className="w-7 h-7 rounded-lg bg-green-50 flex items-center justify-center">
               <CalendarDays
                 size={14}
-                className="text-green-700"
+                className="text-[#407437]"
               />
             </div>
 
@@ -66,9 +66,9 @@ const Day = ({
                   border
                   ${
                     isSelected
-                      ? "bg-green-700 text-white border-green-700 shadow-md"
+                      ? "bg-[#407437] text-white border-[#407437] shadow-md"
                       : isAvailable
-                        ? "bg-green-50 text-green-700 border-green-200 hover:bg-green-100"
+                        ? "bg-green-50 text-[#407437] border-green-200 hover:bg-green-100"
                         : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
                   }
                 `}

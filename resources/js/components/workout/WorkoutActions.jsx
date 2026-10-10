@@ -18,7 +18,7 @@ const Actions = ({
             Icon={Dumbbell}
             color={
               activeSection === "workout"
-                ? "bg-green-700 text-white"
+                ? "bg-[#407437] text-white"
                 : "text-gray-700"
             }
             className={
@@ -35,7 +35,7 @@ const Actions = ({
             Icon={Utensils}
             color={
               activeSection === "nutrition"
-                ? "bg-green-700 text-white"
+                ? "bg-[#407437] text-white"
                 : "text-gray-700"
             }
             className={
@@ -52,7 +52,7 @@ const Actions = ({
             Icon={Clock}
             color={
               activeSection === "versions"
-                ? "bg-green-700 text-white"
+                ? "bg-[#407437] text-white"
                 : "text-gray-700"
             }
             className={

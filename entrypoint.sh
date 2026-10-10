@@ -1,103 +1,137 @@
+
 #!/bin/bash
 set -e
+
+cd /var/www/html
 
 echo "========================================="
 echo " SuperFit API - PHP 8.4 Container"
 echo "========================================="
-echo ""
-echo "📋 Environment:"
-echo "  PORT: ${PORT:-8080}"
-echo "  APP_ENV: ${APP_ENV:-production}"
 
-echo ""
-echo " Setting up Laravel application..."
+echo "PORT: ${PORT:-8080}"
+echo "APP_ENV: ${APP_ENV:-production}"
 
+# 1. Prepare Laravel directories
+echo "Preparing Laravel storage..."
 
+mkdir -p \
+    storage/logs \
+    storage/framework/sessions \
+    storage/framework/cache/data \
+    storage/framework/views \
+    storage/app/public \
+    bootstrap/cache \
+    /var/log/php-fpm \
+    /var/log/nginx \
+    /var/log/supervisor
 
+touch storage/logs/laravel.log
+
+# 2. Fix runtime permissions
+echo "Fixing permissions..."
+
+chown -R www-data:www-data \
+    storage \
+    bootstrap/cache \
+    /var/log/php-fpm
+
+chmod -R ug+rwX storage bootstrap/cache
+
+echo "Storage permissions configured."
+
+# 3. Environment configuration
 if [ ! -f .env ]; then
-    echo "  .env not found, copying from .env.example"
     if [ -f .env.example ]; then
+        echo "Creating .env from example..."
         cp .env.example .env
     else
-        echo ".env.example not found!"
-        exit 1
+        echo "No .env file found. Using Render environment."
     fi
 fi
 
 if [ -z "${APP_KEY:-}" ]; then
-    echo " Generating APP_KEY..."
-    php artisan key:generate --force
-else
-    echo " APP_KEY already set, skipping key generation."
+    echo "APP_KEY is not set in Render Environment."
+
+    if [ -f .env ]; then
+        php artisan key:generate --force
+    else
+        echo "ERROR: Configure APP_KEY in Render."
+        exit 1
+    fi
 fi
-echo "Creating storage link..."
-php artisan storage:link || true
 
-# echo "📁 Checking uploaded files..."
-ls -la storage/app/public || true
+# 4. Clear Laravel configuration
+echo "Clearing Laravel configuration..."
 
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear
 
-echo ""
-echo " Database setup..."
+# 5. Prepare public storage link
+echo "Checking public storage link..."
 
-if [ ! -z "$DB_HOST" ]; then
-    echo "Waiting for database ($DB_HOST:${DB_PORT:-5432})..."
-    max_attempts=30
-    attempt=0
-    
-    while [ $attempt -lt $max_attempts ]; do
-        if pg_isready -h "$DB_HOST" -p "${DB_PORT:-5432}" -U "${DB_USERNAME:-postgres}" 2>/dev/null; then
-            echo "Database is ready!"
+if [ ! -L public/storage ]; then
+    php artisan storage:link
+fi
+
+# 6. Wait for PostgreSQL
+echo "Checking PostgreSQL connectivity..."
+
+if [ -n "${DB_HOST:-}" ]; then
+    DB_READY=false
+
+    for attempt in $(seq 1 15); do
+        echo "Database readiness check $attempt/15..."
+
+        if pg_isready \
+            -h "$DB_HOST" \
+            -p "${DB_PORT:-5432}" \
+            -U "${DB_USERNAME:-postgres}" \
+            -d "${DB_DATABASE:-postgres}"; then
+
+            DB_READY=true
             break
         fi
-        attempt=$((attempt + 1))
-        sleep 1
+
+        sleep 2
     done
+
+    if [ "$DB_READY" != "true" ]; then
+        echo "WARNING: PostgreSQL readiness check failed."
+    fi
 fi
 
-echo "Running migrations..."
-php artisan migrate --force 2>/dev/null || echo "⚠️  Migration warning (DB might not be ready)"
+# 7. Laravel migrations
+echo "Checking database migrations..."
 
-echo " Clearing caches..."
-php artisan config:clear 2>/dev/null || true
-php artisan route:clear 2>/dev/null || true
-php artisan view:clear 2>/dev/null || true
-php artisan cache:clear 2>/dev/null || true
-
-echo " Optimizing application..."
-php artisan config:cache 2>/dev/null || true
-php artisan route:cache 2>/dev/null || true
-
-echo ""
-echo " Configuring PHP-FPM..."
-mkdir -p /var/log/php-fpm
-chown -R www-data:www-data /var/log/php-fpm
-
-echo ""
-echo "Configuring Nginx..."
-sed -i "s/listen 8080/listen ${PORT:-8080}/" /etc/nginx/nginx.conf
-
-echo "  Testing Nginx configuration..."
-if nginx -t 2>&1 | grep -q "successful"; then
-    echo "   Nginx config is valid"
+if php artisan migrate --force; then
+    echo "Database migrations completed."
 else
-    echo "   Nginx config has errors!"
-    nginx -t
-    exit 1
+    echo "WARNING: Database migrations failed."
+    echo "Check PostgreSQL settings and Render database status."
 fi
 
-echo ""
-echo "ℹ System Information:"
-echo "  PHP Version: $(php -v | head -1)"
-echo "  Nginx Version: $(nginx -v 2>&1 | cut -d' ' -f3)"
-echo "  Laravel Version: $(php artisan --version 2>/dev/null || echo 'Unknown')"
-echo "  Working Directory: $(pwd)"
-echo "  Port: ${PORT:-8080}"
+# 8. Cache application configuration
+echo "Caching Laravel configuration..."
 
-echo ""
-echo "========================================="
-echo " Starting services..."
-echo "========================================="
-echo ""
+php artisan config:cache
 
-exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
+# 9. Configure Nginx port
+echo "Configuring Nginx..."
+
+sed -i \
+    "s/listen 8080/listen ${PORT:-8080}/" \
+    /etc/nginx/nginx.conf
+
+nginx -t
+
+# 10. Final permissions
+chown -R www-data:www-data storage bootstrap/cache
+chmod -R ug+rwX storage bootstrap/cache
+
+echo "========================================="
+echo " Starting SuperFit services"
+echo "========================================="
+
+exec /usr/bin/supervisord \
+    -c /etc/supervisor/conf.d/supervisord.conf

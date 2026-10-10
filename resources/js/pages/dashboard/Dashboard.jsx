@@ -1,223 +1,627 @@
-import { useEffect, useState } from "react";
-import { useOutletContext } from "react-router-dom";
-import api from "../../services/api";
 import {
-    Users,
-    FileText,
-    CirclePlus,
-    UserCheck,
-    TriangleAlert,
-    FileEdit,
-    ChevronLeft,
-    Clock,
+  useNavigate,
+  useOutletContext,
+} from "react-router-dom";
+
+import {
+  Users,
+  UserPlus,
+  Dumbbell,
+  ClipboardList,
+  Clock3,
+  Check,
+  X,
+  Eye,
+  Plus,
+  ChevronLeft,
+  LoaderCircle,
 } from "lucide-react";
 
 import Button from "../../components/common/Button";
 import StatCard from "../../components/StatCard";
-import ClientCard from "../../components/ClientCard";
-import ActivityCient from "../../components/ActivityCient";
+
+import useCoachDashboard from "../../hooks/useCoachDashboard";
 
 const Dashboard = () => {
-    const { dashboardData, loading, error } = useOutletContext();
+  const navigate = useNavigate();
+
+  /*
+   * نخلي بيانات المدرب الحالية كما هي
+   * لأنها قادمة من DashboardLayout
+   */
+  const outletContext = useOutletContext();
+
+  const dashboardData =
+    outletContext?.dashboardData ?? null;
+
+  const {
+    pendingRequests,
+    recentTrainees,
+    statistics,
+    loading,
+    error,
+    actionLoadingId,
+    acceptRequest,
+    rejectRequest,
+  } = useCoachDashboard();
+
+  /*
+  |--------------------------------------------------------------------------
+  | Helpers
+  |--------------------------------------------------------------------------
+  */
+
+  const getTraineeFromSubscription = (subscription) => {
+    return (
+      subscription?.trainee ??
+      subscription?.user ??
+      null
+    );
+  };
+
+  const getProfile = (trainee) => {
+    return (
+      trainee?.user_profile ??
+      trainee?.profile ??
+      {}
+    );
+  };
+
+  const getGoalName = (trainee) => {
+    const profile = getProfile(trainee);
 
     return (
-        <div className="min-h-screen bg-[#F8FAFC] px-6 lg:px-10 py-8 text-right">
-            {/* ===== Welcome + Actions ===== */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
-                <div>
-                    <h1 className="text-2xl lg:text-3xl font-bold text-[#1E293B] mb-2 tracking-tight">
-                        مرحباً، كابتن {dashboardData?.coach?.full_name} 👋
-                    </h1>
-
-                    <p className="text-[#94A3B8] text-sm leading-relaxed">
-                        إليك ملخص أداء مشتركينك اليوم
-                    </p>
-                </div>
-
-                <div className="flex gap-3">
-                    <Button
-                        title="إضافة خطة"
-                        Icon={CirclePlus}
-                        color=" bg-[#407437] text-white  hover:bg-green-600  shadow-sm shadow-emerald-200/50 rounded-xl transition-all"
-                    />
-
-                    <Button
-                        title="إضافة مشترك"
-                        Icon={Users}
-                        color="bg-white hover:bg-gray-50 text-[#184159] border border-gray-200 rounded-xl transition-all"
-                    />
-                </div>
-            </div>
-
-            {/* ===== Statistics ===== */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
-                <StatCard
-                    title="عدد المشتركين"
-                    value={dashboardData?.subscriptions_count ?? 0}
-                    icon={<Users size={18} />}
-                    color="bg-slate-50 text-slate-500"
-                    textColor="text-slate-500"
-                    note="+4 هذا الاسبوع"
-                    NoteColor="bg-emerald-50 text-emerald-600"
-                    subtitle="السعة المتبقية: 10 مقاعد"
-                />
-
-                <StatCard
-                    title="المشتركون النشطون"
-                    value="5"
-                    icon={<UserCheck size={18} />}
-                    color="bg-sky-50 text-sky-500"
-                    textColor="text-slate-500"
-                    note="63% التزام ممتاز"
-                    NoteColor="bg-emerald-50 text-emerald-600"
-                    subtitle="سجلوا نشاطاً آخر 48 ساعة"
-                />
-
-                <StatCard
-                    title="يحتاجون إلى متابعة"
-                    value="5"
-                    icon={<TriangleAlert size={18} />}
-                    color="bg-amber-50 text-amber-500"
-                    textColor="text-amber-500"
-                    note="يتطلب تدخلاً"
-                    NoteColor="bg-amber-50 text-amber-600"
-                    subtitle="غياب عن تمارين أو انخفاض الالتزام"
-                />
-
-                <StatCard
-                    title="خطط تحتاج إلى تحديث"
-                    value="5"
-                    icon={<FileEdit size={18} />}
-                    color="bg-blue-50 text-blue-500"
-                    textColor="text-slate-500"
-                    note="مراجعة أسبوعية"
-                    NoteColor="bg-emerald-50 text-emerald-600"
-                    subtitle="مشتركون أكملوا مراحلهم الحالية"
-                />
-            </div>
-
-            {/* ===== Bottom Sections ===== */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* ----- Clients Needing Attention ----- */}
-                <section className="bg-white rounded-2xl border border-slate-100 shadow-sm shadow-slate-100/60 p-5">
-                    {/* Header */}
-                    <div className="flex items-center justify-between mb-5">
-                        <div className="flex items-center gap-2.5">
-                            <span className="bg-amber-400 w-2.5 h-2.5 rounded-full ring-4 ring-amber-100" />
-
-                            <h2 className="text-[#334155] font-bold text-base">
-                                يحتاج إلى انتباهك
-                            </h2>
-
-                            <span className="bg-amber-50 text-amber-700 font-semibold rounded-full px-2.5 py-0.5 text-xs">
-                                5
-                            </span>
-                        </div>
-
-                        <a
-                            href="#"
-                            className="flex items-center gap-1 text-xs text-emerald-600 hover:text-emerald-700 font-medium transition-colors"
-                        >
-                            عرض كل المشتركين
-                            <ChevronLeft size={15} />
-                        </a>
-                    </div>
-
-                    {/* Body */}
-                    <div className="flex flex-col gap-3">
-                        <ClientCard
-                            name="محمد العتيبي"
-                            image="/images/client.jpg"
-                            progress={30}
-                            status="سجل وزنه أمس (88.2 كجم)"
-                            action="سجل وزنه أمس (88.2 كجم)"
-                            statusColor="bg-emerald-50 text-emerald-600"
-                            reason="تغيب عن 3 تمارين متتالية وانخفض معدل استهلاك الماء"
-                            timeAgo="منذ ساعتين"
-                        />
-
-                        <ClientCard
-                            name="محمد العتيبي"
-                            image="/images/client.jpg"
-                            progress={30}
-                            status="سجل وزنه أمس (88.2 كجم)"
-                            action="سجل وزنه أمس (88.2 كجم)"
-                            statusColor="bg-emerald-50 text-emerald-600"
-                            reason="تغيب عن 3 تمارين متتالية وانخفض معدل استهلاك الماء"
-                            timeAgo="منذ ساعتين"
-                        />
-
-                        <ClientCard
-                            name="محمد العتيبي"
-                            image="/images/client.jpg"
-                            progress={30}
-                            status="سجل وزنه أمس (88.2 كجم)"
-                            action="سجل وزنه أمس (88.2 كجم)"
-                            statusColor="bg-emerald-50 text-emerald-600"
-                            reason="تغيب عن 3 تمارين متتالية وانخفض معدل استهلاك الماء"
-                            timeAgo="منذ ساعتين"
-                        />
-
-                        <ClientCard
-                            name="محمد العتيبي"
-                            image="/images/client.jpg"
-                            progress={30}
-                            status="سجل وزنه أمس (88.2 كجم)"
-                            action="سجل وزنه أمس (88.2 كجم)"
-                            statusColor="bg-emerald-50 text-emerald-600"
-                            reason="تغيب عن 3 تمارين متتالية وانخفض معدل استهلاك الماء"
-                            timeAgo="منذ ساعتين"
-                        />
-                    </div>
-                </section>
-
-                {/* ----- Recent Activities ----- */}
-                <section className="bg-white rounded-2xl border border-slate-100 shadow-sm shadow-slate-100/60 p-5">
-                    {/* Header */}
-                    <div className="flex items-center justify-between mb-5">
-                        <div className="flex items-center gap-2.5">
-                            <Clock size={16} className="text-slate-400" />
-
-                            <h3 className="text-[#334155] font-semibold text-base">
-                                آخر النشاطات
-                            </h3>
-                        </div>
-
-                        <a
-                            href="#"
-                            className="flex items-center gap-1 text-xs text-emerald-600 hover:text-emerald-700 font-medium transition-colors"
-                        >
-                            تحديث تلقائي
-                        </a>
-                    </div>
-
-                    {/* Body */}
-                    <div className="flex flex-col gap-3">
-                        <ActivityCient
-                            image="/images/client.jpg"
-                            status="تمرين مكتمل"
-                            title="أكمل أحمد تمرينه اليوم (تمرين الأرجل المكثف والديدليفت الروماني)"
-                            timeAgo="منذ ساعتين"
-                        />
-
-                        <ActivityCient
-                            image="/images/client.jpg"
-                            status="تمرين مكتمل"
-                            title="أكمل أحمد تمرينه اليوم (تمرين الأرجل المكثف والديدليفت الروماني)"
-                            timeAgo="منذ ساعتين"
-                        />
-
-                        <ActivityCient
-                            image="/images/client.jpg"
-                            status="تمرين مكتمل"
-                            title="أكمل أحمد تمرينه اليوم (تمرين الأرجل المكثف والديدليفت الروماني)"
-                            timeAgo="منذ ساعتين"
-                        />
-                    </div>
-                </section>
-            </div>
-        </div>
+      profile?.goal?.name ??
+      profile?.goal?.title ??
+      "غير محدد"
     );
+  };
+
+  const getPlanLabel = (workoutPlan) => {
+    if (!workoutPlan) {
+      return "بدون خطة";
+    }
+
+    switch (workoutPlan.status) {
+      case "active":
+        return "خطة نشطة";
+
+      case "draft":
+        return "مسودة";
+
+      case "completed":
+        return "مكتملة";
+
+      case "cancelled":
+        return "ملغاة";
+
+      default:
+        return "غير محدد";
+    }
+  };
+
+  const getPlanClasses = (workoutPlan) => {
+    if (!workoutPlan) {
+      return "bg-gray-100 text-gray-500";
+    }
+
+    switch (workoutPlan.status) {
+      case "active":
+        return "bg-green-50 text-green-700";
+
+      case "draft":
+        return "bg-amber-50 text-amber-700";
+
+      case "completed":
+        return "bg-blue-50 text-blue-700";
+
+      case "cancelled":
+        return "bg-red-50 text-red-600";
+
+      default:
+        return "bg-gray-100 text-gray-500";
+    }
+  };
+
+  /*
+  |--------------------------------------------------------------------------
+  | Loading
+  |--------------------------------------------------------------------------
+  */
+
+  if (loading) {
+    return (
+      <div
+        dir="rtl"
+        className="min-h-[500px] flex items-center justify-center"
+      >
+        <div className="text-center">
+          <LoaderCircle
+            size={34}
+            className="animate-spin text-green-700 mx-auto"
+          />
+
+          <p className="text-sm text-gray-500 mt-4">
+            جاري تحميل لوحة التحكم...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      dir="rtl"
+      className="min-h-screen bg-[#F8FAF8] px-5 md:px-7 lg:px-10 py-7"
+    >
+      <div className="max-w-[1500px] mx-auto space-y-7">
+
+        {/* =====================================================
+            Header
+        ====================================================== */}
+
+        <section className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+          <div>
+            <p className="text-sm font-medium text-green-700 mb-2">
+              لوحة التحكم
+            </p>
+
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+              مرحباً، كابتن{" "}
+              {dashboardData?.coach?.full_name ??
+                "المدرب"}
+            </h1>
+
+            <p className="text-sm text-gray-500 mt-2">
+              تابع طلبات الاشتراك والمشتركين والخطط
+              التدريبية من مكان واحد.
+            </p>
+          </div>
+
+          <Button
+            title="إنشاء خطة"
+            Icon={Plus}
+            color="bg-[#407437] text-white hover:bg-[#35652f] rounded-xl"
+            onClick={() =>
+              navigate("/dashboard/WorkoutPlan")
+            }
+          />
+        </section>
+
+        {/* =====================================================
+            Error
+        ====================================================== */}
+
+        {error && (
+          <div className="bg-red-50 border border-red-100 rounded-xl px-4 py-3">
+            <p className="text-sm text-red-600">
+              {error}
+            </p>
+          </div>
+        )}
+
+        {/* =====================================================
+            Statistics
+        ====================================================== */}
+
+        <section>
+          <div className="mb-4">
+            <h2 className="font-bold text-gray-900">
+              نظرة عامة
+            </h2>
+
+            <p className="text-xs text-gray-400 mt-1">
+              ملخص مباشر من بيانات المشتركين والخطط
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+            <StatCard
+              title="إجمالي المشتركين"
+              value={statistics.totalTrainees}
+              icon={Users}
+              color="bg-green-50 text-green-700"
+              textColor="text-gray-500"
+              note="مشتركون مقبولون"
+              NoteColor="bg-green-50 text-green-700"
+              subtitle="إجمالي المشتركين الحاليين"
+            />
+
+            <StatCard
+              title="طلبات معلقة"
+              value={statistics.pendingCount}
+              icon={Clock3}
+              color="bg-amber-50 text-amber-600"
+              textColor="text-gray-500"
+              note="تحتاج مراجعة"
+              NoteColor="bg-amber-50 text-amber-700"
+              subtitle="طلبات اشتراك بانتظار قرارك"
+            />
+
+            <StatCard
+              title="خطط نشطة"
+              value={statistics.activePlans}
+              icon={ClipboardList}
+              color="bg-blue-50 text-blue-600"
+              textColor="text-gray-500"
+              note="قيد التنفيذ"
+              NoteColor="bg-blue-50 text-blue-600"
+              subtitle="خطط تدريب حالتها نشطة"
+            />
+
+            <StatCard
+              title="بدون خطة"
+              value={statistics.withoutPlan}
+              icon={Dumbbell}
+              color="bg-red-50 text-red-500"
+              textColor="text-gray-500"
+              note="تحتاج إعداد"
+              NoteColor="bg-red-50 text-red-600"
+              subtitle="مشتركون بدون خطة تدريب"
+            />
+          </div>
+        </section>
+
+        {/* =====================================================
+            Main Content
+        ====================================================== */}
+
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
+
+          {/* =================================================
+              Pending Requests
+          ================================================== */}
+
+          <section className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+                  <UserPlus size={19} />
+                </div>
+
+                <div>
+                  <h2 className="font-bold text-gray-900">
+                    طلبات الاشتراك
+                  </h2>
+
+                  <p className="text-xs text-gray-400 mt-1">
+                    الطلبات التي تنتظر قبولك أو رفضك
+                  </p>
+                </div>
+              </div>
+
+              <span className="bg-amber-50 text-amber-700 text-xs font-bold px-2.5 py-1 rounded-full">
+                {statistics.pendingCount}
+              </span>
+            </div>
+
+            {pendingRequests.length === 0 ? (
+              <EmptyState
+                icon={UserPlus}
+                title="لا توجد طلبات معلقة"
+                description="ستظهر طلبات الاشتراك الجديدة هنا."
+              />
+            ) : (
+              <div className="divide-y divide-gray-100">
+                {pendingRequests
+                  .slice(0, 4)
+                  .map((request) => {
+                    const trainee =
+                      getTraineeFromSubscription(
+                        request,
+                      );
+
+                    const name =
+                      trainee?.full_name ??
+                      "مشترك جديد";
+
+                    const email =
+                      trainee?.email ??
+                      "لا يوجد بريد";
+
+                    const goal =
+                      getGoalName(trainee);
+
+                    const isActionLoading =
+                      actionLoadingId === request.id;
+
+                    return (
+                      <div
+                        key={request.id}
+                        className="p-4 hover:bg-gray-50/60 transition-colors"
+                      >
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+
+                          {/* User */}
+
+                          <div className="flex items-center gap-3 min-w-0">
+                            <Avatar name={name} />
+
+                            <div className="min-w-0">
+                              <h3 className="text-sm font-bold text-gray-900 truncate">
+                                {name}
+                              </h3>
+
+                              <p className="text-xs text-gray-400 mt-1 truncate">
+                                {email}
+                              </p>
+
+                              <div className="mt-2">
+                                <span className="text-[11px] bg-green-50 text-green-700 px-2 py-1 rounded-md">
+                                  الهدف: {goal}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Actions */}
+
+                          <div className="flex items-center gap-2">
+                            <button
+                              type="button"
+                              disabled={
+                                isActionLoading
+                              }
+                              onClick={() =>
+                                acceptRequest(
+                                  request.id,
+                                )
+                              }
+                              title="قبول الطلب"
+                              className="
+                                h-9
+                                px-3
+                                rounded-lg
+                                bg-green-700
+                                text-white
+                                text-xs
+                                font-semibold
+                                flex
+                                items-center
+                                gap-1.5
+                                hover:bg-green-800
+                                disabled:opacity-50
+                                disabled:cursor-not-allowed
+                              "
+                            >
+                              {isActionLoading ? (
+                                <LoaderCircle
+                                  size={14}
+                                  className="animate-spin"
+                                />
+                              ) : (
+                                <Check size={14} />
+                              )}
+
+                              قبول
+                            </button>
+
+                            <button
+                              type="button"
+                              disabled={
+                                isActionLoading
+                              }
+                              onClick={() =>
+                                rejectRequest(
+                                  request.id,
+                                )
+                              }
+                              title="رفض الطلب"
+                              className="
+                                h-9
+                                px-3
+                                rounded-lg
+                                bg-red-50
+                                text-red-600
+                                text-xs
+                                font-semibold
+                                flex
+                                items-center
+                                gap-1.5
+                                hover:bg-red-100
+                                disabled:opacity-50
+                                disabled:cursor-not-allowed
+                              "
+                            >
+                              <X size={14} />
+
+                              رفض
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+              </div>
+            )}
+          </section>
+
+          {/* =================================================
+              Recent Trainees
+          ================================================== */}
+
+          <section className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-green-50 text-green-700 flex items-center justify-center">
+                  <Users size={19} />
+                </div>
+
+                <div>
+                  <h2 className="font-bold text-gray-900">
+                    المشتركين
+                  </h2>
+
+                  <p className="text-xs text-gray-400 mt-1">
+                    وصول سريع لأحدث المشتركين
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() =>
+                  navigate("/dashboard/trainees")
+                }
+                className="flex items-center gap-1 text-xs font-medium text-green-700 hover:text-green-800"
+              >
+                عرض الكل
+                <ChevronLeft size={14} />
+              </button>
+            </div>
+
+            {recentTrainees.length === 0 ? (
+              <EmptyState
+                icon={Users}
+                title="لا يوجد مشتركون"
+                description="سيظهر المشتركون المقبولون هنا."
+              />
+            ) : (
+              <div className="divide-y divide-gray-100">
+                {recentTrainees.map(
+                  (subscription) => {
+                    const trainee =
+                      subscription?.trainee;
+
+                    if (!trainee) {
+                      return null;
+                    }
+
+                    const plan =
+                      subscription?.workout_plan;
+
+                    const goal =
+                      getGoalName(trainee);
+
+                    return (
+                      <div
+                        key={
+                          subscription.id ??
+                          trainee.id
+                        }
+                        className="p-4 hover:bg-gray-50/60 transition-colors"
+                      >
+                        <div className="flex items-center justify-between gap-4">
+
+                          <div className="flex items-center gap-3 min-w-0">
+                            <Avatar
+                              name={
+                                trainee.full_name
+                              }
+                            />
+
+                            <div className="min-w-0">
+                              <h3 className="font-bold text-sm text-gray-900 truncate">
+                                {trainee.full_name ??
+                                  "غير معروف"}
+                              </h3>
+
+                              <p className="text-xs text-gray-400 mt-1 truncate">
+                                {trainee.email ??
+                                  "لا يوجد بريد"}
+                              </p>
+
+                              <div className="flex flex-wrap items-center gap-2 mt-2">
+                                <span className="text-[11px] text-gray-500">
+                                  {goal}
+                                </span>
+
+                                <span
+                                  className={`text-[11px] px-2 py-1 rounded-md font-medium ${getPlanClasses(
+                                    plan,
+                                  )}`}
+                                >
+                                  {getPlanLabel(
+                                    plan,
+                                  )}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-2 shrink-0">
+                            <button
+                              type="button"
+                              onClick={() =>
+                                navigate(
+                                  `/dashboard/trainees/${trainee.id}`,
+                                )
+                              }
+                              title="عرض الملف"
+                              className="w-9 h-9 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 flex items-center justify-center"
+                            >
+                              <Eye size={16} />
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() =>
+                                navigate(
+                                  `/dashboard/WorkoutPlan?trainee=${trainee.id}`,
+                                )
+                              }
+                              title="عرض الخطة"
+                              className="h-9 px-3 rounded-lg bg-green-50 text-green-700 hover:bg-green-100 text-xs font-semibold"
+                            >
+                              الخطة
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  },
+                )}
+              </div>
+            )}
+          </section>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/*
+|--------------------------------------------------------------------------
+| Avatar
+|--------------------------------------------------------------------------
+*/
+
+const Avatar = ({ name }) => {
+  return (
+    <div className="w-11 h-11 shrink-0 rounded-full bg-green-100 text-green-700 flex items-center justify-center font-bold">
+      {name?.charAt(0)?.toUpperCase() ?? "؟"}
+    </div>
+  );
+};
+
+/*
+|--------------------------------------------------------------------------
+| Empty State
+|--------------------------------------------------------------------------
+*/
+
+const EmptyState = ({
+  icon: Icon,
+  title,
+  description,
+}) => {
+  return (
+    <div className="min-h-[220px] flex items-center justify-center p-6">
+      <div className="text-center">
+        <div className="w-12 h-12 mx-auto rounded-xl bg-gray-50 text-gray-400 flex items-center justify-center">
+          <Icon size={21} />
+        </div>
+
+        <h3 className="text-sm font-bold text-gray-800 mt-4">
+          {title}
+        </h3>
+
+        <p className="text-xs text-gray-400 mt-2">
+          {description}
+        </p>
+      </div>
+    </div>
+  );
 };
 
 export default Dashboard;

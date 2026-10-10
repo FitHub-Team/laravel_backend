@@ -16,10 +16,8 @@ class CoachProfile extends Model
         'birth_year',
         'location',
         'national_id',
-        'bio',
-       
+        'bio', 
         'is_approved',
-        'rejection_reason',
         'price',
         'profile_photo',
     ];

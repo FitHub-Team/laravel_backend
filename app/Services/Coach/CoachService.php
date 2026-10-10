@@ -15,7 +15,7 @@ class CoachService
 {
     public function saveCoachProfile(int $userId, array $data): CoachProfile
     {
-        dd($data);
+        // dd($data);
         return DB::transaction(function () use ($userId, $data) {
 
             $hasSkills = array_key_exists('skills', $data);

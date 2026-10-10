@@ -1,87 +1,114 @@
-import { MoreVertical, AlertTriangle, Phone, Eye } from "lucide-react";
-import Button from "./common/Button";
+import {
+  Eye,
+  AlertTriangle,
+  Activity,
+} from "lucide-react";
+
 function ClientCard({
-    name,
-    image,
-    progress,
-    status,
-    statusColor,
-    reason,
-    timeAgo,
-    action,
+  name,
+  progress = 0,
+  status,
+  reason,
+  activity,
+  onView,
 }) {
-    return (
-        <div className="bg-white p-1 flex flex-col rounded-xl border border-gray-100 shadow-sm mb-4">
-            <div className="flex justify-between items-start mb-3">
-                {/* معلومات المشترك */}
-                <div className="flex flex-col gap-3">
-                    {/* الصورة + الاسم + الحالة */}
-                    <div className="flex gap-3">
-                        <img
-                            src={image}
-                            alt={name}
-                            className="w-12 h-12 rounded-full object-cover"
-                        />
+  const initial = name?.charAt(0) ?? "؟";
 
-                        <div className="flex items-center gap-1">
-                            <h4 className="font-bold text-gray-800">{name}</h4>
+  const progressColor =
+    progress >= 70
+      ? "bg-green-500"
+      : progress >= 45
+        ? "bg-amber-500"
+        : "bg-red-500";
 
-                            <span className="text-xs px-1 py-1 mx-2 rounded-md border font-bold border-[#FEE68599] bg-[#FEF3C6] text-[#CA8A04]">
-                                متابعة مطلوبة
-                            </span>
-                        </div>
-                    </div>
+  return (
+    <div className="border border-gray-100 rounded-2xl p-4 hover:bg-gray-50/60 transition-colors">
+      <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
+        {/* User */}
+        <div className="flex gap-3 flex-1">
+          <div className="w-11 h-11 rounded-full bg-green-100 text-green-700 flex items-center justify-center font-bold shrink-0">
+            {initial}
+          </div>
 
-                    {/* سبب التنبيه */}
-                    <div className="flex items-start gap-2 bg-[#FFFBEBCC] border-r-4 border-r-[#FACC15]   px-2">
-                        <p className="text-xs text-[#DC2626] leading-relaxed py-1">
-                            {" "}
-                            <span className="font-bold">السبب: </span> {reason}
-                        </p>
-                    </div>
-                </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex flex-wrap items-center gap-2">
+              <h3 className="font-bold text-gray-900 text-sm">
+                {name}
+              </h3>
 
-                {/* نسبة الالتزام والإجراء */}
-                <div className="w-40">
-                    <div className="flex justify-between text-xs mb-1">
-                        <span className="text-gray-500">نسبة الالتزام</span>
-
-                        <span className="font-bold text-gray-700">
-                            {progress}%
-                        </span>
-                    </div>
-
-                    {/* Progress bar */}
-                    <div className="w-full bg-gray-100 rounded-full h-1.5">
-                        <div
-                            className={`h-1.5 rounded-full ${
-                                progress > 60 ? "bg-green-500" : "bg-red-500"
-                            }`}
-                            style={{ width: `${progress}%` }}
-                        ></div>
-                    </div>
-
-                    {/* Action */}
-                    <div className="text-xs mt-3 font-bold text-[#184159]">
-                        {action}
-                    </div>
-
-                    {/* Button */}
-                    <div className="flex mt-7 items-center gap-3">
-                        {/* <button className="w-9 h-9 flex items-center  justify-center bg-gray-50 text-gray-600
-             rounded-xl  hover:bg-gray-100">
-              <MessageSquare size={18} />
-            </button> */}
-                        <Button
-                            title="عرض الملف "
-                            Icon={Eye}
-                            color="bg-[#407437] text-white font-bold"
-                            className="ml-5"
-                        />
-                    </div>
-                </div>
+              <span className="bg-amber-50 text-amber-700 rounded-full px-2 py-1 text-[10px] font-semibold">
+                {status}
+              </span>
             </div>
+
+            <div className="flex items-start gap-2 mt-3 bg-amber-50/70 rounded-xl px-3 py-2.5">
+              <AlertTriangle
+                size={14}
+                className="text-amber-600 mt-0.5 shrink-0"
+              />
+
+              <p className="text-xs text-gray-600 leading-5">
+                {reason}
+              </p>
+            </div>
+
+            <div className="flex items-center gap-1.5 text-[11px] text-gray-400 mt-3">
+              <Activity size={13} />
+              {activity}
+            </div>
+          </div>
         </div>
-    );
+
+        {/* Progress */}
+        <div className="md:w-40">
+          <div className="flex items-center justify-between text-xs mb-2">
+            <span className="text-gray-400">
+              الالتزام
+            </span>
+
+            <span className="font-bold text-gray-700">
+              {progress}%
+            </span>
+          </div>
+
+          <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+            <div
+              className={`h-full rounded-full transition-all ${progressColor}`}
+              style={{
+                width: `${Math.min(progress, 100)}%`,
+              }}
+            />
+          </div>
+
+          <button
+            type="button"
+            onClick={onView}
+            className="
+              w-full
+              mt-4
+              flex
+              items-center
+              justify-center
+              gap-2
+              bg-green-700
+              hover:bg-green-800
+              text-white
+              text-xs
+              font-semibold
+              rounded-xl
+              px-3
+              py-2.5
+              transition-colors
+            "
+          >
+            <Eye size={15} />
+
+            عرض الملف
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }
+
 export default ClientCard;
