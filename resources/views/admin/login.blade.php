@@ -1,460 +1,763 @@
-
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
-
+<html lang="ar" dir="rtl" data-bs-theme="light">
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>تسجيل دخول الأدمن — SuperFit</title>
 
-    <title>تسجيل دخول الأدمن - SuperFit</title>
-
-    <!-- Google Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap"
-        rel="stylesheet"
-    >
-
-    <!-- Font Awesome -->
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    >
-
-    <!-- CSS -->
-    <link
-        rel="stylesheet"
-        href="{{ asset('front/css/style.css') }}"
-    >
-    <script src="https://cdn.tailwindcss.com"></script>
-
-</head>
-
-
-<body>
-
-<div
-    dir="rtl"
-    class="min-h-screen bg-[#F5FAF8] flex items-center justify-center px-5 py-10 relative overflow-hidden"
->
-
-    <!-- Background decoration -->
-
-    <div
-        class="absolute top-0 right-0 w-[420px] h-[420px] bg-emerald-100/50 rounded-full blur-3xl -z-0"
-    ></div>
-
-    <div
-        class="absolute bottom-0 left-0 w-[350px] h-[350px] bg-teal-100/50 rounded-full blur-3xl -z-0"
-    ></div>
-
-
-    <!-- Main Card -->
-
-    <div
-        class="relative z-10 w-full max-w-[1050px] min-h-[620px] bg-white rounded-[28px] shadow-[0_20px_70px_rgba(15,61,46,0.10)] overflow-hidden flex flex-col lg:flex-row"
-    >
-
-
-        <!-- ================= LEFT SIDE ================= -->
-
-        <div
-            class="hidden lg:flex lg:w-[48%] relative overflow-hidden bg-gradient-to-br from-[#0F3D2E] via-[#145A42] to-[#1F7A59] p-12 flex-col justify-between"
-        >
-
-            <!-- Decorative circles -->
-
-            <div
-                class="absolute -top-32 -right-32 w-[380px] h-[380px] rounded-full border border-white/10"
-            ></div>
-
-            <div
-                class="absolute -bottom-40 -left-40 w-[500px] h-[500px] rounded-full border border-white/10"
-            ></div>
-
-            <div
-                class="absolute top-1/3 -right-20 w-72 h-72 rounded-full bg-emerald-400/10 blur-3xl"
-            ></div>
-
-
-            <!-- Logo -->
-
-            <div class="relative z-10 flex justify-center">
-
-                <img
-                    src="{{ asset('front/imag/super5.png') }}"
-                    alt="SuperFit"
-                    class="max-w-[250px] max-h-[250px] object-contain"
-                >
-
-            </div>
-
-
-            <!-- Main Text -->
-
-            <div class="relative z-10 max-w-[400px]">
-
-                <span
-                    class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/10 text-emerald-100 text-xs mb-6"
-                >
-
-                    <span class="w-2 h-2 bg-emerald-300 rounded-full"></span>
-
-                    منصة SuperFit للأدمن
-
-                </span>
-
-
-                <h2
-                    class="text-white text-4xl font-bold leading-[1.5] mb-5"
-                >
-
-                    طوّر أدائك،
-                    <br>
-
-                    <span class="text-emerald-300">
-                        وأدر منصتك
-                    </span>
-
-                </h2>
-
-
-                <p
-                    class="text-emerald-50/70 text-sm leading-7"
-                >
-
-                    أدِر المستخدمين والمدربين والاشتراكات،
-                    وتابع جميع عمليات منصة SuperFit من مكان واحد.
-
-                </p>
-
-            </div>
-
-
-            <!-- Bottom -->
-
-            <div
-                class="relative z-10 flex items-center gap-3 text-white/50 text-xs"
-            >
-
-                <div class="h-px w-10 bg-white/20"></div>
-
-                <span>
-                    Smart Fitness Management
-                </span>
-
-            </div>
-
-        </div>
-
-
-        <!-- ================= RIGHT SIDE ================= -->
-
-        <div
-            class="w-full lg:w-[52%] flex items-center justify-center px-7 py-10 sm:px-12 lg:px-16"
-        >
-
-            <div class="w-full max-w-[400px]">
-
-
-                <!-- Mobile Logo -->
-
-                <div class="flex lg:hidden justify-center mb-8">
-
-                    <div
-                        class="w-[160px] h-[65px] flex items-center justify-center"
-                    >
-
-                        <img
-                            src="{{ asset('front/imag/super5.png') }}"
-                            alt="SuperFit"
-                            class="max-w-[145px] max-h-[60px] object-contain"
-                        >
-
-                    </div>
-
-                </div>
-
-
-                <!-- Header -->
-
-                <div class="mb-9">
-
-                    <p
-                        class="text-emerald-600 text-sm font-semibold mb-3"
-                    >
-                    مرحبا بعودتك
-                    </p>
-
-
-                    <h1
-                        class="text-[#123F31] text-3xl font-bold mb-3"
-                    >
-                        تسجيل الدخول
-                    </h1>
-
-
-                    <p
-                        class="text-slate-400 text-sm leading-6"
-                    >
-                        سجّل دخولك إلى حساب الأدمن للوصول إلى لوحة التحكم
-                    </p>
-
-                </div>
-
-
-                <!-- Laravel Errors -->
-
-                @if ($errors->any())
-
-                    <div
-                        class="mb-5 rounded-xl bg-red-50 border border-red-100 px-4 py-3 text-red-600 text-sm"
-                    >
-
-                        @foreach ($errors->all() as $error)
-
-                            <p class="mb-1 last:mb-0">
-                                {{ $error }}
-                            </p>
-
-                        @endforeach
-
-                    </div>
-
-                @endif
-
-
-                <!-- Form -->
-
-                <form
-                    action="{{ route('admin.login.submit') }}"
-                    method="POST"
-                    class="flex flex-col gap-5"
-                >
-
-                    @csrf
-
-
-                    <!-- Name -->
-
-                    <div class="flex flex-col gap-2">
-
-                        <label
-                            for="name"
-                            class="text-sm font-semibold text-[#173F32]"
-                        >
-                            الاسم
-                        </label>
-
-
-                        <div class="relative">
-
-                            <i
-                                class="fa-solid fa-user absolute right-4 top-1/2 -translate-y-1/2 text-slate-400"
-                            ></i>
-
-
-                            <input
-                                type="text"
-                                id="name"
-                                name="name"
-                                value="{{ old('name') }}"
-                                placeholder="أدخل اسمك"
-                                required
-                                class="w-full h-[52px] rounded-xl border border-slate-200 bg-slate-50 pr-12 pl-4 text-sm text-slate-700 outline-none transition-all placeholder:text-slate-400 focus:border-emerald-500 focus:bg-white focus:ring-4 focus:ring-emerald-500/10"
-                            >
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- Email -->
-
-                    <div class="flex flex-col gap-2">
-
-                        <label
-                            for="email"
-                            class="text-sm font-semibold text-[#173F32]"
-                        >
-                            البريد الإلكتروني
-                        </label>
-
-
-                        <div class="relative">
-
-                            <i
-                                class="fa-solid fa-envelope absolute right-4 top-1/2 -translate-y-1/2 text-slate-400"
-                            ></i>
-
-
-                            <input
-                                type="email"
-                                id="email"
-                                name="email"
-                                value="{{ old('email') }}"
-                                placeholder="أدخل بريدك الإلكتروني"
-                                required
-                                class="w-full h-[52px] rounded-xl border border-slate-200 bg-slate-50 pr-12 pl-4 text-sm text-slate-700 outline-none transition-all placeholder:text-slate-400 focus:border-emerald-500 focus:bg-white focus:ring-4 focus:ring-emerald-500/10"
-                            >
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- Password -->
-
-                    <div class="flex flex-col gap-2">
-
-                        <label
-                            for="password"
-                            class="text-sm font-semibold text-[#173F32]"
-                        >
-                            كلمة المرور
-                        </label>
-
-
-                   <div class="relative">
-    <input
-        type="password"
-        id="password"
-        name="password"
-        placeholder="كلمة المرور"
-        class="w-full px-4 py-3 pr-12 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
-    >
-
-    <button
-        type="button"
-        id="togglePassword"
-        class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-teal-600"
-    >
-        <i id="passwordIcon" class="fa-solid fa-eye-slash"></i>
-    </button>
-</div>
-                    </div>
-
-
-                    <!-- Options -->
-
-                    <div
-                        class="flex items-center justify-between text-sm mt-1"
-                    >
-
-                        <label
-                            class="flex items-center gap-2 cursor-pointer text-slate-500"
-                        >
-
-                            <input
-                                type="checkbox"
-                                name="remember"
-                                value="1"
-                                class="w-4 h-4 accent-emerald-600 cursor-pointer"
-                            >
-
-                            <span>
-                                تذكرني
-                            </span>
-
-                        </label>
-
-
-                        <a
-                            href="#"
-                            class="text-emerald-600 font-semibold hover:text-emerald-700 transition"
-                        >
-                            نسيت كلمة المرور؟
-                        </a>
-
-                    </div>
-
-
-                    <!-- Login Button -->
-
-                    <button
-                        type="submit"
-                        class="group mt-3 w-full h-[52px] rounded-xl bg-gradient-to-l from-[#0F8F68] to-[#12A878] text-white font-bold text-sm flex items-center justify-center gap-3 shadow-[0_8px_20px_rgba(16,185,129,0.20)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_12px_25px_rgba(16,185,129,0.30)]"
-                    >
-
-                        <span>
-                            تسجيل الدخول
-                        </span>
-
-
-                        <i
-                            class="fa-solid fa-arrow-left text-sm transition-transform duration-300 group-hover:-translate-x-1"
-                        ></i>
-
-                    </button>
-
-                </form>
-
-
-                <!-- Footer -->
-
-                <div
-                    class="mt-8 pt-6 border-t border-slate-100 text-center"
-                >
-
-                    <p class="text-sm text-slate-400">
-
-                        SuperFit Admin Panel
-
-                    </p>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<!-- Show / Hide Password -->
-
-<script>
-
-    const togglePassword = document.getElementById('togglePassword');
-
-    const password = document.getElementById('password');
-
-    const passwordIcon = document.getElementById('passwordIcon');
-
-
-    togglePassword.addEventListener('click', function () {
-
-        if (password.type === 'password') {
-
-            password.type = 'text';
-
-            passwordIcon.classList.remove('fa-eye');
-
-            passwordIcon.classList.add('fa-eye-slash');
-
-        } else {
-
-            password.type = 'password';
-
-            passwordIcon.classList.remove('fa-eye-slash');
-
-            passwordIcon.classList.add('fa-eye');
-
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+    <script>
+        (function () {
+            try {
+                var t = localStorage.getItem('sf-theme');
+                if (t === 'dark') {
+                    document.documentElement.setAttribute('data-bs-theme', 'dark');
+                }
+            } catch (e) {}
+        })();
+    </script>
+
+    <style>
+        :root {
+            --sf-teal-900: #0B3B3C;
+            --sf-teal-700: #0F766E;
+            --sf-teal-500: #14B8A6;
+            --sf-teal-100: #CCFBF1;
+            --sf-green-600: #16A34A;
+            --sf-green-400: #4ADE80;
+            --sf-lime-300: #BEF264;
+            --sf-bg: #F3FAF8;
+            --sf-surface: #FFFFFF;
+            --sf-text: #0F2D2E;
+            --sf-muted: #5B7B7A;
+            --sf-border: #D6EBE7;
+            --sf-warning: #F59E0B;
+            --sf-danger: #E11D48;
+            --sf-info: #0EA5E9;
+
+            --bs-primary: var(--sf-teal-700);
+            --bs-success: var(--sf-green-600);
+            --bs-body-bg: var(--sf-bg);
+            --bs-body-color: var(--sf-text);
+            --bs-border-color: var(--sf-border);
         }
 
-    });
+        [data-bs-theme="dark"] {
+            --sf-bg: #071816;
+            --sf-surface: #0E2320;
+            --sf-text: #E8F5F2;
+            --sf-muted: #9CB5B1;
+            --sf-border: #1C3B37;
+            --sf-teal-100: #133F3A;
+        }
 
+        * { box-sizing: border-box; }
+
+        html, body { min-height: 100%; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif;
+            background: var(--sf-bg);
+            color: var(--sf-text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px 16px;
+            background-image:
+                radial-gradient(circle at 100% 0%, rgba(20, 184, 166, 0.12), transparent 45%),
+                radial-gradient(circle at 0% 100%, rgba(22, 163, 74, 0.12), transparent 45%);
+        }
+
+        .sf-login-card {
+            width: 100%;
+            max-width: 1080px;
+            min-height: 620px;
+            background: var(--sf-surface);
+            border-radius: 28px;
+            overflow: hidden;
+            display: flex;
+            box-shadow: 0 22px 60px rgba(15, 61, 46, 0.10);
+            border: 1px solid var(--sf-border);
+            animation: sfLoginIn 600ms cubic-bezier(.2,.7,.3,1) both;
+        }
+
+        /* ================= Side (right in RTL) ================= */
+
+        .sf-login-side {
+            flex: 1 1 48%;
+            padding: 48px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            color: #ffffff;
+            position: relative;
+            overflow: hidden;
+            background:
+                linear-gradient(135deg, var(--sf-teal-900) 0%, #145A42 55%, var(--sf-green-600) 130%);
+        }
+
+        .sf-login-side::before,
+        .sf-login-side::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            pointer-events: none;
+        }
+
+        .sf-login-side::before {
+            width: 420px; height: 420px;
+            top: -160px; inset-inline-end: -160px;
+            animation: sfFloat 14s ease-in-out infinite;
+        }
+
+        .sf-login-side::after {
+            width: 520px; height: 520px;
+            bottom: -200px; inset-inline-start: -200px;
+            animation: sfFloat 18s ease-in-out infinite reverse;
+        }
+
+        .sf-login-side-inner {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            gap: 28px;
+        }
+
+        .sf-login-logo {
+            display: flex;
+            justify-content: center;
+            animation: sfFadeUp 700ms 120ms cubic-bezier(.2,.7,.3,1) both;
+        }
+
+        .sf-login-logo img {
+            max-width: 220px;
+            max-height: 220px;
+            object-fit: contain;
+            filter: drop-shadow(0 12px 30px rgba(0, 0, 0, 0.25));
+        }
+
+        .sf-login-side-text {
+            margin-top: auto;
+            animation: sfFadeUp 700ms 220ms cubic-bezier(.2,.7,.3,1) both;
+        }
+
+        .sf-login-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.10);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            color: #E4FBF3;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 22px;
+        }
+
+        .sf-login-badge-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: var(--sf-green-400);
+            box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.6);
+            animation: sfDotPulse 2s ease-out infinite;
+        }
+
+        .sf-login-side-text h2 {
+            font-size: 34px;
+            font-weight: 800;
+            line-height: 1.5;
+            margin: 0 0 16px;
+        }
+
+        .sf-login-side-text h2 span {
+            color: var(--sf-green-400);
+        }
+
+        .sf-login-side-text p {
+            color: rgba(232, 255, 248, 0.75);
+            font-size: 14px;
+            line-height: 1.9;
+            margin: 0;
+            max-width: 400px;
+        }
+
+        .sf-login-side-footer {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: rgba(255, 255, 255, 0.55);
+            font-size: 12px;
+            animation: sfFadeUp 700ms 320ms cubic-bezier(.2,.7,.3,1) both;
+        }
+
+        .sf-login-side-footer::before {
+            content: '';
+            width: 40px;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        /* ================= Form Side ================= */
+
+        .sf-login-form-side {
+            flex: 1 1 52%;
+            padding: 48px 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sf-login-form-wrap {
+            width: 100%;
+            max-width: 400px;
+            animation: sfFadeUp 700ms 180ms cubic-bezier(.2,.7,.3,1) both;
+        }
+
+        .sf-login-mobile-logo {
+            display: none;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+
+        .sf-login-mobile-logo img {
+            max-width: 150px;
+            max-height: 70px;
+            object-fit: contain;
+        }
+
+        .sf-login-kicker {
+            color: var(--sf-teal-700);
+            font-size: 13px;
+            font-weight: 700;
+            margin: 0 0 12px;
+        }
+
+        .sf-login-title {
+            color: var(--sf-text);
+            font-size: 30px;
+            font-weight: 800;
+            margin: 0 0 10px;
+        }
+
+        .sf-login-desc {
+            color: var(--sf-muted);
+            font-size: 13.5px;
+            line-height: 1.8;
+            margin: 0 0 32px;
+        }
+
+        .sf-login-alert {
+            border-radius: 14px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            background: rgba(225, 29, 72, 0.08);
+            border: 1px solid rgba(225, 29, 72, 0.20);
+            color: var(--sf-danger);
+        }
+
+        .sf-login-alert p { margin: 0 0 4px; }
+        .sf-login-alert p:last-child { margin-bottom: 0; }
+
+        .sf-form-group {
+            margin-bottom: 18px;
+        }
+
+        .sf-form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--sf-text);
+            margin-bottom: 8px;
+        }
+
+        .sf-input-wrap {
+            position: relative;
+        }
+
+        .sf-input-icon {
+            position: absolute;
+            inset-inline-start: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--sf-muted);
+            font-size: 16px;
+            pointer-events: none;
+            transition: color .2s ease;
+        }
+
+        .sf-input {
+            width: 100%;
+            height: 52px;
+            border-radius: 14px;
+            border: 1px solid var(--sf-border);
+            background: var(--sf-bg);
+            padding: 0 46px 0 46px;
+            font-family: inherit;
+            font-size: 14px;
+            color: var(--sf-text);
+            outline: none;
+            transition: border-color .2s ease, box-shadow .2s ease, background-color .2s ease;
+        }
+
+        .sf-input::placeholder { color: #A7BCBA; }
+
+        .sf-input:focus {
+            border-color: var(--sf-teal-700);
+            background: var(--sf-surface);
+            box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.12);
+        }
+
+        .sf-input-wrap:focus-within .sf-input-icon {
+            color: var(--sf-teal-700);
+        }
+
+        .sf-input-toggle {
+            position: absolute;
+            inset-inline-end: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            background: transparent;
+            color: var(--sf-muted);
+            cursor: pointer;
+            border-radius: 10px;
+            transition: background-color .2s ease, color .2s ease;
+        }
+
+        .sf-input-toggle:hover {
+            background: var(--sf-teal-100);
+            color: var(--sf-teal-700);
+        }
+
+        .sf-login-options {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 6px 0 20px;
+            font-size: 13px;
+        }
+
+        .sf-checkbox {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--sf-muted);
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .sf-checkbox input {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--sf-teal-700);
+            cursor: pointer;
+        }
+
+        .sf-forgot-link {
+            color: var(--sf-teal-700);
+            font-weight: 700;
+            text-decoration: none;
+            transition: color .2s ease;
+        }
+
+        .sf-forgot-link:hover { color: var(--sf-green-600); }
+
+        .sf-btn-primary {
+            width: 100%;
+            height: 52px;
+            border: none;
+            border-radius: 14px;
+            color: #ffffff;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+            background:
+                linear-gradient(135deg, var(--sf-teal-700), var(--sf-green-600));
+            background-size: 200% 200%;
+            box-shadow: 0 10px 24px rgba(15, 118, 110, 0.25);
+            transition: transform .18s ease, box-shadow .18s ease, background-position .6s ease;
+        }
+
+        .sf-btn-primary:hover {
+            background-position: 100% 0;
+            box-shadow: 0 14px 32px rgba(15, 118, 110, 0.32);
+            transform: translateY(-1px);
+        }
+
+        .sf-btn-primary:active { transform: scale(0.98); }
+
+        .sf-btn-primary:disabled {
+            opacity: 0.75;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .sf-btn-primary .spinner-border {
+            width: 16px;
+            height: 16px;
+            border-width: 2px;
+        }
+
+        .sf-login-footer {
+            margin-top: 28px;
+            padding-top: 20px;
+            border-top: 1px solid var(--sf-border);
+            text-align: center;
+            color: var(--sf-muted);
+            font-size: 12.5px;
+        }
+
+        /* ================= Animations ================= */
+
+        @keyframes sfLoginIn {
+            from { opacity: 0; transform: translateY(18px) scale(0.98); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes sfFadeUp {
+            from { opacity: 0; transform: translateY(14px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes sfFloat {
+            0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+            50%      { transform: translate3d(-20px, 20px, 0) rotate(6deg); }
+        }
+
+        @keyframes sfDotPulse {
+            0%   { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.55); }
+            70%  { box-shadow: 0 0 0 8px rgba(74, 222, 128, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); }
+        }
+
+        /* ================= Responsive ================= */
+
+        @media (max-width: 991.98px) {
+            .sf-login-card {
+                min-height: auto;
+                flex-direction: column;
+                border-radius: 22px;
+            }
+            .sf-login-side { display: none; }
+            .sf-login-form-side {
+                padding: 40px 26px;
+            }
+            .sf-login-mobile-logo { display: flex; }
+        }
+
+        @media (max-width: 480px) {
+            body { padding: 12px; }
+            .sf-login-form-side { padding: 32px 20px; }
+            .sf-login-title { font-size: 26px; }
+            .sf-input { height: 48px; }
+            .sf-btn-primary { height: 48px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .sf-login-card,
+            .sf-login-side::before,
+            .sf-login-side::after,
+            .sf-login-logo,
+            .sf-login-side-text,
+            .sf-login-side-footer,
+            .sf-login-form-wrap,
+            .sf-login-badge-dot {
+                animation: none !important;
+            }
+            * { transition: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="sf-login-card">
+
+    {{-- ============ Side Panel ============ --}}
+    <aside class="sf-login-side">
+        <div class="sf-login-side-inner">
+
+            <div class="sf-login-logo">
+                <img src="{{ asset('front/imag/super5.png') }}" alt="SuperFit">
+            </div>
+
+            <div class="sf-login-side-text">
+                <span class="sf-login-badge">
+                    <span class="sf-login-badge-dot"></span>
+                    منصة SuperFit للأدمن
+                </span>
+
+                <h2>
+                    طوّر أدائك،<br>
+                    <span>وأدر منصتك</span>
+                </h2>
+
+                <p>
+                    أدِر المستخدمين والمدربين والاشتراكات،
+                    وتابع جميع عمليات منصة SuperFit من مكان واحد.
+                </p>
+            </div>
+
+            <div class="sf-login-side-footer">
+                <span>Smart Fitness Management</span>
+            </div>
+
+        </div>
+    </aside>
+
+    {{-- ============ Form Side ============ --}}
+    <section class="sf-login-form-side">
+
+        <div class="sf-login-form-wrap">
+
+            <div class="sf-login-mobile-logo">
+                <img src="{{ asset('front/imag/super5.png') }}" alt="SuperFit">
+            </div>
+
+            <p class="sf-login-kicker">مرحباً بعودتك</p>
+            <h1 class="sf-login-title">تسجيل الدخول</h1>
+            <p class="sf-login-desc">
+                سجّل دخولك إلى حساب الأدمن للوصول إلى لوحة التحكم
+            </p>
+
+            @if ($errors->any())
+                <div class="sf-login-alert" role="alert">
+                    @foreach ($errors->all() as $error)
+                        <p>{{ $error }}</p>
+                    @endforeach
+                </div>
+            @endif
+
+            <form action="{{ route('admin.login.submit') }}" method="POST" id="sfLoginForm" novalidate>
+                @csrf
+
+                {{-- Name --}}
+                <div class="sf-form-group">
+                    <label for="name" class="sf-form-label">الاسم</label>
+                    <div class="sf-input-wrap">
+                        <i class="bi bi-person sf-input-icon" aria-hidden="true"></i>
+                        <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            class="sf-input"
+                            value="{{ old('name') }}"
+                            placeholder="أدخل اسمك"
+                            required
+                            autocomplete="username"
+                        >
+                    </div>
+                </div>
+
+                {{-- Email --}}
+                <div class="sf-form-group">
+                    <label for="email" class="sf-form-label">البريد الإلكتروني</label>
+                    <div class="sf-input-wrap">
+                        <i class="bi bi-envelope sf-input-icon" aria-hidden="true"></i>
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            class="sf-input"
+                            value="{{ old('email') }}"
+                            placeholder="أدخل بريدك الإلكتروني"
+                            required
+                            autocomplete="email"
+                        >
+                    </div>
+                </div>
+
+                {{-- Password --}}
+                <div class="sf-form-group">
+                    <label for="password" class="sf-form-label">كلمة المرور</label>
+                    <div class="sf-input-wrap">
+                        <i class="bi bi-lock sf-input-icon" aria-hidden="true"></i>
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            class="sf-input"
+                            placeholder="كلمة المرور"
+                            required
+                            autocomplete="current-password"
+                        >
+                        <button
+                            type="button"
+                            id="togglePassword"
+                            class="sf-input-toggle"
+                            aria-label="إظهار كلمة المرور"
+                            aria-pressed="false"
+                        >
+                            <i id="passwordIcon" class="bi bi-eye-slash" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </div>
+
+                {{-- Options --}}
+                <div class="sf-login-options">
+                    <label class="sf-checkbox">
+                        <input type="checkbox" name="remember" value="1">
+                        <span>تذكرني</span>
+                    </label>
+
+                    <a href="#" class="sf-forgot-link">نسيت كلمة المرور؟</a>
+                </div>
+
+                {{-- Submit --}}
+                <button type="submit" class="sf-btn-primary" id="sfLoginBtn">
+                    <span class="sf-btn-text">تسجيل الدخول</span>
+                    <i class="bi bi-arrow-left sf-btn-arrow" aria-hidden="true"></i>
+                    <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                </button>
+
+            </form>
+
+            <div class="sf-login-footer">
+                SuperFit Admin Panel
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+
+<script>
+(function () {
+    'use strict';
+
+    // ============================================
+    // SF Utilities
+    // ============================================
+
+    function sfCsrf() {
+        var meta = document.querySelector('meta[name="csrf-token"]');
+        return meta ? meta.getAttribute('content') : '';
+    }
+
+    function sfSetLoading(button, isLoading, loadingText) {
+        if (!button) return;
+        var textEl = button.querySelector('.sf-btn-text');
+        var spinner = button.querySelector('.spinner-border');
+        var arrow = button.querySelector('.sf-btn-arrow');
+
+        if (isLoading) {
+            button.disabled = true;
+            if (!button.dataset.sfOriginalText && textEl) {
+                button.dataset.sfOriginalText = textEl.textContent;
+            }
+            if (textEl && loadingText) textEl.textContent = loadingText;
+            if (spinner) spinner.classList.remove('d-none');
+            if (arrow) arrow.classList.add('d-none');
+        } else {
+            button.disabled = false;
+            if (textEl && button.dataset.sfOriginalText) {
+                textEl.textContent = button.dataset.sfOriginalText;
+            }
+            if (spinner) spinner.classList.add('d-none');
+            if (arrow) arrow.classList.remove('d-none');
+        }
+    }
+
+    function sfTheme() {
+        var toggle = document.getElementById('sfThemeToggle');
+        var icon = document.getElementById('sfThemeIcon');
+
+        function apply(theme) {
+            document.documentElement.setAttribute('data-bs-theme', theme);
+            try { localStorage.setItem('sf-theme', theme); } catch (e) {}
+            if (icon) {
+                icon.className = theme === 'dark' ? 'bi bi-sun' : 'bi bi-moon-stars';
+            }
+        }
+
+        function current() {
+            return document.documentElement.getAttribute('data-bs-theme') === 'dark' ? 'dark' : 'light';
+        }
+
+        if (icon) {
+            icon.className = current() === 'dark' ? 'bi bi-sun' : 'bi bi-moon-stars';
+        }
+
+        if (toggle) {
+            toggle.addEventListener('click', function () {
+                apply(current() === 'dark' ? 'light' : 'dark');
+            });
+        }
+    }
+
+    // ============================================
+    // Init
+    // ============================================
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+        sfTheme();
+
+        // ============================================
+        // Password Toggle
+        // ============================================
+
+        var togglePassword = document.getElementById('togglePassword');
+        var passwordInput = document.getElementById('password');
+        var passwordIcon = document.getElementById('passwordIcon');
+
+        if (togglePassword && passwordInput && passwordIcon) {
+            togglePassword.addEventListener('click', function () {
+                var isPassword = passwordInput.type === 'password';
+                passwordInput.type = isPassword ? 'text' : 'password';
+                passwordIcon.classList.toggle('bi-eye', isPassword);
+                passwordIcon.classList.toggle('bi-eye-slash', !isPassword);
+                togglePassword.setAttribute('aria-pressed', String(isPassword));
+                togglePassword.setAttribute('aria-label', isPassword ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور');
+            });
+        }
+
+        // ============================================
+        // Login Form Submit (Spinner + prevent double)
+        // ============================================
+
+        var form = document.getElementById('sfLoginForm');
+        var btn = document.getElementById('sfLoginBtn');
+
+        if (form && btn) {
+            form.addEventListener('submit', function () {
+                if (form.dataset.sfSubmitting === '1') return;
+                form.dataset.sfSubmitting = '1';
+                sfSetLoading(btn, true, 'جاري الدخول...');
+
+                setTimeout(function () {
+                    form.dataset.sfSubmitting = '0';
+                    sfSetLoading(btn, false);
+                }, 5000);
+            });
+        }
+    });
+})();
 </script>
 
-<script src="{{ asset('front/js/login.js') }}"></script>
 </body>
-
 </html>
-
-
-

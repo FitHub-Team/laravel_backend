@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\Admin\SkillController;
 use App\Http\Controllers\Api\Admin\TrainerController;
 use App\Http\Controllers\Api\Admin\AdminUserController;
 use App\Http\Controllers\Api\Admin\UsersDetailsController;
+use App\Http\Controllers\Api\Admin\PaymentController;
 use Illuminate\Support\Facades\Route;
 
 // ==========================================
@@ -97,6 +98,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::patch('/skills/{skill}/toggle', [SkillController::class, 'toggleActive'])->name('skills.toggle');
     Route::delete('/skills/{skill}', [SkillController::class, 'destroy'])->name('skills.destroy');
 
+
+    // Payments
+    Route::get('/payments', [PaymentController::class, 'index'])
+        ->name('payments.index');
+
 });
 
 // Clear Cache Route
@@ -106,4 +112,10 @@ Route::get('/clear-all-cache', function () {
     \Illuminate\Support\Facades\Artisan::call('view:clear');
     \Illuminate\Support\Facades\Artisan::call('route:clear');
     return 'Done! All cache cleared successfully.';
+});
+
+
+
+Route::get('/superfit', function () {
+    return view('SuperFit');
 });
