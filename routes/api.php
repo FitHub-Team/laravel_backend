@@ -214,6 +214,15 @@ Route::middleware('auth:sanctum')->group(function () {
                 Route::post('/{id}/workout-plan/update', [WorkoutPlanController::class, 'storeOrUpdate']);
                 Route::post('/{id}/nutrition-plan', [CoachNutritionPlanController::class, 'storeOrUpdate']);
                 Route::get('/{id}/progress', [ProgressController::class, 'show']);
+                Route::get(
+                    '/{traineeId}/workout-plan/versions',
+                    [WorkoutPlanController::class, 'versions']
+                );
+
+                Route::get(
+                    '/{traineeId}/workout-plan/versions/{planId}',
+                    [WorkoutPlanController::class, 'showVersion']
+                );
             });
 
             /*

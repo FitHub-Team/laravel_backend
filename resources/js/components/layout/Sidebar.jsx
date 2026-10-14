@@ -10,11 +10,14 @@ import {
     Bell,
     LogOut,
     User,
-    Settings,Dumbbell,Utensils 
+    Settings,
+    Dumbbell,
+    Utensils,
 } from "lucide-react";
 
 import logo from "../../assets/logo-dashboard.png";
 import profileImage from "../../assets/profile-avatar.jpg";
+import { getImageUrl } from "../../utils/imageUrl";
 
 function Sidebar({ dashboardData }) {
     const navigate = useNavigate();
@@ -26,6 +29,7 @@ function Sidebar({ dashboardData }) {
         localStorage.setItem("flashMessage", "تم تسجيل الخروج بنجاح ..");
         navigate("/login", { replace: true });
     };
+
 
     return (
         <aside className="fixed top-0 right-0 w-64 h-screen bg-white border-l border-gray-200 flex flex-col hidden lg:flex rtl">
@@ -60,11 +64,23 @@ function Sidebar({ dashboardData }) {
                             <div className="w-12 h-12 shrink-0 rounded-full border-2 border-[#407437] overflow-hidden">
                                 <img
                                     src={
-                                        dashboardData?.coach?.profile_photo ??
-                                        profileImage
+                                        dashboardData?.coach?.coach_profile?.profile_photo
+                                            ? getImageUrl(
+                                                  dashboardData.coach.coach_profile
+                                                      .profile_photo,
+                                              )
+                                            : profileImage
                                     }
-                                    alt="User"
+                                    alt="Coach"
                                     className="w-full h-full object-cover"
+                                    onError={(e) => {
+                                        console.error(
+                                            "Failed image URL:",
+                                            e.currentTarget.src,
+                                        );
+                                        e.currentTarget.onerror = null;
+                                        e.currentTarget.src = profileImage;
+                                    }}
                                 />
                             </div>
 
@@ -122,7 +138,6 @@ function Sidebar({ dashboardData }) {
                         label="مكتبة الوصفات"
                         active={location.pathname === "/dashboard/recipes"}
                     />
-                   
 
                     {/* <NavItem icon={<Bookmark size={20} />} label="الحزم" /> */}
 

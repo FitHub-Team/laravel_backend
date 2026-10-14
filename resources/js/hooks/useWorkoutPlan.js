@@ -1,8 +1,17 @@
 import { useEffect, useState } from "react";
 import workoutPlanService from "../services/workoutPlanService";
 
-// جميع أيام الأسبوع المستخدمة في الخطة
-const allDaysOfWeek = [
+// Display API validation details instead of hiding them in the browser console.
+const errorMessage = (err, fallback) => {
+  const errors = err?.response?.data?.errors;
+  if (errors && typeof errors === "object") {
+    const messages = Object.values(errors).flat().filter(Boolean);
+    if (messages.length) return messages.join(" | ");
+  }
+  return err?.response?.data?.message || err?.message || fallback;
+};
+
+const daysOfWeek = [
   { id: "sunday", name: "الأحد" },
   { id: "monday", name: "الإثنين" },
   { id: "tuesday", name: "الثلاثاء" },
@@ -12,552 +21,252 @@ const allDaysOfWeek = [
   { id: "saturday", name: "السبت" },
 ];
 
-const useWorkoutPlan = (traineeId) => {
-  // =========================================================
-  // الحالات
-  // =========================================================
+const dayNames = {
+  "الأحد": "sunday", "الاحد": "sunday", "الإثنين": "monday", "الاثنين": "monday",
+  "الثلاثاء": "tuesday", "الأربعاء": "wednesday", "الاربعاء": "wednesday",
+  "الخميس": "thursday", "الجمعة": "friday", "السبت": "saturday",
+};
 
-  // اليوم المحدد حاليًا
+const getId = (item) => item?.exercise_id ?? item?.exercise?.id ?? item?.id;
+const normalizeItem = (item) => {
+  const nested = item.exercise && typeof item.exercise === "object" ? item.exercise : null;
+  const id = getId(item);
+  return {
+    ...item,
+    exercise_id: id,
+    exercise: nested ?? (item.name ? { id, name: item.name, description: item.description, muscle_group: item.muscle_group ?? item.category, equipment: item.equipment, difficulty_level: item.difficulty_level } : null),
+    sets: item.sets ?? 3,
+    reps: String(item.reps ?? "10-12"),
+    rest_seconds: item.rest_seconds ?? item.rest_time ?? item.rest ?? 60,
+    notes: item.notes ?? "",
+  };
+};
+
+// The editor uses a flat days array, while AI provides weeks[0].days.
+function normalizeAIPlan(result) {
+  const response = result?.data?.weeks ? result.data : result;
+  const week = response?.weeks?.[0];
+  if (!Array.isArray(week?.days)) throw new Error("استجابة AI لا تحتوي أيام تدريب صالحة");
+  const days = week.days.map((day) => {
+    // Prefer the Arabic weekday because AI week numbering can begin on Saturday.
+    const dayId = dayNames[day.day_name_ar] ?? daysOfWeek[Number(day.day_number) - 1]?.id;
+    if (!dayId) throw new Error("تعذّر تحديد يوم في خطة AI");
+    const isRest = day.is_rest || !day.session;
+    return {
+      day: dayId,
+      focus: isRest ? "راحة" : (day.focus_ar || day.session?.focus_ar || day.session?.focus || ""),
+      exercises: isRest ? [] : (day.session?.exercises ?? []).map(normalizeItem),
+    };
+  });
+  return { ...response, days };
+}
+
+function normalizeSavedPlan(result) {
+  const plan = result?.data?.days ? result.data : result;
+  if (!plan || !Array.isArray(plan.days)) return plan ?? null;
+  return {
+    ...plan,
+    days: plan.days.map((day) => ({
+      ...day,
+      exercises: (day.exercises ?? []).map(normalizeItem),
+    })),
+  };
+}
+
+export default function useWorkoutPlan(traineeId) {
   const [selectedDay, setSelectedDay] = useState("sunday");
-
-  // بيانات خطة التمرين كاملة
   const [workoutPlan, setWorkoutPlan] = useState(null);
-
-  // قائمة المشتركين
   const [trainees, setTrainees] = useState([]);
-
-  // المشترك المحدد حاليًا
   const [selectedTrainee, setSelectedTrainee] = useState(null);
-
-  // حالة تحميل الخطة
   const [isLoading, setIsLoading] = useState(false);
-
-  // حالة حفظ الخطة
   const [isSaving, setIsSaving] = useState(false);
-
-  // حالة تحميل المشتركين
   const [isTraineesLoading, setIsTraineesLoading] = useState(false);
-
-  // حالة توليد الخطة بالـ AI
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
-
-  // تخزين أي خطأ
   const [error, setError] = useState(null);
+  const [flashMessage, setFlashMessage] = useState(null);
+  const showFlash = (message, type = "error") => {
+    setFlashMessage({ id: Date.now(), message, type });
+  };
+  const dismissFlash = () => setFlashMessage(null);
 
-  // =========================================================
-  // الأيام
-  // =========================================================
-
-  const daysOfWeek = allDaysOfWeek;
-
-  // الأيام التي اختارها المشترك كأيام متاحة للتمرين
-  const availableDays =
-    selectedTrainee?.trainee?.user_profile?.available_days || [];
-
-  // بيانات اليوم المحدد
-  const selectedDayData = daysOfWeek.find(
-    (day) => day.id === selectedDay
-  );
-
-  // تمارين اليوم المحدد
-  const exercises =
-    workoutPlan?.days?.find(
-      (day) => day.day === selectedDay
-    )?.exercises || [];
-
-  // التركيز الخاص باليوم المحدد
-  const selectedDayFocus =
-    workoutPlan?.days?.find(
-      (day) => day.day === selectedDay
-    )?.focus || "";
-
-  // =========================================================
-  // جلب خطة التمرين الخاصة بالمشترك
-  // =========================================================
+  const availableDays = selectedTrainee?.trainee?.user_profile?.available_days ?? [];
+  const currentDay = workoutPlan?.days?.find((day) => day.day === selectedDay);
+  const selectedDayData = daysOfWeek.find((day) => day.id === selectedDay);
+  const exercises = currentDay?.exercises ?? [];
+  const selectedDayFocus = currentDay?.focus ?? "";
+  const hasExercises = (workoutPlan?.days ?? []).some((day) => (day.exercises ?? []).length > 0);
 
   const getWorkoutPlan = async (id) => {
     if (!id) return;
-
+    setIsLoading(true);
+    setError(null);
     try {
-      setIsLoading(true);
-      setError(null);
-
-      const plan = await workoutPlanService.getWorkoutPlan(id);
-
+      const plan = normalizeSavedPlan(await workoutPlanService.getWorkoutPlan(id));
       setWorkoutPlan(plan);
-
-      // إذا كانت الخطة تحتوي على أيام
-      // نحدد أول يوم موجود فيها
-      if (plan?.days?.length) {
-        setSelectedDay(plan.days[0].day);
-      } else {
-        setSelectedDay("sunday");
-      }
-    } catch (error) {
-      console.error("Error loading workout plan:", error);
-
+      setSelectedDay(plan?.days?.[0]?.day ?? "sunday");
+      return plan;
+    } catch (err) {
       setWorkoutPlan(null);
-      setError(error);
+      setError(err);
+      showFlash(errorMessage(err, "تعذّر تحميل خطة التدريب"));
+      throw err;
     } finally {
       setIsLoading(false);
     }
   };
 
-  // =========================================================
-  // جلب جميع المشتركين
-  // =========================================================
+  const selectTrainee = async (subscription) => {
+    if (!subscription?.trainee?.id) return;
+    setSelectedTrainee(subscription);
+    setSelectedDay("sunday");
+    setWorkoutPlan(null);
+    try { await getWorkoutPlan(subscription.trainee.id); }
+    catch (_) { /* The hook already displays the loading failure. */ }
+  };
 
-  const getTrainees = async () => {
+  const generateAIPlan = async () => {
+    if (!selectedTrainee?.trainee?.id) throw new Error("لم يتم اختيار مشترك");
+    setIsGeneratingAI(true);
+    setError(null);
     try {
-      setIsTraineesLoading(true);
-
-      const traineesData =
-        await workoutPlanService.getTrainees();
-
-      setTrainees(traineesData);
-    } catch (error) {
-      console.error("Error loading trainees:", error);
-
-      setTrainees([]);
+      const raw = await workoutPlanService.generateAIWorkoutPlan(selectedTrainee.trainee.id);
+      const plan = normalizeAIPlan(raw);
+      setWorkoutPlan(plan);
+      setSelectedDay(plan.days.find((day) => day.exercises.length)?.day ?? plan.days[0]?.day ?? "sunday");
+      showFlash("تم توليد خطة التمارين بنجاح", "success");
+      return plan;
+    } catch (err) {
+      setError(err);
+      showFlash(errorMessage(err, "تعذّر توليد خطة التمارين"));
+      throw err;
     } finally {
-      setIsTraineesLoading(false);
+      setIsGeneratingAI(false);
     }
   };
 
-  // =========================================================
-  // توليد خطة التمرين باستخدام AI
-  // =========================================================
-
-// توليد خطة التمرين باستخدام AI
-const generateAIPlan = async () => {
-  if (!selectedTrainee?.trainee?.id) {
-    throw new Error("لم يتم اختيار مشترك");
-  }
-
-  try {
-    setIsGeneratingAI(true);
-
-    const traineeId = selectedTrainee.trainee.id;
-
-    console.log("🚀 Calling AI for trainee:", traineeId);
-
-    const result =
-      await workoutPlanService.generateAIWorkoutPlan(traineeId);
-
-    console.log("🤖 AI RESULT:", result);
-
-    // ==========================================
-    // تحويل خطة AI إلى نفس شكل workoutPlan
-    // ==========================================
-
-    const aiWeek = result?.weeks?.[0];
-
-    if (!aiWeek?.days) {
-      throw new Error("لم يتم العثور على أيام في خطة AI");
-    }
-
-    const aiDays = aiWeek.days.map((aiDay) => {
-      // تحويل رقم اليوم إلى اسم اليوم المستخدم في النظام
-      const dayData = daysOfWeek[aiDay.day_number - 1];
-
-      const dayId = dayData?.id;
-
-      // يوم راحة
-      if (aiDay.is_rest || !aiDay.session) {
-        return {
-          day: dayId,
-          focus: "راحة",
-          exercises: [],
-        };
-      }
-
-      // يوم تمرين
-      const exercises = (aiDay.session.exercises || []).map(
-        (exercise, index) => ({
-          // id مؤقت للعرض في الـ Table
-          id: `ai-${aiDay.day_number}-${index}`,
-
-          // الاسم الذي رجعه الـ AI
-          name: exercise.name,
-
-          // بيانات إضافية
-          target_muscle: exercise.target_muscle,
-          equipment: exercise.equipment,
-
-          // بيانات التمرين
-          sets: exercise.sets,
-          reps: exercise.reps,
-          rest_time: exercise.rest_seconds,
-
-          // سيتم ربطه لاحقاً مع exercise الحقيقي من DB
-          exercise_id: null,
-
-          notes: "",
-        })
-      );
-
-      return {
-        day: dayId,
-        focus: aiDay.session.focus,
-        exercises,
-      };
+  const updateSelectedDay = (updater) => {
+    setWorkoutPlan((previous) => {
+      const current = previous ?? { days: [] };
+      const existing = (current.days ?? []).some((day) => day.day === selectedDay);
+      const days = existing
+        ? current.days.map((day) => day.day === selectedDay ? updater(day) : day)
+        : [...(current.days ?? []), updater({ day: selectedDay, focus: "", exercises: [] })];
+      return { ...current, days };
     });
-
-    const generatedPlan = {
-      ...result,
-
-      // الشكل الذي يفهمه الـ Table والـ save
-      days: aiDays,
-
-      // نحتفظ بمعلومات الخطة
-      duration_weeks: result.duration_weeks,
-      disclaimer: result.disclaimer,
-      summary: result.summary,
-    };
-
-    console.log("🟢 GENERATED WORKOUT PLAN:", generatedPlan);
-
-    // أهم سطر
-    setWorkoutPlan(generatedPlan);
-
-    // اختيار أول يوم فيه تمارين
-    const firstWorkoutDay = aiDays.find(
-      (day) => day.exercises.length > 0
-    );
-
-    if (firstWorkoutDay) {
-      setSelectedDay(firstWorkoutDay.day);
-    }
-
-    return generatedPlan;
-  } catch (error) {
-    console.error("❌ AI SERVICE ERROR:", error);
-    throw error;
-  } finally {
-    setIsGeneratingAI(false);
-  }
-};
-  // =========================================================
-  // إضافة تمرين جديد لليوم المحدد
-  // =========================================================
+  };
 
   const addExercise = (exercise) => {
     if (!exercise) return;
-
-    const newExercise = {
-      ...exercise,
-      exercise_id: exercise.id,
-      sets: 3,
-      reps: 10,
-      rest_time: 60,
-      notes: "",
-    };
-
-    setWorkoutPlan((prev) => {
-      const currentPlan = prev || {
-        days: [],
-      };
-
-      const days = [...(currentPlan.days || [])];
-
-      const existingDayIndex = days.findIndex(
-        (day) => day.day === selectedDay
-      );
-
-      if (existingDayIndex >= 0) {
-        days[existingDayIndex] = {
-          ...days[existingDayIndex],
-
-          exercises: [
-            ...(days[existingDayIndex].exercises || []),
-            newExercise,
-          ],
-        };
-      } else {
-        days.push({
-          day: selectedDay,
-          focus: "",
-          exercises: [newExercise],
-        });
-      }
-
-      return {
-        ...currentPlan,
-        days,
-      };
-    });
-  };
-
-  // =========================================================
-  // تعديل التركيز الخاص باليوم المحدد
-  // =========================================================
-
-  const updateDayFocus = (focus) => {
-    console.log("🟢 updateDayFocus called:", {
-      selectedDay,
-      focus,
-    });
-
-    setWorkoutPlan((prev) => {
-      const currentPlan = prev || {
-        days: [],
-      };
-
-      const days = [...(currentPlan.days || [])];
-
-      const existingDayIndex = days.findIndex(
-        (day) => day.day === selectedDay
-      );
-
-      console.log("🟡 Before update:", {
-        currentPlan,
-        existingDayIndex,
-        days,
-      });
-
-      if (existingDayIndex >= 0) {
-        days[existingDayIndex] = {
-          ...days[existingDayIndex],
-          focus,
-        };
-      } else {
-        days.push({
-          day: selectedDay,
-          focus,
-          exercises: [],
-        });
-      }
-
-      const updatedPlan = {
-        ...currentPlan,
-        days,
-      };
-
-      console.log("🔵 After update:", updatedPlan);
-
-      return updatedPlan;
-    });
-  };
-
-  // =========================================================
-  // حذف تمرين من اليوم المحدد
-  // =========================================================
-
-  const deleteExercise = (exerciseId) => {
-    setWorkoutPlan((prev) => {
-      if (!prev) return prev;
-
-      return {
-        ...prev,
-
-        days: (prev.days || []).map((day) => {
-          // لا نعدل الأيام الأخرى
-          if (day.day !== selectedDay) {
-            return day;
-          }
-
-          return {
-            ...day,
-
-            exercises: (day.exercises || []).filter(
-              (exercise) =>
-                exercise.id !== exerciseId &&
-                exercise.exercise_id !== exerciseId
-            ),
-          };
-        }),
-      };
-    });
-  };
-
-  // =========================================================
-  // معرفة عدد التمارين الموجودة في يوم معين
-  // =========================================================
-
-  const getDayExercisesCount = (dayId) => {
-    const planDay = workoutPlan?.days?.find(
-      (day) => day.day === dayId
-    );
-
-    return planDay?.exercises?.length || 0;
-  };
-
-  // =========================================================
-  // حفظ أو إرسال خطة التمرين
-  // status = draft | active
-  // =========================================================
-
-  const saveWorkoutPlan = async (status = "draft") => {
-    if (!selectedTrainee?.trainee?.id) {
+    const item = normalizeItem({ ...exercise, exercise_id: getId(exercise), sets: 3, reps: "10-12", rest_seconds: 60, notes: "" });
+    if (!Number.isInteger(Number(item.exercise_id)) || Number(item.exercise_id) <= 0) {
+      showFlash("لا يمكن إضافة التمرين: معرّفه غير صالح");
       return;
     }
+    updateSelectedDay((day) => ({ ...day, exercises: [...(day.exercises ?? []), item] }));
+  };
 
+  const updateDayFocus = (focus) => updateSelectedDay((day) => ({ ...day, focus }));
+
+  // The index disambiguates repeated exercises within one day.
+  const updateExercise = (exerciseId, changes, index) => {
+    updateSelectedDay((day) => ({
+      ...day,
+      exercises: (day.exercises ?? []).map((item, i) => {
+        const matching = Number(getId(item)) === Number(exerciseId);
+        if ((index != null ? i === index && matching : matching)) {
+          return { ...item, ...changes };
+        }
+        return item;
+      }),
+    }));
+  };
+
+  const deleteExercise = (exerciseId, index) => {
+    updateSelectedDay((day) => ({
+      ...day,
+      exercises: (day.exercises ?? []).filter((item, i) =>
+        index != null ? !(i === index && Number(getId(item)) === Number(exerciseId)) : Number(getId(item)) !== Number(exerciseId)
+      ),
+    }));
+  };
+
+  const getDayExercisesCount = (dayId) => workoutPlan?.days?.find((day) => day.day === dayId)?.exercises?.length ?? 0;
+
+  const saveWorkoutPlan = async (status = "draft") => {
+    if (isSaving) return;
+    if (!selectedTrainee?.trainee?.id) {
+      showFlash("يرجى اختيار المشترك");
+      return;
+    }
+    setIsSaving(true);
+    setError(null);
     try {
-      setIsSaving(true);
-      setError(null);
-
-      // تحويل تمارين جميع الأيام إلى الشكل المطلوب من Backend
-      const exercisesPayload = (
-        workoutPlan?.days || []
-      ).flatMap((day) =>
-        (day.exercises || []).map((exercise) => ({
-          day_of_week: day.day,
-          exercise_id:
-            exercise.exercise_id ?? exercise.id,
-          sets: Number(exercise.sets),
-          reps: Number(exercise.reps),
-          rest_time:
-            exercise.rest_time ?? null,
-          notes: exercise.notes ?? null,
-        }))
+      const allExercises = (workoutPlan?.days ?? []).flatMap((day) =>
+        (day.exercises ?? []).map((exercise) => {
+          const exerciseId = Number(getId(exercise));
+          const sets = Number(exercise.sets);
+          const rest = Number(exercise.rest_seconds ?? exercise.rest_time ?? 60);
+          const reps = String(exercise.reps ?? "").trim();
+          if (!Number.isInteger(exerciseId) || exerciseId <= 0 ||
+            !Number.isInteger(sets) || sets < 1 ||
+            !Number.isInteger(rest) || rest < 0 || !reps) {
+            throw new Error("هناك تمرين ببيانات غير صالحة. راجعي المجموعات والتكرارات والراحة.");
+          }
+          return { day_of_week: day.day, exercise_id: exerciseId, sets, reps, rest_time: rest, notes: exercise.notes ?? null };
+        })
       );
-
-      // البيانات التي سيتم إرسالها للـ API
+      if (!allExercises.length) throw new Error("أضيفي تمرينًا واحدًا على الأقل قبل الحفظ");
       const payload = {
-        start_date:
-          workoutPlan?.start_date ?? null,
-
-        end_date:
-          workoutPlan?.end_date ?? null,
-
+        start_date: workoutPlan?.start_date ?? null,
+        end_date: workoutPlan?.end_date ?? null,
         status,
-
-        days: (workoutPlan?.days || []).map((day) => ({
-          day: day.day,
-          focus: day.focus ?? null,
-        })),
-
-        exercises: exercisesPayload,
+        days: (workoutPlan?.days ?? []).map((day) => ({ day: day.day, focus: day.focus ?? null })),
+        exercises: allExercises,
       };
-
-      const response =
-        await workoutPlanService.saveWorkoutPlan(
-          selectedTrainee.trainee.id,
-          payload
-        );
-
-      console.log(
-        "Workout plan saved:",
-        response
-      );
-
+      const response = await workoutPlanService.saveWorkoutPlan(selectedTrainee.trainee.id, payload);
+      if (status === "active") {
+        clearWorkoutTable();
+        showFlash("تم إرسال الخطة للمشترك وتفريغ الجدول", "success");
+      } else {
+        showFlash("تم حفظ الخطة كمسودة بنجاح", "success");
+      }
       return response;
-    } catch (error) {
-      console.error(
-        "Error saving workout plan:",
-        error
-      );
-
-      setError(error);
-
-      throw error;
+    } catch (err) {
+      setError(err);
+      showFlash(errorMessage(err, "تعذّر حفظ الخطة"));
+      return null;
     } finally {
       setIsSaving(false);
     }
   };
 
-  // =========================================================
-  // اختيار مشترك من القائمة
-  // =========================================================
-
-  const selectTrainee = async (subscription) => {
-    if (!subscription?.trainee?.id) {
-      return;
-    }
-
-    // تحديد المشترك
-    setSelectedTrainee(subscription);
-
-    // البدء من يوم الأحد
+  const clearWorkoutTable = () => {
+    setWorkoutPlan({ days: [], status: "draft" });
     setSelectedDay("sunday");
-
-    // مسح الخطة القديمة مؤقتًا
-    setWorkoutPlan(null);
-
-    // جلب خطة المشترك الجديد
-    await getWorkoutPlan(
-      subscription.trainee.id
-    );
   };
 
-  // =========================================================
-  // جلب المشتركين عند فتح الصفحة
-  // =========================================================
-
   useEffect(() => {
-    getTrainees();
+    let active = true;
+    setIsTraineesLoading(true);
+    workoutPlanService.getTrainees()
+      .then((data) => { if (active) setTrainees(Array.isArray(data) ? data : []); })
+      .catch((err) => { if (active) { setTrainees([]); showFlash(errorMessage(err, "تعذّر تحميل المشتركين")); } })
+      .finally(() => { if (active) setIsTraineesLoading(false); });
+    return () => { active = false; };
   }, []);
 
-  // =========================================================
-  // إذا جاء traineeId من URL
-  // نحدد المشترك تلقائيًا
-  // =========================================================
-
   useEffect(() => {
-    if (!traineeId || trainees.length === 0) {
-      return;
-    }
-
-    const subscription = trainees.find(
-      (item) =>
-        String(item.trainee?.id) ===
-        String(traineeId)
-    );
-
-    if (!subscription) {
-      return;
-    }
-
-    setSelectedTrainee(subscription);
-
-    getWorkoutPlan(
-      subscription.trainee.id
-    );
+    if (!traineeId || trainees.length === 0) return;
+    const subscription = trainees.find((item) => String(item.trainee?.id) === String(traineeId));
+    if (subscription) selectTrainee(subscription);
   }, [traineeId, trainees]);
 
-  // =========================================================
-  // البيانات والدوال التي يستطيع المكون استخدامها
-  // =========================================================
-
   return {
-    // الأيام
-    daysOfWeek,
-    availableDays,
-
-    // اليوم المحدد
-    selectedDay,
-    setSelectedDay,
-    selectedDayData,
-    selectedDayFocus,
-
-    // الخطة
-    workoutPlan,
-    exercises,
-
-    // المشتركين
-    trainees,
-    selectedTrainee,
-    selectTrainee,
-
-    // التمارين
-    addExercise,
-    updateDayFocus,
-    deleteExercise,
-    getDayExercisesCount,
-
-    // الحفظ
-    saveWorkoutPlan,
-    isSaving,
-
-    // AI
-    generateAIPlan,
-    isGeneratingAI,
-
-    // حالات التحميل والأخطاء
-    isLoading,
-    isTraineesLoading,
-    error,
+    daysOfWeek, availableDays, selectedDay, setSelectedDay, selectedDayData,
+    selectedDayFocus, workoutPlan, exercises, hasExercises,
+    trainees, selectedTrainee, selectTrainee,
+    addExercise, updateDayFocus, updateExercise, deleteExercise, getDayExercisesCount,
+    saveWorkoutPlan, isSaving, generateAIPlan, isGeneratingAI,
+    isLoading, isTraineesLoading, error, clearWorkoutTable, flashMessage, dismissFlash, showFlash,
   };
-};
-
-export default useWorkoutPlan;
+}

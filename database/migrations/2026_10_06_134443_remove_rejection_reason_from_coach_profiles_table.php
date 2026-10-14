@@ -8,16 +8,19 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('coach_profiles', function (Blueprint $table) {
-            $table->dropColumn('rejection_reason');
-            $table->dropColumn('skill_id');
-        });
+        if (Schema::hasColumn('coach_profiles', 'rejection_reason')) {
+            Schema::table('coach_profiles', function (Blueprint $table) {
+                $table->dropColumn('rejection_reason');
+            });
+        }
     }
 
     public function down(): void
     {
-        Schema::table('coach_profiles', function (Blueprint $table) {
-            $table->text('rejection_reason')->nullable();
-        });
+        if (!Schema::hasColumn('coach_profiles', 'rejection_reason')) {
+            Schema::table('coach_profiles', function (Blueprint $table) {
+                $table->text('rejection_reason')->nullable();
+            });
+        }
     }
 };

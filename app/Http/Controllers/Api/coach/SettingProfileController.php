@@ -78,50 +78,55 @@ class SettingProfileController extends Controller
         ], 200);
     }
 
-    public function updateProfilePhoto(Request $request): JsonResponse
-    {
-        try {
-            $request->validate([
-                'profile_photo' => [
-                    'required',
-                    'image',
-                    'mimes:jpeg,png,jpg,gif,webp',
-                    'max:2048',
-                ],
-            ]);
+  public function updateProfilePhoto(Request $request): JsonResponse
+{
+    $validated = $request->validate([
+        'profile_photo' => [
+            'required',
+            'image',
+            'mimes:jpeg,png,jpg,gif,webp',
+            'max:2048',
+        ],
+    ]);
 
-            $profile = $this->coachService->updateProfilePhoto(
-                $request->user(),
-                $request->file('profile_photo')
-            );
+    try {
+        $profile = $this->coachService->updateProfilePhoto(
+            $request->user(),
+            $request->file('profile_photo')
+        );
 
-            if (!$profile) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'الملف الشخصي للمستخدم غير موجود.',
-                ], 404);
-            }
-
-            return response()->json([
-                'status' => true,
-                'message' => 'تم تحديث صورة الملف الشخصي بنجاح',
-                'data' => [
-                    'profile_photo' => $profile->coachProfile->profile_photo
-                        ? asset(
-                            'storage/' .
-                                $profile->coachProfile->profile_photo
-                        )
-                        : null,
-                ],
-            ], 200);
-        } catch (Exception $e) {
+        if (!$profile) {
             return response()->json([
                 'status' => false,
-                'message' => 'حدث خطأ أثناء تحديث صورة الملف الشخصي',
-                'error' => $e->getMessage(),
-            ], 500);
+                'message' => 'الملف الشخصي للمستخدم غير موجود.',
+            ], 404);
         }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'تم تحديث صورة الملف الشخصي بنجاح',
+            'data' => [
+                'profile_photo' => $profile->coachProfile->profile_photo
+                    ? asset(
+                        'storage/' .
+                        $profile->coachProfile->profile_photo
+                    )
+                    : null,
+            ],
+        ], 200);
+
+    } catch (\Throwable $e) {
+        \Illuminate\Support\Facades\Log::error('Coach profile photo upload failed', [
+            'user_id' => $request->user()?->id,
+            'exception' => $e,
+        ]);
+
+        return response()->json([
+            'status' => false,
+            'message' => 'حدث خطأ أثناء تحديث صورة الملف الشخصي',
+        ], 500);
     }
+}
     
     public function deleteProfilePhoto(Request $request)
     {

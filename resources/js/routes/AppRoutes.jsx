@@ -11,6 +11,7 @@ import SubscribersRequset from "../pages/coach/trainees/SubscribersRequset";
 import WorkoutPlan from "../pages/coach/workout/WorkoutPlan";
 import CoachProfile from "../pages/coach/profile/CoachProfile";
 import CustomExercises from "../pages/coach/workout/CustomExercises";
+import ChallengesPage from "../pages/coach/challenges/ChallengesPage";
 
 import TraineeProfile from "../pages/coach/trainees/TraineeProfile";
 import RecipeLibrary from "../pages/coach/recipes/RecipeLibrary";
@@ -59,7 +60,9 @@ const AppRoutes = () => {
                 <Route path="coach/profile" element={<CoachProfile />} />
                 <Route path="trainees/:id" element={<TraineeProfile />} />
                 <Route path="recipes" element={<RecipeLibrary />} />
+               
             </Route>
+             <Route path="challenges" element={<ChallengesPage />} />
         </Routes>
     );
 };

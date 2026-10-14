@@ -11,16 +11,22 @@ class WorkoutPlan extends Model
 
     protected $fillable = [
         'coach_id',
-    'trainee_id',
-   
-    'start_date',
-    'end_date',
-    'status',
+        'trainee_id',
+
+        'start_date',
+        'end_date',
+        'status',
+        'version'
+    ];
+    protected $casts = [
+        'version' => 'integer',
+        'start_date' => 'date',
+        'end_date' => 'date',
     ];
 
     public function workoutExercises()
     {
-        return $this->hasMany(WorkoutExercise::class,'workout_plan_id');
+        return $this->hasMany(WorkoutExercise::class, 'workout_plan_id');
     }
 
 

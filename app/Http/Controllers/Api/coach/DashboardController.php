@@ -11,11 +11,12 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         $coach = $request->user();
+        $coach->load('coachProfile');
         $subscriptionsCount = Subscription::where('coach_id', $coach->id)->count();
         return response()->json([
             'message' => 'Coach dashboard data',
             'coach' => $coach,
-            'subscriptions_count'=> $subscriptionsCount
+            'subscriptions_count' => $subscriptionsCount
         ]);
     }
 }

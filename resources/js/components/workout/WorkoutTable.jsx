@@ -1,209 +1,260 @@
-import { useState } from "react";
-import { Trash2, Plus, Sparkles } from "lucide-react";
-import Button from "../common/Button";
+import { useEffect, useState } from "react";
+import {
+    Trash2,
+    Plus,
+    Dumbbell,
+    Clock3,
+    Layers3,
+    RotateCcw,
+    Info,
+} from "lucide-react";
 import ExerciseLibraryModal from "./ExerciseLibraryModal";
 
-const Table = ({
-  selectedDayData,
-  exercises,
-  handleDelete,
-  selectedTrainee,
-  workoutPlan,
-  onAddExercise, // ← prop جديد لاستقبال التمرين المختار
-  selectedDayFocus,
-  onFocusChange,
-}) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+const exerciseId = (item) => item.exercise_id ?? item.exercise?.id ?? item.id;
+const display = (v) =>
+    typeof v === "string" || typeof v === "number" ? v : "";
 
-  // ===== عند اختيار تمرين من المكتبة =====
-  const handleSelectExercise = (exercise) => {
-    if (onAddExercise) {
-      onAddExercise(exercise);
-    }
-    setIsModalOpen(false);
-  };
+function Field({
+    label,
+    icon: Icon,
+    value,
+    onChange,
+    type = "text",
+    min,
+    placeholder = "",
+}) {
+    return (
+        <label className="flex min-w-0 flex-col gap-2 rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 focus-within:border-green-400">
+            <span className="flex items-center gap-1.5 text-[11px] text-gray-500">
+                {Icon && <Icon size={13} />} {label}
+            </span>
+            <input
+                type={type}
+                min={min}
+                value={display(value)}
+                onChange={(event) => onChange(event.target.value)}
+                placeholder={placeholder}
+                className="w-full min-w-0 bg-transparent text-right text-sm font-semibold text-gray-800 outline-none"
+            />
+        </label>
+    );
+}
 
-  return (
-    <div className="bg-white rounded-xl p-6 shadow-sm space-y-6">
-      {/* Table Header */}
-      <div className="flex flex-wrap items-center justify-between border-b pb-4 gap-4">
-        <div>
-          <div className="flex items-center gap-3">
-            <h2 className="text-lg font-bold text-gray-800">
-              جدول يوم {selectedDayData?.name || "غير محدد"}
-            </h2>
+function ExerciseRow({ item, index, onDelete, onUpdateExercise }) {
+    const id = exerciseId(item);
+    const details =
+        item.exercise && typeof item.exercise === "object"
+            ? item.exercise
+            : item;
+    const [draft, setDraft] = useState({
+        sets: item.sets ?? 3,
+        reps: item.reps ?? "10-12",
+        weight: item.weight ?? "",
+        rest_seconds: item.rest_seconds ?? item.rest_time ?? item.rest ?? 60,
+        notes: item.notes ?? "",
+    });
+    useEffect(() => {
+        setDraft({
+            sets: item.sets ?? 3,
+            reps: item.reps ?? "10-12",
+            weight: item.weight ?? "",
+            rest_seconds:
+                item.rest_seconds ?? item.rest_time ?? item.rest ?? 60,
+            notes: item.notes ?? "",
+        });
+    }, [
+        item.sets,
+        item.reps,
+        item.weight,
+        item.rest_seconds,
+        item.rest_time,
+        item.rest,
+        item.notes,
+        id,
+    ]);
 
-            {exercises.length > 0 ? (
-              <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs px-2.5 py-1 rounded-full font-medium">
-                ✓ يوم تدريب نشط
-              </span>
-            ) : (
-              <span className="bg-yellow-200 text-gray-700 border border-yellow-200 text-xs px-2.5 py-1 rounded-full font-medium">
-                راحة
-              </span>
-            )}
-          </div>
-          <div className="flex items-center gap-3 mt-4 border-b border-green-200 pb-2 focus-within:border-green-500 transition-colors">
-            <label
-              htmlFor="workout-focus"
-              className="text-sm font-semibold text-green-800 whitespace-nowrap"
-            >
-              التركيز:
-            </label>
-
-           <input
-  id="workout-focus"
-  type="text"
-  value={selectedDayFocus}
-  onChange={(e) => {
-    console.log("🟠 INPUT CHANGED:", e.target.value);
-
-    if (onFocusChange) {
-      onFocusChange(e.target.value);
-    } else {
-      console.log("🔴 onFocusChange is undefined");
-    }
-  }}
-  placeholder="مثال: تمارين الجزء العلوي"
-  className="
-    flex-1
-    bg-transparent
-    text-sm
-    text-green-900
-    placeholder:text-gray-400
-    focus:outline-none
-    text-right
-  "
-/>
-          </div>
-        </div>
-
-        <div className="flex gap-1">
-          <Button
-            onClick={() => setIsModalOpen(true)}
-            title="إضافة تمرين من المكتبة"
-            Icon={Plus}
-            color="bg-[#407437] text-white"
-            className="border border-gray-200"
-          />
-
-        
-        </div>
-      </div>
-
-      {/* Exercises */}
-      <div className="space-y-4">
-        {exercises.length === 0 ? (
-          <div className="text-center py-10 text-gray-400 text-sm">
-            لم تتم إضافة أي تمارين لهذا اليوم بعد
-          </div>
-        ) : (
-          exercises.map((exercise, index) => (
-            <div
-              key={exercise.id}
-              className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm"
-            >
-              {/* Exercise Header */}
-              <div className="flex items-center justify-between mb-4 pb-2 border-b border-gray-100">
-                <div className="flex items-center gap-3 min-w-0">
-                  <span className="w-6 h-6 shrink-0 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center text-xs font-bold">
-                    {index + 1}
-                  </span>
-
-                  <h3 className="font-bold text-gray-800 text-sm sm:text-base truncate">
-                    {exercise.name}
-                  </h3>
-
-                  <span className="bg-gray-100 text-gray-600 text-xs px-2.5 py-0.5 rounded whitespace-nowrap">
-                    {exercise.category}
-                  </span>
+    const change = (field, value) => {
+        setDraft((p) => ({ ...p, [field]: value }));
+        onUpdateExercise?.(id, { [field]: value }, index);
+    };
+    const title = display(details.name) || "تمرين غير معروف";
+    return (
+        <article className="overflow-hidden rounded-2xl border border-gray-200 bg-white hover:border-green-200">
+            <div className="flex items-start justify-between gap-3 border-b border-gray-100 px-4 py-4">
+                <div className="flex min-w-0 items-start gap-3">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-green-50 text-[#407437]">
+                        <Dumbbell size={18} />
+                    </div>
+                    <div className="min-w-0">
+                        <h3 className="text-sm font-bold text-gray-900">
+                            {title}{" "}
+                            <span className="text-xs text-gray-400">
+                                #{index + 1}
+                            </span>
+                        </h3>
+                        <div className="mt-2 flex flex-wrap gap-2 text-[11px] text-gray-500">
+                            {details.muscle_group && (
+                                <span className="rounded-full bg-green-50 px-2 py-1">
+                                    {display(details.muscle_group)}
+                                </span>
+                            )}
+                            {details.equipment && (
+                                <span className="rounded-full bg-gray-100 px-2 py-1">
+                                    {display(details.equipment)}
+                                </span>
+                            )}
+                            {details.difficulty_level && (
+                                <span className="rounded-full bg-blue-50 px-2 py-1">
+                                    {display(details.difficulty_level)}
+                                </span>
+                            )}
+                        </div>
+                    </div>
                 </div>
-
                 <button
-                  type="button"
-                  onClick={() => handleDelete(exercise.id)}
-                  className="text-gray-400 hover:text-red-500 transition-colors shrink-0"
-                  title="حذف التمرين"
+                    type="button"
+                    onClick={() => onDelete?.(id, index)}
+                    aria-label={`حذف ${title}`}
+                    className="rounded-xl bg-red-50 p-2 text-red-500 hover:bg-red-100"
                 >
-                  <Trash2 size={18} />
+                    <Trash2 size={17} />
                 </button>
-              </div>
-
-              {/* Exercise Details */}
-              <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 text-right">
-                {/* Sets */}
-                <div className="bg-gray-50 p-2.5 rounded-lg border border-gray-200">
-                  <span className="block text-xs text-gray-400 mb-1">
-                    المجموعات (Sets)
-                  </span>
-                  <input
-                    type="text"
-                    defaultValue={exercise.sets}
-                    className="w-full bg-transparent font-semibold text-gray-800 text-sm focus:outline-none"
-                  />
-                </div>
-
-                {/* Reps */}
-                <div className="bg-gray-50 p-2.5 rounded-lg border border-gray-200">
-                  <span className="block text-xs text-gray-400 mb-1">
-                    التكرارات (Reps)
-                  </span>
-                  <input
-                    type="text"
-                    defaultValue={exercise.reps}
-                    className="w-full bg-transparent font-semibold text-gray-800 text-sm focus:outline-none"
-                  />
-                </div>
-
-                {/* Weight */}
-                <div className="bg-gray-50 p-2.5 rounded-lg border border-gray-200">
-                  <span className="block text-xs text-gray-400 mb-1">
-                    الوزن المقترح
-                  </span>
-                  <input
-                    type="text"
-                    defaultValue={exercise.weight}
-                    className="w-full bg-transparent font-semibold text-gray-800 text-sm focus:outline-none"
-                  />
-                </div>
-
-                {/* Rest */}
-                <div className="bg-gray-50 p-2.5 rounded-lg border border-gray-200">
-                  <span className="block text-xs text-gray-400 mb-1">
-                    الراحة (ثواني)
-                  </span>
-                  <input
-                    type="text"
-                    defaultValue={exercise.rest}
-                    className="w-full bg-transparent font-semibold text-gray-800 text-sm focus:outline-none"
-                  />
-                </div>
-
-                {/* Notes */}
-                <div className="bg-gray-50 p-2.5 rounded-lg border border-gray-200 col-span-2 sm:col-span-1">
-                  <span className="block text-xs text-gray-400 mb-1">
-                    الملاحظات
-                  </span>
-                  <input
-                    type="text"
-                    defaultValue={exercise.notes}
-                    className="w-full bg-transparent font-semibold text-gray-800 text-sm focus:outline-none truncate"
-                  />
-                </div>
-              </div>
             </div>
-          ))
-        )}
-      </div>
+            {details.description && (
+                <div className="flex items-start gap-2 border-b border-gray-100 bg-[#FAFCFA] px-4 py-3">
+                    <Info size={15} className="mt-1 shrink-0 text-[#407437]" />
+                    <p className="line-clamp-2 text-xs leading-6 text-gray-500">
+                        {display(details.description)}
+                    </p>
+                </div>
+            )}
+            <div className="grid grid-cols-2 gap-3 p-4 sm:grid-cols-3 lg:grid-cols-5">
+                <Field
+                    label="المجموعات"
+                    icon={Layers3}
+                    type="number"
+                    min="1"
+                    value={draft.sets}
+                    onChange={(v) => change("sets", v)}
+                />
+                <Field
+                    label="التكرارات"
+                    icon={RotateCcw}
+                    value={draft.reps}
+                    placeholder="10-12"
+                    onChange={(v) => change("reps", v)}
+                />
+                <Field
+                    label="الوزن (kg)"
+                    icon={Dumbbell}
+                    value={draft.weight}
+                    placeholder="اختياري"
+                    onChange={(v) => change("weight", v)}
+                />
+                <Field
+                    label="الراحة (ثانية)"
+                    icon={Clock3}
+                    type="number"
+                    min="0"
+                    value={draft.rest_seconds}
+                    onChange={(v) => change("rest_seconds", v)}
+                />
+                <Field
+                    label="ملاحظات المدرب"
+                    value={draft.notes}
+                    placeholder="ملاحظة"
+                    onChange={(v) => change("notes", v)}
+                />
+            </div>
+        </article>
+    );
+}
 
-      {/* المودال */}
-      <ExerciseLibraryModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSelectExercise={handleSelectExercise}
-      />
-    </div>
-  );
-};
-
-export default Table;
+export default function WorkoutTable({
+    selectedDayData,
+    exercises = [],
+    handleDelete,
+    onAddExercise,
+    selectedDayFocus = "",
+    onFocusChange,
+    onUpdateExercise,
+}) {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const name =
+        selectedDayData?.day_name_ar ?? selectedDayData?.name ?? "غير محدد";
+    const isRest = exercises.length === 0;
+    return (
+        <div
+            dir="rtl"
+            className="space-y-6 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:p-6"
+        >
+            <div className="flex flex-col justify-between gap-4 border-b pb-5 sm:flex-row sm:items-start">
+                <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-3">
+                        <h2 className="text-lg font-bold text-[#1A3D27]">
+                            جدول يوم {name}
+                        </h2>
+                        <span
+                            className={`rounded-full px-3 py-1 text-xs ${isRest ? "bg-amber-50 text-amber-700" : "bg-green-50 text-green-700"}`}
+                        >
+                            {isRest ? "راحة / بلا تمارين" : "يوم تدريب"}
+                        </span>
+                    </div>
+                    <label className="mt-4 block max-w-xl">
+                        <span className="mb-2 block text-xs font-semibold text-gray-600">
+                            التركيز التدريبي
+                        </span>
+                        <input
+                            type="text"
+                            value={display(selectedDayFocus)}
+                            onChange={(e) => onFocusChange?.(e.target.value)}
+                            placeholder="مثال: دفع (صدر، كتف، ترايسبس)"
+                            className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-green-500"
+                        />
+                    </label>
+                </div>
+                <button
+                    type="button"
+                    onClick={() => setIsModalOpen(true)}
+                    className="flex items-center justify-center gap-2 rounded-xl bg-[#407437] px-4 py-3 text-sm font-semibold text-white hover:bg-[#32632C]"
+                >
+                    <Plus size={17} /> إضافة تمرين
+                </button>
+            </div>
+            <div className="flex items-center justify-between">
+                <h3 className="flex items-center gap-2 text-sm font-bold">
+                    <Dumbbell size={18} className="text-[#407437]" /> تمارين
+                    اليوم
+                </h3>
+                <span className="rounded-lg bg-gray-100 px-3 py-1.5 text-xs">
+                    {exercises.length} تمرين
+                </span>
+            </div>
+            {exercises.length ? (
+                <div className="space-y-4">
+                    {exercises.map((item, index) => (
+                        <ExerciseRow
+                            key={`${exerciseId(item)}-${index}`}
+                            item={item}
+                            index={index}
+                            onDelete={handleDelete}
+                            onUpdateExercise={onUpdateExercise}
+                        />
+                    ))}
+                </div>
+            ) : (
+                <div className="rounded-2xl border border-dashed border-gray-200 bg-gray-50 p-10 text-center text-sm text-gray-500">
+                    لا توجد تمارين لهذا اليوم. يمكنك إضافتها من المكتبة.
+                </div>
+            )}
+            <ExerciseLibraryModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onSelectExercise={(exercise) => {
+                    onAddExercise?.(exercise);
+                    setIsModalOpen(false);
+                }}
+            />
+        </div>
+    );
+}

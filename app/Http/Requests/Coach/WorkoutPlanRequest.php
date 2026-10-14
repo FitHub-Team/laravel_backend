@@ -32,7 +32,7 @@ class WorkoutPlanRequest extends FormRequest
             'exercises.*.day_of_week' => 'required|string',
             'exercises.*.exercise_id' => 'required|exists:exercises,id',
             'exercises.*.sets' => 'required|integer',
-            'exercises.*.reps' => 'required|integer',
+            'exercises.*.reps' => 'required',
             'exercises.*.rest_time' => 'nullable',
             'exercises.*.notes' => 'nullable|string',
             'days' => 'required|array|min:1',

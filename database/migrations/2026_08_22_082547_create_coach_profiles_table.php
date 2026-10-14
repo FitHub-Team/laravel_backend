@@ -22,8 +22,7 @@ return new class extends Migration
             $table->boolean('is_approved')->default(false); // موافقة الأدمن
          
             $table->enum('status', ['active', 'inactive'])
-                ->default('active')
-                ->after('is_approved');
+                ->default('active');
        
             $table->decimal('price', 10, 2)->nullable(); // سعر الخدمة
             $table->string('profile_photo')->nullable();

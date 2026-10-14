@@ -35,7 +35,7 @@ const DashboardLayout = () => {
       {/* Main Content */}
       <div className="flex-1">
         {/* Header */}
-        <Header navigate={navigate} />
+        <Header navigate={navigate} dashboardData={dashboardData} />
 
         {/* Page Content */}
         <main className="lg:mr-64">

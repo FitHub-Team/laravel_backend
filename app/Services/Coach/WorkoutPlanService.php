@@ -16,12 +16,15 @@ class WorkoutPlanService
         int $traineeId
     ): ?WorkoutPlan {
 
+
         $plan = WorkoutPlan::where('coach_id', $coachId)
             ->where('trainee_id', $traineeId)
+            ->where('status', 'draft')
             ->with([
                 'workoutExercises',
                 'days',
             ])
+            ->latest('id')
             ->first();
 
         if (!$plan) {
@@ -168,66 +171,94 @@ class WorkoutPlanService
             $traineeId,
             $data
         ) {
+            // Serialize plan saves for the same trainee.
+            \App\Models\User::whereKey($traineeId)
+                ->lockForUpdate()
+                ->firstOrFail();
 
-            $plan = WorkoutPlan::updateOrCreate(
-                [
+            $status = $data['status'] ?? 'draft';
+
+            if (!in_array($status, ['draft', 'active'], true)) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'status' => 'حالة الخطة غير صالحة.',
+                ]);
+            }
+
+            // Get the current editable draft only.
+            $plan = WorkoutPlan::where('coach_id', $coachId)
+                ->where('trainee_id', $traineeId)
+                ->where('status', 'draft')
+                ->latest('id')
+                ->first();
+
+            // Next version after the latest sent version.
+            $lastVersion = (int) WorkoutPlan::where('coach_id', $coachId)
+                ->where('trainee_id', $traineeId)
+                ->where('status', '!=', 'draft')
+                ->max('version');
+
+            $nextVersion = $lastVersion + 1;
+
+            if (!$plan) {
+                $plan = WorkoutPlan::create([
                     'coach_id' => $coachId,
                     'trainee_id' => $traineeId,
-                ],
-                [
+                    'version' => $nextVersion,
                     'start_date' => $data['start_date'] ?? null,
                     'end_date' => $data['end_date'] ?? null,
-                    'status' => $data['status'] ?? 'draft',
-                ]
-            );
+                    'status' => 'draft',
+                ]);
+            } else {
+                $plan->update([
+                    'version' => $nextVersion,
+                    'start_date' => $data['start_date'] ?? null,
+                    'end_date' => $data['end_date'] ?? null,
+                ]);
+            }
 
-            /*
-            |--------------------------------------------------------------------------
-            | حذف الأيام والتمارين القديمة
-            |--------------------------------------------------------------------------
-            */
-
+            // Replace exercises only in the editable draft.
             $plan->days()->delete();
             $plan->workoutExercises()->delete();
 
-            /*
-            |--------------------------------------------------------------------------
-            | حفظ الأيام
-            |--------------------------------------------------------------------------
-            */
-
             foreach ($data['days'] ?? [] as $dayData) {
-
                 $plan->days()->create([
                     'day' => $dayData['day'],
-                    'date' => $dayData['date'] ?? now()->toDateString(),
+                    'date' => $dayData['date'] ?? null,
                     'focus' => $dayData['focus'] ?? null,
                 ]);
             }
 
-            /*
-            |--------------------------------------------------------------------------
-            | حفظ تمارين المكتبة العادية
-            |--------------------------------------------------------------------------
-            */
-
             foreach ($data['exercises'] ?? [] as $exerciseData) {
-
                 $plan->workoutExercises()->create([
                     'exercise_id' => $exerciseData['exercise_id'] ?? null,
+                    'custom_exercise_id' => $exerciseData['custom_exercise_id'] ?? null,
                     'day_of_week' => $exerciseData['day_of_week'],
                     'sets' => $exerciseData['sets'],
                     'reps' => $exerciseData['reps'],
                     'rest_time' => $exerciseData['rest_time'] ?? null,
                     'notes' => $exerciseData['notes'] ?? null,
-
                     'exercise_name' => $exerciseData['exercise_name'] ?? null,
                     'target_muscle' => $exerciseData['target_muscle'] ?? null,
                     'equipment' => $exerciseData['equipment'] ?? null,
                 ]);
             }
 
+            if ($status === 'active') {
+                // Archive the previous active version.
+                WorkoutPlan::where('coach_id', $coachId)
+                    ->where('trainee_id', $traineeId)
+                    ->where('status', 'active')
+                    ->where('id', '!=', $plan->id)
+                    ->update(['status' => 'completed']);
+
+                $plan->update([
+                    'status' => 'active',
+                    'version' => $nextVersion,
+                ]);
+            }
+
             return $plan->load([
+                'days',
                 'workoutExercises',
             ]);
         });
