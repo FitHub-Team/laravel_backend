@@ -1,11 +1,10 @@
 <?php
 
 namespace App\Http\Controllers\Api;
-
 use App\Http\Controllers\Controller;
 use App\Models\ActivityLevel;
 use App\Models\Goal;
-use App\Models\skill;
+use App\Models\Skill;
 use Illuminate\Http\Request;
 
 class ProfileOptionController extends Controller
@@ -43,7 +42,7 @@ class ProfileOptionController extends Controller
 
     public function index()
     {
-        $skills = skill::where('is_active', true)->select('id', 'name')->get();
+        $skills = Skill::where('is_active', true)->select('id', 'name')->get();
 
         return response()->json([
             'status' => true,
@@ -74,7 +73,7 @@ class ProfileOptionController extends Controller
     // جلب قائمة المهارات المفعّلة لتطبيق الموبايل
     public function getSkills()
     {
-        $skills = skill::where('is_active', true)->get(['id', 'name']);
+        $skills = Skill::where('is_active', true)->get(['id', 'name']);
 
         return response()->json([
             'status' => true,

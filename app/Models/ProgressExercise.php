@@ -8,21 +8,37 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class ProgressExercise extends Model
 {
     protected $fillable = [
-        'completed',
-        'completed_sets',
-        'completed_reps',
+        'trainee_id',
+        'workout_exercise_id',
+        'is_completed',
         'notes',
+        'sets',
+        'repetitions',
+        'weight',
+        'duration',
+        'completed_at',
     ];
+
     protected $casts = [
-        'completed' => 'boolean',
+        'is_completed' => 'boolean',
+        'completed_at' => 'datetime',
+        'weight' => 'decimal:2',
     ];
-    public function traineeProgress(): BelongsTo
+
+    /**
+     * المتدرب صاحب التقدم.
+     */
+    public function trainee(): BelongsTo
     {
         return $this->belongsTo(
-            TraineeProgress::class,
-            'trainee_progress_id'
+            User::class,
+            'trainee_id'
         );
     }
+
+    /**
+     * التمرين الموجود داخل خطة التمارين.
+     */
     public function workoutExercise(): BelongsTo
     {
         return $this->belongsTo(

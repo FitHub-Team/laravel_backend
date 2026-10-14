@@ -21,10 +21,10 @@ return new class extends Migration
                 ->constrained('health_conditions')
                 ->cascadeOnDelete();
 
-            $table->unique([
-                'user_profile_id',
-                'health_condition_id'
-            ]);
+            $table->unique(
+                ['user_profile_id', 'health_condition_id'],
+                'profile_health_unique'
+            );
         });
     }
 

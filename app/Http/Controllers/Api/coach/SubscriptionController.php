@@ -89,4 +89,22 @@ class SubscriptionController extends Controller
             'data' => $trainee
         ], 200);
     }
+    public function getCertifications(Request $request)
+{
+    $coachProfile = $request->user()->coachProfile;
+
+    if (!$coachProfile) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Coach profile not found'
+        ], 404);
+    }
+
+    $certifications = $coachProfile->certifications;
+
+    return response()->json([
+        'status' => true,
+        'data' => $certifications
+    ], 200);
+}
 }

@@ -7,7 +7,7 @@ use App\Models\User;
 
 class RequestSubscription
 {
-    public function sendRequest(int $traineeId, int $coachId)
+    public function sendRequest(int $traineeId, int $coachId, bool $autoRenew = true)
     {
         $trainee = User::findOrFail($traineeId);
 
@@ -31,14 +31,29 @@ class RequestSubscription
         return Subscription::create([
             'trainee_id' => $traineeId,
             'coach_id' => $coachId,
+            'auto_renew' => $autoRenew, // حفظ حالة التجديد التلقائي (مفعل أو غير مفعل)
             'status' => 'pending',
         ]);
     }
+
     public function getMyRequests(int $traineeId)
     {
         return Subscription::where('trainee_id', $traineeId)
             ->with('coach')
             ->latest()
             ->get();
+    }
+
+    public function updateAutoRenew(int $traineeId, int $subscriptionId, bool $autoRenew)
+    {
+        $subscription = Subscription::where('id', $subscriptionId)
+            ->where('trainee_id', $traineeId)
+            ->firstOrFail();
+
+        $subscription->update([
+            'auto_renew' => $autoRenew,
+        ]);
+
+        return $subscription;
     }
 }

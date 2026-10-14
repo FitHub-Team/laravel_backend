@@ -20,6 +20,8 @@ return [
     'allowed_methods' => ['*'],
 
     'allowed_origins' => [
+        'http://localhost:5176',
+        'http://localhost:5178',
         'http://localhost:5174',
         'https://superfit-react-production.up.railway.app',
     ],

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class UserProfile extends Model
 {
@@ -57,15 +58,27 @@ class UserProfile extends Model
         );
     }
 
-   public function healthConditions()
-{
-    return $this->belongsToMany(
-        HealthCondition::class,
-        'health_condition_user_profile',
-        'user_profile_id',
-        'health_condition_id'
-    );
-}
+    public function healthConditions()
+    {
+        return $this->belongsToMany(
+            HealthCondition::class,
+            'health_condition_user_profile',
+            'user_profile_id',
+            'health_condition_id'
+        );
+    }
 
-function workoutPlan() {}
+    function workoutPlan() {}
+    protected $appends = [
+        'age',
+    ];
+
+    public function getAgeAttribute(): ?int
+    {
+        if (!$this->date_of_birth) {
+            return null;
+        }
+
+        return Carbon::parse($this->date_of_birth)->age;
+    }
 }

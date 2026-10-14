@@ -15,12 +15,16 @@ class CoachMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if ($request->user()->role !== 'coach') {
-            return response()->json([
-                'status' => false,
-                'message' => 'You are not authorized to access this resource.',
-            ], 403);
+       $user = $request->user();
+
+        if (! $user) {
+            return response()->json(['message' => 'غير مصرح'], 401);
         }
+     
+        if (($user->role ?? null) !== 'coach') {
+            return response()->json(['message' => 'هذا الإجراء متاح للمدربين فقط'], 403);
+        }
+
         return $next($request);
     }
 }

@@ -1,0 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Almarai:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+body {
+  font-family: 'Almarai', sans-serif;
+
+}
+
+.sidebar-scroll::-webkit-scrollbar {
+  width: 5px;
+}
+
+.sidebar-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb {
+  background: #c5dbc1;
+  border-radius: 9999px;
+}
+.sidebar-scroll::-webkit-scrollbar-thumb:hover {
+  background: #7fa279;
+}

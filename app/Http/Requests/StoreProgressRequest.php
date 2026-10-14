@@ -10,7 +10,7 @@ class StoreProgressRequest extends FormRequest
     /**
      * Determine if the user is authorized to make this request.
      */
-     public function authorize(): bool
+    public function authorize(): bool
     {
         return true;
     }
@@ -27,27 +27,17 @@ class StoreProgressRequest extends FormRequest
                 'required',
                 'numeric',
                 'min:0',
-                'max:999.99'],
-                'height' => ['nullable', 'numeric', 'min:0', 'max:999.99'],
-                'notes' => ['nullable', 'text',],
-                'recorded_at' => ['required', 'date', 'before_or_equal:today'],
-
-                'exercises' => ['required', 'array', 'min:1',],
-
-                'exercises.*.workout_exercise_id' => ['required', 'integer', 'exists:workout_exercises,id'],
-                'exercises.*.completed' => [
-                    'required',
-                    'boolean',
-                ],
-
-                'exercises.*.completed_sets' => ['nullable', 'integer', 'min:0'],
-
-                'exercises.*.completed_reps' => ['nullable', 'integer', 'min:0'],
-
-                'exercises.*.notes' => ['nullable', 'string'],
-                'progress_photo'=>['nullable','mimes:png,jpg']
-
-            ];
-        
+                'max:999.99'
+            ],
+            'recorded_at' => [
+                'required',
+                'date',
+                'before_or_equal:today'
+            ],
+            'progress_photo' => [
+                'nullable',
+                'mimes:png,jpg'
+            ]
+        ];
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\coach;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CoachDetailsResource;
 use App\Http\Requests\StoreCoachProfileRequest;
 use App\Services\Coach\CoachService;
 
@@ -44,21 +45,22 @@ class SettingProfileController extends Controller
         return response()->json(['data' => $profile], 200);
     }
 
-    public function showPublicProfile($id): JsonResponse
-    {
-        $coach = $this->coachService->getPublicProfile($id);
+  public function showPublicProfile($id): JsonResponse
+{
+    $coach = $this->coachService->getPublicProfile($id);
 
-        if (!$coach) {
-            return response()->json([
-                'message' => 'Coach not found'
-            ], 404);
-        }
-
+    if (!$coach) {
         return response()->json([
-            'status' => true,
-            'data' => $coach
-        ], 200);
+            'status' => false,
+            'message' => 'Coach not found'
+        ], 404);
     }
+
+    return response()->json([
+        'status' => true,
+        'data' => new CoachDetailsResource($coach) 
+    ], 200);
+}
 
     public function showTraineeDetails($id): JsonResponse
     {
@@ -76,45 +78,55 @@ class SettingProfileController extends Controller
         ], 200);
     }
 
-    public function updateProfilePhoto(Request $request): JsonResponse
-    {
-        $request->validate([
-            'profile_photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
+  public function updateProfilePhoto(Request $request): JsonResponse
+{
+    $validated = $request->validate([
+        'profile_photo' => [
+            'required',
+            'image',
+            'mimes:jpeg,png,jpg,gif,webp',
+            'max:2048',
+        ],
+    ]);
 
-        try {
-            $profile = $this->coachService->updateProfilePhoto(
-                $request->user(),
-                $request->file('profile_photo')
-            );
-            // dd($profile);
+    try {
+        $profile = $this->coachService->updateProfilePhoto(
+            $request->user(),
+            $request->file('profile_photo')
+        );
 
-            if (!$profile) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'الملف الشخصي للمستخدم غير موجود.',
-                ], 404);
-            }
-
-            return response()->json([
-                'status' => true,
-                'message' => 'تم تحديث صورة الملف الشخصي بنجاح',
-                'data' => [
-
-                    'profile_photo' => $profile->coachProfile->profile_photo
-                        ? asset('storage/' . $profile->coachProfile->profile_photo)
-                        : null,
-
-                ],
-            ], 200);
-        } catch (Exception $e) {
+        if (!$profile) {
             return response()->json([
                 'status' => false,
-                'message' => 'حدث خطأ اثناء تحديث صورة الملف الشخصي',
-                'error' => $e->getMessage(),
-            ], 500);
+                'message' => 'الملف الشخصي للمستخدم غير موجود.',
+            ], 404);
         }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'تم تحديث صورة الملف الشخصي بنجاح',
+            'data' => [
+                'profile_photo' => $profile->coachProfile->profile_photo
+                    ? asset(
+                        'storage/' .
+                        $profile->coachProfile->profile_photo
+                    )
+                    : null,
+            ],
+        ], 200);
+
+    } catch (\Throwable $e) {
+        \Illuminate\Support\Facades\Log::error('Coach profile photo upload failed', [
+            'user_id' => $request->user()?->id,
+            'exception' => $e,
+        ]);
+
+        return response()->json([
+            'status' => false,
+            'message' => 'حدث خطأ أثناء تحديث صورة الملف الشخصي',
+        ], 500);
     }
+}
     
     public function deleteProfilePhoto(Request $request)
     {
@@ -160,21 +172,37 @@ class SettingProfileController extends Controller
         ], 200);
     }
 
-    public function subscriptionStatus(Request $request, $id): JsonResponse
-    {
-        $traineeId = $request->user()->id;
+public function subscriptionStatus(Request $request, $id): JsonResponse
+{
+    $traineeId = $request->user()->id;
 
-        $subscription = \App\Models\Subscription::where('trainee_id', $traineeId)
-            ->where('coach_id', $id)
-            ->latest()
-            ->first();
+    $coach = \App\Models\User::where('role', 'coach')
+        ->with(['coachProfile.skills'])
+        ->findOrFail($id);
 
-        return response()->json([
-            'status' => true,
-            'data' => [
-                'is_subscribed' => $subscription && $subscription->status === 'accepted',
-                'status' => $subscription ? $subscription->status : 'not_subscribed',
-            ]
-        ], 200);
-    }
+    $subscription = \App\Models\Subscription::where('trainee_id', $traineeId)
+        ->where('coach_id', $id)
+        ->latest()
+        ->first();
+
+    return response()->json([
+        'status' => true,
+        'data' => [
+            'id' => $coach->id,
+            'full_name' => $coach->full_name,
+            'profile_photo' => $coach->coachProfile?->profile_photo,
+            'bio' => $coach->coachProfile?->bio,
+            'price' => $coach->coachProfile?->price ?? '0.00',
+            'skills' => $coach->coachProfile && $coach->coachProfile->skills ? $coach->coachProfile->skills->map(function ($skill) {
+                return [
+                    'id' => $skill->id,
+                    'name' => $skill->name,
+                ];
+            }) : [],
+            
+            // فقط الحقل اللازم للزر في واجهة تفاصيل الاشتراك
+            'auto_renew' => $subscription ? (bool) $subscription->auto_renew : true,
+        ]
+    ], 200);
+}
 }

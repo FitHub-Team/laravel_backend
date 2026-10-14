@@ -12,16 +12,21 @@ class WorkoutPlan extends Model
     protected $fillable = [
         'coach_id',
         'trainee_id',
-        'title',
-        'description',
+
         'start_date',
         'end_date',
-        'status'
+        'status',
+        'version'
+    ];
+    protected $casts = [
+        'version' => 'integer',
+        'start_date' => 'date',
+        'end_date' => 'date',
     ];
 
     public function workoutExercises()
     {
-        return $this->hasMany(WorkoutExercise::class);
+        return $this->hasMany(WorkoutExercise::class, 'workout_plan_id');
     }
 
 
@@ -38,6 +43,7 @@ class WorkoutPlan extends Model
             'sets',
             'reps',
             'rest_time',
+            'notes'
         ])->withTimestamps();
     }
 

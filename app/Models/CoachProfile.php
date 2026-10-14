@@ -16,10 +16,8 @@ class CoachProfile extends Model
         'birth_year',
         'location',
         'national_id',
-        'bio',
-        'certifications',
+        'bio', 
         'is_approved',
-        'rejection_reason',
         'price',
         'profile_photo',
     ];
@@ -30,13 +28,14 @@ class CoachProfile extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
+    
 
     public function skills()
     {
         return $this->belongsToMany(
-            skill::class,
+            Skill::class, 
             'coach_skills',
             'coach_id',
             'skill_id'

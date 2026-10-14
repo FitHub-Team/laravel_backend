@@ -2,17 +2,25 @@
 
 namespace App\Services\Coach;
 
+use App\Models\ProgressExercise;
 use App\Models\Subscription;
 use App\Models\User;
 use Carbon\Carbon;
 
 class SubscriptionService
 {
-    public function getPendingRequests(int $coachId, ?string $search = null)
-    {
+    /**
+     * عرض طلبات الاشتراك المعلقة.
+     */
+    public function getPendingRequests(
+        int $coachId,
+        ?string $search = null
+    ) {
         $query = Subscription::where('coach_id', $coachId)
             ->where('status', 'pending')
-            ->with(['trainee.userProfile.goal']);
+            ->with([
+                'trainee.userProfile.goal',
+            ]);
 
         if ($search) {
             $query->search($search);
@@ -20,14 +28,20 @@ class SubscriptionService
 
         return $query->get();
     }
-    // زر قبول الاشتراك 
-    public function acceptSubscription(int $subscriptionId, int $coachId): Subscription
-    {
+
+    /**
+     * قبول الاشتراك.
+     */
+    public function acceptSubscription(
+        int $subscriptionId,
+        int $coachId
+    ): Subscription {
         $subscription = Subscription::where('id', $subscriptionId)
             ->where('coach_id', $coachId)
             ->firstOrFail();
 
-        $durationDays = 30; // مدة ثابتة للاشتراك الشهري
+        $durationDays = 30;
+
         $startDate = Carbon::now();
         $endDate = Carbon::now()->addDays($durationDays);
 
@@ -39,9 +53,15 @@ class SubscriptionService
 
         return $subscription;
     }
-    // رفض الاشتراك
-    public function rejectSubscription(int $subscriptionId, int $coachId, ?string $notes): Subscription
-    {
+
+    /**
+     * رفض الاشتراك.
+     */
+    public function rejectSubscription(
+        int $subscriptionId,
+        int $coachId,
+        ?string $notes
+    ): Subscription {
         $subscription = Subscription::where('id', $subscriptionId)
             ->where('coach_id', $coachId)
             ->firstOrFail();
@@ -53,18 +73,25 @@ class SubscriptionService
 
         return $subscription;
     }
-    public function getAcceptedTrainees(int $coachId, ?string $search = null)
-    {
+
+    /**
+     * عرض المتدربين المشتركين حاليًا مع الكوتش.
+     */
+    public function getAcceptedTrainees(
+        int $coachId,
+        ?string $search = null
+    ) {
         $query = Subscription::where('coach_id', $coachId)
             ->where('status', 'accepted')
             ->with([
                 'trainee.userProfile.goal',
+
                 'trainee.workoutPlans' => function ($query) use ($coachId) {
-                    $query->where('coach_id', $coachId)
+                    $query
+                        ->where('coach_id', $coachId)
                         ->where('status', 'active')
                         ->with('workoutExercises');
                 },
-                'trainee.traineeProgresses.progressExercises',
             ]);
 
         if ($search) {
@@ -74,35 +101,53 @@ class SubscriptionService
         $trainees = $query->get();
 
         return $trainees->map(function ($subscription) {
-
             $trainee = $subscription->trainee;
 
-            // الخطة النشطة الحالية
-            $workoutPlan = $trainee->workoutPlans->first();
+            /*
+             * الخطة النشطة الحالية
+             */
+            $workoutPlan = $trainee?->workoutPlans?->first();
 
-            // IDs تمارين الخطة الحالية
+            /*
+             * IDs الخاصة بسجلات workout_exercises
+             * وليس exercises.id.
+             */
             $workoutExerciseIds = $workoutPlan
                 ? $workoutPlan->workoutExercises->pluck('id')
                 : collect();
 
-            // عدد تمارين الخطة
+            /*
+             * إجمالي تمارين الخطة الحالية.
+             */
             $totalExercises = $workoutExerciseIds->count();
 
-            // كل Progress Exercises الخاصة بالمتدرب
-            $progressExercises = $trainee->traineeProgresses
-                ->flatMap(function ($progress) {
-                    return $progress->progressExercises;
-                });
+            /*
+             * عدد التمارين المكتملة للمتدرب
+             * والموجودة داخل الخطة الحالية فقط.
+             */
+            $completedExercises = 0;
 
-            // التمارين المكتملة من الخطة الحالية فقط
-            $completedExercises = $progressExercises
-                ->whereIn('workout_exercise_id', $workoutExerciseIds)
-                ->where('completed', true)
-                ->count();
+            if (
+                $trainee &&
+                $workoutExerciseIds->isNotEmpty()
+            ) {
+                $completedExercises = ProgressExercise::query()
+                    ->where('trainee_id', $trainee->id)
+                    ->whereIn(
+                        'workout_exercise_id',
+                        $workoutExerciseIds
+                    )
+                    ->where('is_completed', true)
+                    ->count();
+            }
 
-            // نسبة الالتزام
+            /*
+             * حساب نسبة الالتزام.
+             */
             $commitmentPercentage = $totalExercises > 0
-                ? round(($completedExercises / $totalExercises) * 100)
+                ? round(
+                    ($completedExercises / $totalExercises) * 100
+                )
                 : 0;
 
             return [
@@ -113,13 +158,25 @@ class SubscriptionService
 
                 'workout_plan' => $workoutPlan,
 
-                'commitment_percentage' => min($commitmentPercentage, 100),
+                'commitment_percentage' => min(
+                    $commitmentPercentage,
+                    100
+                ),
             ];
         });
     }
-    public function verifyAndGetTraineeDetails(int $coachId, int $traineeId): ?User
-    {
-        $hasSubscription = Subscription::where('coach_id', $coachId)
+
+    /**
+     * التأكد أن المتدرب تابع للكوتش ثم إرجاع بياناته.
+     */
+    public function verifyAndGetTraineeDetails(
+        int $coachId,
+        int $traineeId
+    ): ?User {
+        $hasSubscription = Subscription::where(
+            'coach_id',
+            $coachId
+        )
             ->where('trainee_id', $traineeId)
             ->exists();
 

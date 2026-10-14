@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api\user;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\user\RequestSubscriptionRequest;
 use App\Services\User\RequestSubscription;
+use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 
 class RequestSubscriptionController extends Controller
 {
@@ -15,15 +17,18 @@ class RequestSubscriptionController extends Controller
     {
         $subscription = $this->subscriptionService->sendRequest(
             $request->user()->id,
-            $request->coach_id
+            $request->coach_id,
+            $request->auto_renew 
         );
+        
         return response()->json([
             'status' => true,
             'message' => 'Subscription request sent successfully',
             'data' => $subscription,
         ], 201);
     }
-      public function getMyRequests()
+
+    public function getMyRequests()
     {
         $traineeId = auth()->id();
         $requests = $this->subscriptionService->getMyRequests($traineeId);
@@ -32,5 +37,27 @@ class RequestSubscriptionController extends Controller
             'message' => 'Subscription requests fetched successfully',
             'data' => $requests,
         ]);
+    }
+
+    public function updateAutoRenew(Request $request, $subscriptionId): JsonResponse
+    {
+        $request->validate([
+            'auto_renew' => 'required|boolean',
+        ]);
+
+        $traineeId = $request->user()->id;
+
+        $subscription = $this->subscriptionService->updateAutoRenew(
+            $traineeId, 
+            $subscriptionId, 
+            $request->auto_renew
+        );
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Auto-renewal setting updated successfully',
+            'subscription_id' => $subscription->id,
+            'auto_renew' => (bool) $subscription->auto_renew,
+        ], 200);
     }
 }

@@ -37,53 +37,57 @@ class ProfileService
         }
     }
 
-    public function update(User $user, array $data)
-    {
-        try {
+   public function update(User $user, array $data)
+{
+    try {
+        DB::transaction(function () use ($user, $data) {
+            
+            // 1. تحديث جدول users (الاسم، البريد، الهاتف) إذا تم إرسالهم
+            $userData = collect($data)->only(['full_name', 'email', 'phone'])->toArray();
+            if (!empty($userData)) {
+                $user->update($userData);
+            }
+
+            // 2. تحديث جدول user_profiles (الجنس، تاريخ الميلاد، القياسات، إلخ)
             $profile = $user->userProfile;
+            if ($profile) {
+                $profileData = collect($data)->except([
+                    'full_name',
+                    'email',
+                    'phone',
+                    'health_condition_ids',
+                    'dietary_restriction_ids',
+                ])->toArray();
 
-            if (!$profile) {
-                return null;
+                $profile->update($profileData);
+
+                // تحديث الحالات الصحية
+                if (array_key_exists('health_condition_ids', $data)) {
+                    $profile->healthConditions()->sync($data['health_condition_ids'] ?? []);
+                }
+
+                // تحديث القيود الغذائية
+                if (array_key_exists('dietary_restriction_ids', $data)) {
+                    $profile->dietaryRestrictions()->sync($data['dietary_restriction_ids'] ?? []);
+                }
             }
+        });
 
-            // البيانات التي تخص جدول user_profiles
-            $profileData = collect($data)->except([
-                'health_condition_ids',
-                'dietary_restriction_ids',
-            ])->toArray();
+        // إرجاع المستخدم مع كامل علاقات البروفايل المحدثة
+        return $user->fresh([
+            'userProfile',
+            'userProfile.goal',
+            'userProfile.activityLevel',
+            'userProfile.healthConditions',
+            'userProfile.dietaryRestrictions',
+            'userProfile.trainingLocation',
+        ]);
 
-            $profile->update($profileData);
-
-            // تحديث الحالات الصحية
-            if (array_key_exists('health_condition_ids', $data)) {
-                $profile->healthConditions()->sync(
-                    $data['health_condition_ids'] ?? []
-                );
-            }
-
-            // تحديث القيود الغذائية
-            if (array_key_exists('dietary_restriction_ids', $data)) {
-                $profile->dietaryRestrictions()->sync(
-                    $data['dietary_restriction_ids'] ?? []
-                );
-            }
-
-            return $user->load([
-                'userProfile',
-                'userProfile.goal',
-                'userProfile.activityLevel',
-                'userProfile.healthConditions',
-                'userProfile.dietaryRestrictions',
-                'userProfile.trainingLocation',
-            ]);
-        } catch (Exception $e) {
-            Log::error('ProfileService Update Error: ' . $e->getMessage());
-
-            throw new Exception(
-                'فشلت عملية تحديث الملف الشخصي: ' . $e->getMessage()
-            );
-        }
+    } catch (Exception $e) {
+        Log::error('ProfileService Update Error: ' . $e->getMessage());
+        throw new Exception('فشلت عملية تحديث الملف الشخصي: ' . $e->getMessage());
     }
+}
 
 
     public function updateProfilePhoto(User $user, UploadedFile $image)

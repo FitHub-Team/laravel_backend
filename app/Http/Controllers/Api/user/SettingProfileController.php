@@ -85,37 +85,50 @@ class SettingProfileController extends Controller
         }
     }
 
+public function update(UpdateProfileRequest $request)
+{
+    try {
+        $validated = $request->validated();
 
-    public function update(UpdateProfileRequest $request)
-    {
-        try {
-            $validated = $request->validated();
+        $user = $this->profileService->update(
+            $request->user(),
+            $validated
+        );
 
-            $profile = $this->profileService->update(
-                $request->user(),
-                $validated
-            );
-
-            if (!$profile) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'الملف الشخصي للمستخدم غير موجود.',
-                ], 404);
-            }
-
-            return response()->json([
-                'status' => true,
-                'message' => 'تم تحديث بيانات الملف الشخصي بنجاح',
-                'data' => $profile,
-            ], 200);
-        } catch (Exception $e) {
+        if (!$user) {
             return response()->json([
                 'status' => false,
-                'message' => 'حدث خطأ اثناء تحديث الملف الشخصي',
-                'error' => $e->getMessage(),
-            ], 500);
+                'message' => 'الملف الشخصي للمستخدم غير موجود.',
+            ], 404);
         }
+
+        $profile = $user->userProfile;
+
+        return response()->json([
+            'status' => true,
+            'message' => 'تم تحديث بيانات الملف الشخصي بنجاح',
+            'data' => [
+                'id'            => $user->id,
+                'full_name'     => $user->full_name,
+                'email'         => $user->email,
+                'phone'         => $user->phone,
+                'gender'        => $profile?->gender,
+                'date_of_birth' => $profile?->date_of_birth,
+                // إرجاع رابط الصورة كـ String (أو null إذا لم توجد) ليتطابق مع الـ API المتفق عليها
+                'profile_photo' => $profile?->profile_photo 
+                    ? asset('storage/' . $profile->profile_photo) 
+                    : null,
+            ],
+        ], 200);
+
+    } catch (Exception $e) {
+        return response()->json([
+            'status' => false,
+            'message' => 'حدث خطأ اثناء تحديث الملف الشخصي',
+            'error' => $e->getMessage(),
+        ], 500);
     }
+}
 
     public function updateProfilePhoto(Request $request)
     {

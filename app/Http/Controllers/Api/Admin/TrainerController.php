@@ -137,7 +137,7 @@ class TrainerController extends Controller
 
         // إلغاء الاعتماد وتحديد سبب الرفض/الحذف
         $coach->is_approved = false;
-        $coach->rejection_reason = $request->input('rejection_reason', 'تم حذف الحساب بواسطة المسؤول');
+        // $coach->rejection_reason = $request->input('rejection_reason', 'تم حذف الحساب بواسطة المسؤول');
         $coach->save();
 
         if ($request->wantsJson() || $request->ajax()) {
@@ -167,17 +167,17 @@ class TrainerController extends Controller
                 $q->where('is_approved', 0)
                     ->orWhereNull('is_approved');
             })
-            ->where(function ($q) {
-                $q->whereNull('rejection_reason')
-                    ->orWhere('rejection_reason', '');
-            })
+            // ->where(function ($q) {
+            //     $q->whereNull('rejection_reason')
+            //         ->orWhere('rejection_reason', '');
+            // })
             ->get();
 
         // الطلبات المرفوضة: توجد بها قيمة في سبب الرفض
-        $rejectedCoaches = CoachProfile::with('user')
-            ->whereNotNull('rejection_reason')
-            ->where('rejection_reason', '!=', '')
-            ->get();
+        // $rejectedCoaches = CoachProfile::with('user')
+        //     ->whereNotNull('rejection_reason')
+        //     ->where('rejection_reason', '!=', '')
+        //     ->get();
 
         return view('admin.coaches_requests', compact('pendingCoaches', 'rejectedCoaches'));
     }
@@ -186,7 +186,7 @@ class TrainerController extends Controller
         $coach = CoachProfile::findOrFail($id);
 
         $coach->is_approved = true;
-        $coach->rejection_reason = null; // مسح أي سبب رفض سابق
+        // $coach->rejection_reason = null; // مسح أي سبب رفض سابق
         $coach->save();
 
         if ($coach->user_id) {
@@ -201,22 +201,22 @@ class TrainerController extends Controller
     }
 
 
-    public function reject(Request $request, $id)
-    {
-        $request->validate([
-            'rejection_reason' => 'required|string|max:500',
-        ]);
+    // public function reject(Request $request, $id)
+    // {
+    //     $request->validate([
+    //         'rejection_reason' => 'required|string|max:500',
+    //     ]);
 
-        $coach = CoachProfile::findOrFail($id);
+    //     $coach = CoachProfile::findOrFail($id);
 
-        // استخدام الحفظ المباشر لضمان التعديل بصرف النظر عن الـ Mass Assignment
-        $coach->is_approved = 0;
-        $coach->rejection_reason = $request->rejection_reason;
-        $coach->save();
+    //     // استخدام الحفظ المباشر لضمان التعديل بصرف النظر عن الـ Mass Assignment
+    //     $coach->is_approved = 0;
+    //     $coach->rejection_reason = $request->rejection_reason;
+    //     $coach->save();
 
-        return redirect()->route('admin.coaches.requests')
-            ->with('success', 'تم رفض الطلب وإضافته لجدول الطلبات المرفوضة.');
-    }
+    //     return redirect()->route('admin.coaches.requests')
+    //         ->with('success', 'تم رفض الطلب وإضافته لجدول الطلبات المرفوضة.');
+    // }
 
 
 }

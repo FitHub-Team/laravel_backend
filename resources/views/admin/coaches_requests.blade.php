@@ -1790,7 +1790,7 @@
 
                                         {{-- Reject --}}
 
-                                        <div class="reject-box">
+                                        {{-- <div class="reject-box">
 
                                             <form
                                                 action="{{ route('admin.coaches.reject', $coach->id) }}"
@@ -1821,7 +1821,7 @@
 
                                             </form>
 
-                                        </div>
+                                        </div> --}}
 
 
                                     </div>

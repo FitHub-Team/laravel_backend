@@ -20,10 +20,11 @@ class RequestSubscriptionRequest extends FormRequest
      *
      * @return array<string, ValidationRule|array<mixed>|string>
      */
-    public function rules(): array
+ public function rules(): array
     {
         return [
-              'coach_id' => 'required|exists:users,id',
+            'coach_id' => 'required|exists:users,id',
+            'auto_renew' => 'required|boolean', // التحقق من أن حقل التجديد التلقائي موجود وقيمة منطقية (true/false)
         ];
     }
 }

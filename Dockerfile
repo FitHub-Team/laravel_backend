@@ -34,8 +34,9 @@ RUN mkdir -p \
     /var/log/supervisor \
     /var/log/nginx
 
-RUN chmod -R 775 storage bootstrap/cache && \
-    chown -R www-data:www-data /var/www/html
+RUN touch storage/logs/laravel.log \
+    && chown -R www-data:www-data storage bootstrap/cache \
+    && chmod -R ug+rwX storage bootstrap/cache
 
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf

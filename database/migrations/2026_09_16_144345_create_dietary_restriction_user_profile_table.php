@@ -20,10 +20,10 @@ return new class extends Migration {
                 ->constrained('dietary_restrictions')
                 ->cascadeOnDelete();
 
-            $table->unique([
-                'user_profile_id',
-                'dietary_restriction_id'
-            ]);
+            $table->unique(
+                ['user_profile_id', 'dietary_restriction_id'],
+                'profile_dietary_unique'
+            );
         });
     }
 
