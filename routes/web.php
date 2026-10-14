@@ -5,7 +5,6 @@ use App\Http\Controllers\Api\Admin\GoalController;
 use App\Http\Controllers\Api\Admin\ActivityLevelController;
 use App\Http\Controllers\Api\Admin\AdminAuthController;
 use App\Http\Controllers\Api\Admin\HealthRestrictionController;
-use App\Http\Controllers\Api\Admin\HeathRestrictionController;
 use App\Http\Controllers\Api\Admin\SkillController;
 use App\Http\Controllers\Api\Admin\TrainerController;
 use App\Http\Controllers\Api\Admin\AdminUserController;
@@ -106,4 +105,14 @@ Route::get('/clear-all-cache', function () {
     \Illuminate\Support\Facades\Artisan::call('view:clear');
     \Illuminate\Support\Facades\Artisan::call('route:clear');
     return 'Done! All cache cleared successfully.';
+});
+Route::get('/coach-app/{any?}', function () {
+    return view('react');
+})->where('any', '.*');
+
+
+Route::get('/', function () {
+
+    return view('SuperFit');
+
 });
