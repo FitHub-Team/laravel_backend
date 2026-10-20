@@ -31,6 +31,7 @@ use App\Http\Controllers\ChatController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\coach\RecipeController;
+
 /*
 |--------------------------------------------------------------------------
 | Authentication Routes
@@ -61,6 +62,9 @@ Route::middleware('auth:sanctum')->group(function () {
     */
     Route::get('/coaches', [BrowseCoachController::class, 'index']);
     Route::get('/coaches/{id}', [CoachSettingProfileController::class, 'showPublicProfile']);
+    Route::get('/coaches/{id}/reviews', [BrowseCoachController::class, 'getReviews']);
+    Route::get('/coaches/{id}/subscription-status', [BrowseCoachController::class, 'getSubscriptionStatus']);
+    Route::get('/coaches/{id}/subscription-details', [BrowseCoachController::class, 'getSubscriptionDetails']);
 
     // Health Information Routes
     Route::prefix('health-information')->group(function () {

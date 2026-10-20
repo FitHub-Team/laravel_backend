@@ -7,7 +7,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class CoachResource extends JsonResource
 {
-    public function toArray(Request $request): array
+   public function toArray(Request $request): array
     {
         return [
             'id' => $this->id,
@@ -16,7 +16,8 @@ class CoachResource extends JsonResource
             'price' => $this->coachProfile?->price,
             'rating' => round($this->average_rating ?? 4.8, 1),
             'active_trainees' => $this->active_subscribers_count ?? 0,
-            'tags' => $this->coachProfile?->skills->pluck('name') ?? [],
+            'experience' => $this->coachProfile?->experience,
+            'skills' => $this->coachProfile?->skills->pluck('name') ?? [],
             'profile_photo' => $this->coachProfile?->profile_photo,
         ];
     }
