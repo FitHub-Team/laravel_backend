@@ -23,7 +23,7 @@ class TraineeProgress
             
             if ($traineeId) {
                 $subscription = Subscription::where('trainee_id', $traineeId)
-                    ->where('status', 'accepted') //أو الحالة المعتمدة 
+                    ->where('status', 'accepted') // أو الحالة المعتمدة 
                     ->first();
 
                 if ($subscription) {
@@ -42,7 +42,7 @@ class TraineeProgress
                 $progress->exercises()->create($exercise);
             }
 
-            // إرجاع كائن التقدم مباشرة بدون تحميل علاقة التمارين لتجنب أخطاء الأعمدة غير الموجودة
+           
             return $progress;
         });
     }
@@ -84,14 +84,16 @@ class TraineeProgress
             foreach ($exercises as $exercise) {
                 ProgressExercise::updateOrCreate(
                     [
-                        'trainee_progress_id' => $progress->id,
+                        'trainee_id'          => $progress->trainee_id, // تم التصحيح هنا ليتطابق مع جدول قاعدة البيانات
                         'workout_exercise_id' => $exercise['workout_exercise_id'],
                     ],
                     [
-                        'completed' => $exercise['completed'] ?? false,
-                        'completed_sets' => $exercise['completed_sets'] ?? null,
-                        'completed_reps' => $exercise['completed_reps'] ?? null,
-                        'notes' => $exercise['notes'] ?? null,
+                        'is_completed' => $exercise['is_completed'] ?? ($exercise['completed'] ?? false),
+                        'sets'         => $exercise['sets'] ?? 1,
+                        'repetitions'  => $exercise['repetitions'] ?? ($exercise['completed_reps'] ?? null),
+                        'weight'       => $exercise['weight'] ?? null,
+                        'duration'     => $exercise['duration'] ?? null,
+                        'notes'        => $exercise['notes'] ?? null,
                     ]
                 );
             }
