@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class HealthInformationResource extends JsonResource
+class TraineeProgressResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -15,11 +15,15 @@ class HealthInformationResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'health_status'       => $this->health_status ?? 'جيد',
-            'chronic_diseases'    => $this->chronic_diseases ?? 'لا',     // تحتمل "نعم" أو "لا"
-            'previous_injuries'   => $this->previous_injuries ?? 'لا',    // تحتمل "نعم" أو "لا"
-            'current_medications' => $this->current_medications ?? 'لا', // تحتمل "نعم" أو "لا"
-            'other_details'       => $this->other_details ?? null,       // خانة تفاصيل أخرى الموضحة في أسفل الواجهة
+            'id'                 => $this->id,
+            'weight'             => (float) $this->weight,
+            'height'             => $this->height,
+            'workouts_completed' => $this->workouts_completed ?? 0,
+            'notes'              => $this->notes,
+            'coach_notes'        => $this->coach_notes,
+            'progress_photo'     => $this->progress_photo ? asset('storage/' . $this->progress_photo) : null,
+            'recorded_at'        => optional($this->recorded_at)->format('Y-m-d') ?? $this->created_at->format('Y-m-d'),
+            'formatted_date'     => optional($this->recorded_at)->translatedFormat('d F Y') ?? $this->created_at->translatedFormat('d F Y'),
         ];
     }
 }
