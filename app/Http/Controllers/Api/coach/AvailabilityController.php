@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\Api\coach;
 
 use App\Http\Controllers\Controller;
-use App\Services\Coach\AvailabilityService;
+use App\Services\Coach\CoachAvailabilityService;
 use Illuminate\Http\Request;
 
 class AvailabilityController extends Controller
 {
-    protected AvailabilityService $availabilityService;
+    protected CoachAvailabilityService $availabilityService;
 
-    public function __construct(AvailabilityService $availabilityService)
+    public function __construct(CoachAvailabilityService $availabilityService)
     {
         $this->availabilityService = $availabilityService;
     }
