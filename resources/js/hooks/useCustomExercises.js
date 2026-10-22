@@ -21,6 +21,7 @@ export default function useCustomExercises(initialFilters = {}) {
             });
 
             const result = await customExerciseService.getCustomExercises(params);
+            console.log("Custom Exercises API:", result);
             setExercises(result.data || []);
             setMeta(result.meta || null);
         } catch (err) {

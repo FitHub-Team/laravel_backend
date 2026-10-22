@@ -14,12 +14,21 @@ const customExerciseService = {
     },
 
     async createCustomExercise(data) {
-        const response = await api.post(BASE, data);
+        const response = await api.post(BASE, data , {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+
         return response.data;
     },
 
     async updateCustomExercise(id, data) {
-        const response = await api.put(`${BASE}/${id}`, data);
+        const response = await api.put(`${BASE}/${id}`, data , {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
         return response.data;
     },
 

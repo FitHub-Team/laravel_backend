@@ -7,8 +7,11 @@ import {
     Layers3,
     RotateCcw,
     Info,
+    FolderHeart,
 } from "lucide-react";
 import ExerciseLibraryModal from "./ExerciseLibraryModal";
+import CoachExercisesModal from "./custom-exercises/CoachExercisesModal";
+import useCustomExercises from "../../hooks/useCustomExercises";
 
 const exerciseId = (item) => item.exercise_id ?? item.exercise?.id ?? item.id;
 const display = (v) =>
@@ -180,6 +183,13 @@ export default function WorkoutTable({
     onUpdateExercise,
 }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
+    const {
+        exercises: coachExercises,
+        loading: isCoachExercisesLoading,
+        error: coachExercisesError,
+    } = useCustomExercises();
+
     const name =
         selectedDayData?.day_name_ar ?? selectedDayData?.name ?? "غير محدد";
     const isRest = exercises.length === 0;
@@ -213,13 +223,27 @@ export default function WorkoutTable({
                         />
                     </label>
                 </div>
-                <button
-                    type="button"
-                    onClick={() => setIsModalOpen(true)}
-                    className="flex items-center justify-center gap-2 rounded-xl bg-[#407437] px-4 py-3 text-sm font-semibold text-white hover:bg-[#32632C]"
-                >
-                    <Plus size={17} /> إضافة تمرين
-                </button>
+                <div className="flex flex-wrap items-center gap-3">
+                    {/* General exercise library */}
+                    <button
+                        type="button"
+                        onClick={() => setIsModalOpen(true)}
+                        className="flex items-center justify-center gap-2 rounded-xl bg-[#407437] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#32632C]"
+                    >
+                        <Plus size={17} />
+                        إضافة تمرين
+                    </button>
+
+                    {/* Coach's custom exercise library */}
+                    <button
+                        type="button"
+                        onClick={() => setIsCustomModalOpen(true)}
+                        className="flex items-center justify-center gap-2 rounded-xl border border-[#407437] bg-white px-4 py-3 text-sm font-semibold text-[#407437] transition hover:bg-[#F1F7EF]"
+                    >
+                        <FolderHeart size={17} />
+                        تماريني الخاصة
+                    </button>
+                </div>
             </div>
             <div className="flex items-center justify-between">
                 <h3 className="flex items-center gap-2 text-sm font-bold">
@@ -253,6 +277,33 @@ export default function WorkoutTable({
                 onSelectExercise={(exercise) => {
                     onAddExercise?.(exercise);
                     setIsModalOpen(false);
+                }}
+            />
+            {isCustomModalOpen && coachExercisesError && (
+                <p role="alert" className="text-sm text-red-600">
+                    {coachExercisesError}
+                </p>
+            )}
+            <CoachExercisesModal
+                isOpen={isCustomModalOpen}
+                onClose={() => setIsCustomModalOpen(false)}
+                exercises={coachExercises}
+                isLoading={isCoachExercisesLoading}
+                onSelectExercise={(exercise) => {
+                    onAddExercise?.({
+                        ...exercise,
+                        id: undefined,
+                        exercise_id: null,
+                        custom_exercise_id: exercise.id,
+                        source: "custom",
+                        name: exercise.name_ar || exercise.name,
+                        sets: 3,
+                        reps: "10-12",
+                        rest_seconds: 60,
+                        notes: "",
+                    });
+
+                    setIsCustomModalOpen(false);
                 }}
             />
         </div>

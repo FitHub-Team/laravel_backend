@@ -30,7 +30,6 @@ function Sidebar({ dashboardData }) {
         navigate("/login", { replace: true });
     };
 
-
     return (
         <aside className="fixed top-0 right-0 w-64 h-screen bg-white border-l border-gray-200 flex flex-col hidden lg:flex rtl">
             <div className="flex-1 overflow-y-auto sidebar-scroll">
@@ -64,9 +63,11 @@ function Sidebar({ dashboardData }) {
                             <div className="w-12 h-12 shrink-0 rounded-full border-2 border-[#407437] overflow-hidden">
                                 <img
                                     src={
-                                        dashboardData?.coach?.coach_profile?.profile_photo
+                                        dashboardData?.coach?.coach_profile
+                                            ?.profile_photo
                                             ? getImageUrl(
-                                                  dashboardData.coach.coach_profile
+                                                  dashboardData.coach
+                                                      .coach_profile
                                                       .profile_photo,
                                               )
                                             : profileImage
@@ -121,12 +122,6 @@ function Sidebar({ dashboardData }) {
                     />
 
                     <NavItem
-                        icon={<FileText size={20} />}
-                        label="الخطط"
-                        to="/dashboard/workout-plan"
-                        active={location.pathname === "/dashboard/workout-plan"}
-                    />
-                    <NavItem
                         to="/dashboard/exercises"
                         icon={<Dumbbell size={20} />} // استخدم نفس نوع الأيقونات المستخدمة في باقي العناصر
                         label="تماريني الخاصة"
@@ -137,6 +132,18 @@ function Sidebar({ dashboardData }) {
                         icon={<Utensils size={20} />} // استخدم نفس نوع الأيقونات المستخدمة في باقي العناصر
                         label="مكتبة الوصفات"
                         active={location.pathname === "/dashboard/recipes"}
+                    />
+                    <NavItem
+                        icon={<FileText size={20} />}
+                        label="خطط التمارين"
+                        to="/dashboard/current-plans"
+                        active={location.pathname === "/dashboard/current-plans"}
+                    />
+                    <NavItem
+                        icon={<FileText size={20} />}
+                        label="انشاء خطة"
+                        to="/dashboard/workout-plan"
+                        active={location.pathname === "/dashboard/workout-plan"}
                     />
 
                     {/* <NavItem icon={<Bookmark size={20} />} label="الحزم" /> */}

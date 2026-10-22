@@ -1,4 +1,5 @@
-import {  Plus } from "lucide-react";
+
+import { ArrowUpLeft, Dumbbell } from "lucide-react";
 
 import {
   translateDifficulty,
@@ -8,146 +9,162 @@ import {
 } from "../../../utils/exerciseTranslations";
 
 const ExerciseCard = ({ exercise, onSelect }) => {
-  // ألوان دلالية لمستوى الصعوبة (مختلفة عن هوية البطاقة الخضراء)
+  // استخدام الترجمة العربية مع الرجوع للإنجليزية عند غيابها
+  const name = exercise.name_ar?.trim() || exercise.name || "تمرين بدون اسم";
+
+  const muscleGroup =
+    exercise.muscle_group_ar?.trim() ||
+    translateMuscleGroup(exercise.muscle_group) ||
+    "غير محدد";
+
+  const equipment =
+    exercise.equipment_ar?.trim() ||
+    translateEquipment(exercise.equipment) ||
+    "غير محدد";
+
+  const category =
+    exercise.type_ar?.trim() ||
+    translateCategory(exercise.type) ||
+    "تمرين";
+
+  const difficulty =
+    exercise.difficulty_level_ar?.trim() ||
+    translateDifficulty(exercise.difficulty_level) ||
+    "غير محدد";
+
+  // تحديد لون الصعوبة باستخدام القيمة الإنجليزية الثابتة
+  const difficultyKey = (exercise.difficulty_level || "")
+    .trim()
+    .toLowerCase();
+
   const difficultyStyles = {
-    beginner:     "bg-blue-50 text-blue-700 ring-blue-200",       // أزرق - سهل
-    intermediate: "bg-amber-50 text-amber-700 ring-amber-200",    // عنبري - متوسط
-    advanced:     "bg-orange-50 text-orange-700 ring-orange-200", // برتقالي - متقدم
-    expert:       "bg-red-50 text-red-700 ring-red-200",          // أحمر - خبير
+    beginner: "bg-emerald-50 text-emerald-700 border-emerald-200",
+    intermediate: "bg-amber-50 text-amber-700 border-amber-200",
+    advanced: "bg-orange-50 text-orange-700 border-orange-200",
+    expert: "bg-red-50 text-red-700 border-red-200",
   };
 
   const difficultyStyle =
-    difficultyStyles[exercise.difficulty_level] ||
-    "bg-slate-50 text-slate-700 ring-slate-200";
+    difficultyStyles[difficultyKey] ||
+    "bg-slate-50 text-slate-600 border-slate-200";
 
   return (
     <button
       type="button"
       onClick={onSelect}
+      dir="rtl"
+      aria-label={`عرض تفاصيل تمرين ${name}`}
       className="
-        group
-        relative
-        w-full
-        text-right
-        rounded-2xl
-        bg-white
-        border
-        border-green-100
-        hover:border-green-300
-        hover:shadow-[0_12px_28px_-14px_rgba(21,128,61,0.4)]
+        group relative flex h-full w-full flex-col
+        rounded-2xl border border-slate-200
+        bg-white p-4 text-right
+        shadow-[0_2px_8px_rgba(15,23,42,0.03)]
+        transition-all duration-200
         hover:-translate-y-0.5
-        transition-all
-        duration-300
-        p-4
+        hover:border-[#407437]/40
+        hover:shadow-[0_10px_28px_rgba(15,23,42,0.08)]
+        focus-visible:outline-none
+        focus-visible:ring-2
+        focus-visible:ring-[#407437]
+        focus-visible:ring-offset-2
+        active:scale-[0.99]
       "
     >
-      <div className="flex items-start gap-3">
-
-    
-
-        {/* Content */}
-        <div className="flex-1 min-w-0">
-
-          {/* Name + Difficulty */}
-          <div className="flex items-center justify-between gap-2">
-
-            <h3
-              className="
-                text-sm
-                font-bold
-                text-green-900
-                truncate
-                group-hover:text-green-700
-                transition-colors
-              "
-            >
-              {exercise.name}
-            </h3>
-
-            {/* شارة الصعوبة - ألوان دلالية مختلفة */}
-            <span
-              className={`
-                flex-shrink-0
-                text-[10px]
-                font-semibold
-                px-2
-                py-0.5
-                rounded-full
-                ring-1
-                ring-inset
-                ${difficultyStyle}
-              `}
-            >
-              {translateDifficulty(exercise.difficulty_level)}
-            </span>
-
-          </div>
-
-          {/* Muscle group */}
-          <p className="text-[11px] text-[#45556C] truncate mt-0.5">
-            {translateMuscleGroup(exercise.muscle_group)}
-          </p>
-
-          {/* Tags */}
-          <div className="flex items-center gap-1.5 mt-2.5 flex-wrap">
-
-            <span
-              className="
-                text-[10px]
-                font-medium
-                px-2
-                py-0.5
-                rounded-md
-                bg-green-100
-                text-green-800
-              "
-            >
-              {translateCategory(exercise.category)}
-            </span>
-
-            <span
-              className="
-                text-[10px]
-                font-medium
-                px-2
-                py-0.5
-                rounded-md
-                bg-green-50
-                text-green-700
-              "
-            >
-              {translateEquipment(exercise.equipment)}
-            </span>
-
-          </div>
-        </div>
-
-        {/* Add icon */}
+      {/* Header */}
+      <div className="flex w-full items-start justify-between gap-3">
         <div
           className="
-            flex-shrink-0
-            w-7
-            h-7
-            rounded-full
-            bg-green-100
-            flex
-            items-center
-            justify-center
-            opacity-0
-            -translate-x-1
-            group-hover:opacity-100
-            group-hover:translate-x-0
-            transition-all
-            duration-300
+            flex h-10 w-10 shrink-0 items-center
+            justify-center rounded-xl bg-[#407437]/10
+            text-[#407437]
           "
         >
-          <Plus
-            size={14}
-            className="text-green-800"
-            strokeWidth={2.5}
-          />
+          <Dumbbell size={19} strokeWidth={1.8} />
         </div>
 
+        <span
+          className={`
+            inline-flex max-w-[55%] shrink-0 items-center
+            rounded-full border px-2.5 py-1
+            text-[11px] font-medium
+            ${difficultyStyle}
+          `}
+        >
+          {difficulty}
+        </span>
+      </div>
+
+      {/* Exercise name */}
+      <div className="mt-4 min-w-0">
+        <h3
+          className="
+            min-h-[42px] text-sm font-bold
+            leading-6 text-slate-800
+            line-clamp-2
+            transition-colors
+            group-hover:text-[#407437]
+          "
+          title={name}
+        >
+          {name}
+        </h3>
+
+        <p className="mt-1 text-xs text-slate-500">
+          {muscleGroup}
+        </p>
+      </div>
+
+      {/* Tags */}
+      <div className="mt-4 flex flex-wrap gap-2">
+        <span
+          className="
+            rounded-lg bg-[#407437]/10
+            px-2.5 py-1 text-[11px]
+            font-medium text-[#407437]
+          "
+        >
+          {category}
+        </span>
+
+        <span
+          className="
+            rounded-lg bg-slate-100
+            px-2.5 py-1 text-[11px]
+            font-medium text-slate-600
+          "
+        >
+          {equipment}
+        </span>
+      </div>
+
+      {/* Footer */}
+      <div
+        className="
+          mt-auto flex items-center justify-between
+          gap-2 border-t border-slate-100 pt-3
+        "
+        style={{ marginTop: "auto" }}
+      >
+        <span
+          className="
+            text-xs font-semibold text-[#407437]
+          "
+        >
+          عرض تفاصيل التمرين
+        </span>
+
+        <span
+          className="
+            flex h-8 w-8 items-center justify-center
+            rounded-full bg-[#407437]/10
+            text-[#407437]
+            transition-colors
+            group-hover:bg-[#407437]
+            group-hover:text-white
+          "
+        >
+          <ArrowUpLeft size={16} />
+        </span>
       </div>
     </button>
   );

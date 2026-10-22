@@ -1,4 +1,4 @@
-const STORAGE_URL = import.meta.env.VITE_STORAGE_URL || "/storage";
+const STORAGE_URL = import.meta.env.APP_URL || "/storage";
 
 export function getImageUrl(path, fallback = "") {
   if (!path) return fallback;
