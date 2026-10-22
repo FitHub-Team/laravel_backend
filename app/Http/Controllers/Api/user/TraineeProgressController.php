@@ -39,25 +39,72 @@ class TraineeProgressController extends Controller
         }
     }
 
-    public function index(Request $request)
-    {
-        try {
-            $traineeId = $request->user()->id;
+  public function index(Request $request)
+{
+    try {
+        $traineeId = $request->user()->id;
 
-            $progress = $this->progressService->getTraineeProgress($traineeId);
+        $records = $this->progressService->getTraineeProgress($traineeId);
 
+        if ($records->isEmpty()) {
             return response()->json([
                 'status' => true,
                 'message' => 'Progress data fetched successfully',
-                'data' => TraineeProgressResource::collection($progress),
+                'data' => [
+                    'current_weight' => 0,
+                    'weight_change' => 0,
+                    'is_decrease' => true,
+                    'chart_data' => [],
+                    'recent_logs' => []
+                ]
             ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Error fetching progress data: ' . $e->getMessage(),
-            ], 500);
         }
+
+        // 1. الوزن الحالي (أحدث قياس)
+        $latestRecord = $records->first();
+        $currentWeight = (float) $latestRecord->weight;
+
+        // 2. حساب الفارق عن القياس السابق
+        $previousRecord = $records->skip(1)->first();
+        $weightChange = 0;
+        $isDecrease = true;
+
+        if ($previousRecord) {
+            $diff = $currentWeight - (float) $previousRecord->weight;
+            $weightChange = abs(round($diff, 1));
+            $isDecrease = $diff <= 0;
+        }
+
+        // 3. نقاط الرسم البياني (Chart)
+        $chartData = $records->sortBy('recorded_at')->map(function ($item) {
+            return [
+                'date' => optional($item->recorded_at)->format('Y-m-d') ?? $item->created_at->format('Y-m-d'),
+                'label' => optional($item->recorded_at)->translatedFormat('j M') ?? $item->created_at->translatedFormat('j M'),
+                'weight' => (float) $item->weight,
+            ];
+        })->values();
+
+        // 4. السجلات الأخيرة (Recent Logs)
+        $recentLogs = TraineeProgressResource::collection($records);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Progress data fetched successfully',
+            'data' => [
+                'current_weight' => $currentWeight,
+                'weight_change' => $weightChange,
+                'is_decrease' => $isDecrease,
+                'chart_data' => $chartData,
+                'recent_logs' => $recentLogs,
+            ]
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Error fetching progress data: ' . $e->getMessage(),
+        ], 500);
     }
+}
 
     public function update(StoreProgressRequest $request, $progressId)
     {
@@ -83,4 +130,24 @@ class TraineeProgressController extends Controller
             ], 500);
         }
     }
+    public function weightProgress(Request $request)
+{
+    try {
+        $traineeId = $request->user()->id;
+        
+       
+        $data = $this->progressService->getWeightProgressChart($traineeId);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Weight progress fetched successfully',
+            'data' => $data,
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Error: ' . $e->getMessage(),
+        ], 500);
+    }
+}
 }

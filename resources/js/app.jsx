@@ -1,18 +1,14 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter } from "react-router-dom";
 
-import "./index.css";
-import App from "./App";
+import AppRoutes from "./routes/AppRoutes";
 
-const queryClient = new QueryClient();
-
-const rootElement = document.getElementById("app");
-
-if (rootElement) {
-    ReactDOM.createRoot(rootElement).render(
-        <QueryClientProvider client={queryClient}>
-            <App />
-        </QueryClientProvider>
+function App() {
+    return (
+        <BrowserRouter basename="/coach-app">
+            <AppRoutes />
+        </BrowserRouter>
     );
 }
+
+export default App;
+

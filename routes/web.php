@@ -5,7 +5,6 @@ use App\Http\Controllers\Api\Admin\GoalController;
 use App\Http\Controllers\Api\Admin\ActivityLevelController;
 use App\Http\Controllers\Api\Admin\AdminAuthController;
 use App\Http\Controllers\Api\Admin\HealthRestrictionController;
-use App\Http\Controllers\Api\Admin\HeathRestrictionController;
 use App\Http\Controllers\Api\Admin\SkillController;
 use App\Http\Controllers\Api\Admin\TrainerController;
 use App\Http\Controllers\Api\Admin\AdminUserController;
@@ -112,3 +111,8 @@ Route::get('/coach-app/{any?}', function () {
 })->where('any', '.*');
 
 
+Route::get('/', function () {
+
+    return view('SuperFit');
+
+});
