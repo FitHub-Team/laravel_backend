@@ -15,6 +15,7 @@ class CustomExercise extends Model
         'muscle_group',
         'equipment',
         'difficulty',
+        'image',
         'instructions',
     ];
     public function coach(): BelongsTo

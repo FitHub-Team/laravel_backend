@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\coach\WorkoutPlan;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Coach\CustomExerciseRequest;
 use App\Models\CustomExercise;
 use Illuminate\Http\Request;
 
@@ -48,18 +49,16 @@ class CustomExerciseController extends Controller
     /**
      * Create a new custom exercise.
      */
-    public function store(Request $request)
+    public function store(CustomExerciseRequest $request)
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-            'muscle_group' => ['required', 'string', 'max:255'],
-            'equipment' => ['nullable', 'string', 'max:255'],
-            'difficulty' => ['required', 'string', 'max:255'],
-            'instructions' => ['required', 'string'],
-        ]);
+        $validated = $request->validated();
 
         $validated['coach_id'] = $request->user()->id;
+
+        if ($request->hasFile('image')) {
+            $validated['image'] = $request->file('image')
+                ->store('custom-exercises', 'public');
+        }
 
         $exercise = CustomExercise::create($validated);
 
@@ -84,18 +83,21 @@ class CustomExerciseController extends Controller
     /**
      * Update a custom exercise.
      */
-    public function update(Request $request, int $id)
+    public function update(CustomExerciseRequest $request, int $id)
     {
         $exercise = $this->findOwnedOrFail($request, $id);
 
-        $validated = $request->validate([
-            'name' => ['sometimes', 'required', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-            'muscle_group' => ['sometimes', 'required', 'string', 'max:255'],
-            'equipment' => ['nullable', 'string', 'max:255'],
-            'difficulty' => ['sometimes', 'required', 'string', 'max:255'],
-            'instructions' => ['sometimes', 'required', 'string'],
-        ]);
+        $validated = $request->validated();
+        if ($request->hasFile('image')) {
+            // حذف الصورة القديمة إن وجدت
+            if ($exercise->image) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($exercise->image);
+            }
+
+            // تخزين الصورة الجديدة
+            $validated['image'] = $request->file('image')
+                ->store('custom-exercises', 'public');
+        }
 
         $exercise->update($validated);
 
@@ -104,6 +106,10 @@ class CustomExerciseController extends Controller
             'data' => $exercise->fresh(),
         ]);
     }
+
+
+
+
 
     /**
      * Delete a custom exercise.

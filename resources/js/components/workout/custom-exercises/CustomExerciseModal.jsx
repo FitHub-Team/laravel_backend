@@ -9,7 +9,7 @@ export default function CustomExerciseModal({ open, title, onClose, children }) 
             onClick={onClose}
         >
             <div
-                className="bg-white rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-6 shadow-xl"
+                className="bg-white rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 shadow-xl"
                 onClick={(e) => e.stopPropagation()}
                 dir="rtl"
             >

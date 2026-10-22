@@ -1,5 +1,13 @@
-import { useMemo, useState } from "react";
-import { ChevronLeft, Dumbbell, X } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import {
+    AlertCircle,
+    ChevronLeft,
+    ChevronRight,
+    Dumbbell,
+    LoaderCircle,
+    RotateCcw,
+    X,
+} from "lucide-react";
 
 import useExercises from "../../hooks/useExercises";
 import ExerciseFilters from "./exercise-library/ExerciseFilters";
@@ -8,470 +16,332 @@ import ExerciseDetails from "./exercise-library/ExerciseDetails";
 import FlashMessage from "../../components/common/FlashMessage";
 
 const ExerciseLibraryModal = ({
-  isOpen,
-  onClose,
-  onSelectExercise,
-  selectedTrainee,
-})  => {
-  const [search, setSearch] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("");
-  const [difficultyFilter, setDifficultyFilter] = useState("");
-  const [flashMessage, setFlashMessage] = useState("");
-  const [selectedExercise, setSelectedExercise] = useState(null);
+    isOpen,
+    onClose,
+    onSelectExercise,
+    selectedTrainee,
+}) => {
+    const [search, setSearch] = useState("");
+    const [categoryFilter, setCategoryFilter] = useState("");
+    const [difficultyFilter, setDifficultyFilter] = useState("");
+    const [flashMessage, setFlashMessage] = useState("");
+    const [selectedExercise, setSelectedExercise] = useState(null);
+    const [page, setPage] = useState(1);
 
-  // ================= جلب التمارين =================
-  const { data: exercises = [], isLoading, isError } = useExercises(isOpen);
-
-  // ================= الفئات =================
-  const categories = useMemo(() => {
-    const uniqueCategories = new Set(
-      exercises.map((exercise) => exercise.category).filter(Boolean),
+    // Keep the enabled-first signature compatible with existing useExercises(false) calls.
+    const { data, isLoading, isFetching, isError, refetch } = useExercises(
+        isOpen,
+        {
+            page,
+            search: search.trim(),
+            muscle_group: categoryFilter,
+            difficulty_level: difficultyFilter,
+        },
     );
 
-    return Array.from(uniqueCategories);
-  }, [exercises]);
+    // Laravel response can be {status, data: paginator} or the paginator itself.
+    const paginator =
+        data?.data?.current_page != null
+            ? data.data
+            : data?.current_page != null
+              ? data
+              : null;
+    const exercises = Array.isArray(paginator?.data)
+        ? paginator.data
+        : Array.isArray(data?.data)
+          ? data.data
+          : Array.isArray(data)
+            ? data
+            : [];
+    const currentPage = paginator?.current_page ?? page;
+    const lastPage = Math.max(1, Number(paginator?.last_page ?? 1));
+    const total = paginator?.total ?? exercises.length;
 
-  // ================= مستويات الصعوبة =================
-  const difficulties = useMemo(() => {
-    const uniqueDifficulties = new Set(
-      exercises.map((exercise) => exercise.difficulty_level).filter(Boolean),
+    const categories = useMemo(
+        () => [
+            ...new Set(
+                exercises
+                    .map((e) => e.muscle_group ?? e.category)
+                    .filter(Boolean),
+            ),
+        ],
+        [exercises],
+    );
+    const difficulties = useMemo(
+        () => [
+            ...new Set(
+                exercises.map((e) => e.difficulty_level).filter(Boolean),
+            ),
+        ],
+        [exercises],
     );
 
-    return Array.from(uniqueDifficulties);
-  }, [exercises]);
+    // Reset pagination whenever backend filters change.
+    const updateSearch = (value) => {
+        setSearch(value);
+        setPage(1);
+    };
+    const updateCategory = (value) => {
+        setCategoryFilter(value);
+        setPage(1);
+    };
+    const updateDifficulty = (value) => {
+        setDifficultyFilter(value);
+        setPage(1);
+    };
 
-  // ================= فلترة التمارين =================
-  const filteredExercises = useMemo(() => {
-    const normalizedSearch = search.toLowerCase().trim();
+    const handleClose = () => {
+        setSearch("");
+        setCategoryFilter("");
+        setDifficultyFilter("");
+        setFlashMessage("");
+        setSelectedExercise(null);
+        setPage(1);
+        onClose?.();
+    };
 
-    return exercises.filter((exercise) => {
-      const matchesSearch = exercise.name
-        ?.toLowerCase()
-        .includes(normalizedSearch);
+    const handleAddExercise = () => {
+        if (!selectedExercise) return;
+        if (typeof onSelectExercise !== "function") {
+            setFlashMessage("تعذر إضافة التمرين. يرجى المحاولة مرة أخرى.");
+            return;
+        }
+        onSelectExercise(selectedExercise);
+        handleClose();
+    };
 
-      const matchesCategory =
-        !categoryFilter || exercise.category === categoryFilter;
+    useEffect(() => {
+        if (!isOpen) return undefined;
+        const onKeyDown = (event) => {
+            if (event.key === "Escape") handleClose();
+        };
+        window.addEventListener("keydown", onKeyDown);
+        return () => window.removeEventListener("keydown", onKeyDown);
+        // onClose is expected to be stable in the parent.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isOpen]);
 
-      const matchesDifficulty =
-        !difficultyFilter || exercise.difficulty_level === difficultyFilter;
+    if (!isOpen) return null;
 
-      return matchesSearch && matchesCategory && matchesDifficulty;
-    });
-  }, [exercises, search, categoryFilter, difficultyFilter]);
-
-  // ================= إغلاق المودال =================
-  const handleClose = () => {
-    setSearch("");
-    setCategoryFilter("");
-    setDifficultyFilter("");
-    setFlashMessage("");
-    setSelectedExercise(null);
-
-    onClose();
-  };
-
-  // ================= اختيار تمرين =================
-  const handleSelect = (exercise) => {
-    setSelectedExercise(exercise);
-  };
-
-  // ================= الرجوع للمكتبة =================
-  const handleBack = () => {
-    setSelectedExercise(null);
-  };
-
-  // ================= إضافة التمرين للخطة =================
-  const handleAddExercise = () => {
-    if (!selectedExercise) return;
-
-    if (!onSelectExercise) {
-      setFlashMessage("لا يمكن إضافة التمرين، حاول مرة أخرى");
-      return;
-    }
-
-    onSelectExercise(selectedExercise);
-    setSelectedExercise(null);
-    handleClose();
-  };
-
-  if (!isOpen) return null;
-
-  return (
-    <div
-      dir="rtl"
-      className="
-    fixed
-    inset-0
-    z-[100]
-    flex
-    items-center
-    justify-center
-    p-4
-    bg-slate-900/40
-    animate-fadeIn
-  "
-      onClick={handleClose}
-    >
-      <FlashMessage
-        message={flashMessage}
-        type="error"
-        onClose={() => setFlashMessage("")}
-      />
-
-      <div
-        className="
-          relative
-          w-full
-          max-w-5xl
-          max-h-[92vh]
-          bg-white
-          rounded-3xl
-          shadow-[0_25px_80px_-20px_rgba(21,128,61,0.25)]
-          flex
-          flex-col
-          overflow-hidden
-          animate-scaleIn
-          border
-          border-green-100
-        "
-        onClick={(event) => event.stopPropagation()}
-      >
-        {/* ================= HEADER ================= */}
+    return (
         <div
-          className="
-            relative
-            flex
-            items-center
-            justify-between
-            px-6
-            py-5
-            border-b
-            border-green-100
-          "
+            dir="rtl"
+            role="presentation"
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/55 p-2 backdrop-blur-[3px] sm:p-5"
+            onMouseDown={(e) => {
+                if (e.target === e.currentTarget) handleClose();
+            }}
         >
-          {/* Decorative background */}
-          <div
-            className="
-              absolute
-              -top-20
-              -right-20
-              w-40
-              h-40
-              bg-green-100/60
-              rounded-full
-              blur-3xl
-              pointer-events-none
-            "
-          />
-
-          <div className="relative flex items-center gap-3">
-            {/* Back button - بقى أخضر */}
-            {selectedExercise && (
-              <button
-                type="button"
-                onClick={handleBack}
-                className="
-                  w-9
-                  h-9
-                  rounded-full
-                  flex
-                  items-center
-                  justify-center
-                  text-[#407437]
-                  bg-green-50
-                  hover:bg-green-100
-                  hover:text-green-800
-                  transition-all
-                "
-                title="العودة إلى المكتبة"
-              >
-                <ChevronLeft size={18} className="rotate-180" />
-              </button>
-            )}
-
-            {/* Main icon */}
-            <div
-              className="
-                w-11
-                h-11
-                rounded-2xl
-                bg-[#407437]
-                flex
-                items-center
-                justify-center
-                shadow-[0_8px_20px_-6px_rgba(21,128,61,0.45)]
-              "
-            >
-              <Dumbbell size={20} className="text-white" />
-            </div>
-
-            <div>
-              <h2 className="text-base font-bold text-green-900 leading-tight">
-                {selectedExercise ? "تفاصيل التمرين" : "مكتبة التمارين"}
-              </h2>
-
-              <p className="text-xs text-[#314158] mt-0.5">
-                {selectedExercise
-                  ? "راجع التفاصيل قبل الإضافة إلى الخطة"
-                  : "اختر تمريناً لإضافته إلى خطة المتدرب"}
-              </p>
-            </div>
-          </div>
-
-          {/* Close */}
-          <button
-            type="button"
-            onClick={handleClose}
-            className="
-              relative
-              w-9
-              h-9
-              rounded-full
-              flex
-              items-center
-              justify-center
-              text-green-600
-              hover:bg-green-50
-              hover:text-green-800
-              transition
-            "
-          >
-            <X size={18} />
-          </button>
-        </div>
-
-        {/* ================= BODY ================= */}
-        {selectedExercise ? (
-          <ExerciseDetails
-  exercise={selectedExercise}
-  onAdd={handleAddExercise}
-  onBack={() => setSelectedExercise(null)}
-/>
-        ) : (
-          <>
-            <ExerciseFilters
-              search={search}
-              onSearchChange={setSearch}
-              categoryFilter={categoryFilter}
-              onCategoryChange={setCategoryFilter}
-              difficultyFilter={difficultyFilter}
-              onDifficultyChange={setDifficultyFilter}
-              categories={categories}
-              difficulties={difficulties}
-              resultsCount={filteredExercises.length}
+            <FlashMessage
+                message={flashMessage}
+                type="error"
+                onClose={() => setFlashMessage("")}
             />
-            {/* ================= HEALTH WARNING ================= */}
-            {selectedTrainee?.trainee?.user_profile?.medical_restrictions && (
-              <div className="px-6 pt-4">
-                <div className="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3">
-                  {/* Icon */}
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-100">
-                    <span className="text-lg">⚠️</span>
-                  </div>
 
-                  {/* Content */}
-                  <div className="min-w-0">
-                    <p className="text-sm font-bold text-amber-800">
-                      تنبيه صحي
-                    </p>
-
-                    <p className="mt-1 text-xs leading-6 text-amber-700">
-                      يجب مراعاة القيود الصحية للمتدرب عند اختيار التمارين.
-                    </p>
-
-                    <p className="mt-1 text-xs font-semibold leading-6 text-amber-800">
-                      {selectedTrainee.trainee.user_profile.medical_restrictions}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-            {/* ================= EXERCISES GRID ================= */}
-            <div className="flex-1 overflow-y-auto px-6 py-5 modal-scroll">
-              {/* Loading */}
-              {isLoading && (
-                <div className="flex flex-col items-center justify-center py-20 gap-3">
-                  <div
-                    className="
-                      w-10
-                      h-10
-                      border-[3px]
-                      border-green-100
-                      border-t-[#407437]
-                      rounded-full
-                      animate-spin
-                    "
-                  />
-
-                  <p className="text-sm text-green-600">
-                    جاري تحميل التمارين...
-                  </p>
-                </div>
-              )}
-
-              {/* Error - لسه أحمر لأنه دلالي */}
-              {isError && (
-                <div className="text-center py-20">
-                  <div
-                    className="
-                      w-14
-                      h-14
-                      rounded-2xl
-                      bg-red-50
-                      flex
-                      items-center
-                      justify-center
-                      mx-auto
-                      mb-3
-                    "
-                  >
-                    <X size={22} className="text-red-500" />
-                  </div>
-
-                  <p className="text-red-500 text-sm">
-                    حدث خطأ أثناء تحميل التمارين
-                  </p>
-                </div>
-              )}
-
-              {/* Empty */}
-              {!isLoading && !isError && filteredExercises.length === 0 && (
-                <div className="text-center py-20">
-                  <div
-                    className="
-                        w-16
-                        h-16
-                        rounded-2xl
-                        bg-green-50
-                        flex
-                        items-center
-                        justify-center
-                        mx-auto
-                        mb-3
-                      "
-                  >
-                    <Dumbbell size={26} className="text-green-300" />
-                  </div>
-
-                  <p className="text-green-600 text-sm">
-                    لا توجد تمارين مطابقة
-                  </p>
-                </div>
-              )}
-
-              {/* Exercises */}
-              {!isLoading && !isError && filteredExercises.length > 0 && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {filteredExercises.map((exercise) => (
-                    <ExerciseCard
-                      key={exercise.id}
-                      exercise={exercise}
-                      onSelect={() => handleSelect(exercise)}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* ================= FOOTER ================= */}
-            <div
-              className="
-                px-6
-                py-4
-                border-t
-                border-green-100
-                flex
-                items-center
-                justify-between
-              "
+            <section
+                role="dialog"
+                aria-modal="true"
+                aria-label={
+                    selectedExercise ? "تفاصيل التمرين" : "مكتبة التمارين"
+                }
+                className="flex h-[min(92dvh,850px)] w-full max-w-6xl flex-col overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-2xl sm:rounded-[28px]"
             >
-              <p className="text-xs text-[#314158]">
-                اضغط على تمرين لعرض تفاصيله
-              </p>
+                <header className="flex shrink-0 items-center justify-between border-b border-slate-100 bg-white px-4 py-4 sm:px-7 sm:py-5">
+                    <div className="flex min-w-0 items-center gap-3">
+                        {selectedExercise && (
+                            <button
+                                type="button"
+                                onClick={() => setSelectedExercise(null)}
+                                className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-slate-200 text-slate-600 transition hover:bg-slate-50"
+                                aria-label="العودة إلى المكتبة"
+                            >
+                                <ChevronRight size={19} />
+                            </button>
+                        )}
+                        <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-[#407437] text-white shadow-sm">
+                            <Dumbbell size={21} />
+                        </span>
+                        <div className="min-w-0">
+                            <h2 className="text-base font-bold text-slate-900 sm:text-lg">
+                                {selectedExercise
+                                    ? "تفاصيل التمرين"
+                                    : "مكتبة التمارين"}
+                            </h2>
+                            <p className="mt-0.5 text-xs text-slate-500 sm:text-sm">
+                                {selectedExercise
+                                    ? "راجعي التفاصيل قبل إضافته للخطة"
+                                    : "اختاري التمرين الأنسب لخطة المتدرب"}
+                            </p>
+                        </div>
+                    </div>
+                    <button
+                        type="button"
+                        onClick={handleClose}
+                        aria-label="إغلاق مكتبة التمارين"
+                        className="grid h-10 w-10 shrink-0 place-items-center rounded-xl text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
+                    >
+                        <X size={21} />
+                    </button>
+                </header>
 
-              {/* زر الإغلاق - بقى أخضر زي زر الرجوع */}
-              <button
-                type="button"
-                onClick={handleClose}
-                className="
-                  px-5
-                  h-[40px]
-                  rounded-full
-                  border
-                  border-green-200
-                  bg-white
-                  text-[#407437]
-                  text-sm
-                  font-semibold
-                  hover:bg-green-50
-                  hover:border-green-300
-                  transition
-                "
-              >
-                إغلاق
-              </button>
-            </div>
-          </>
-        )}
-      </div>
+                {selectedExercise ? (
+                    <div className="min-h-0 flex-1 overflow-y-auto">
+                        <ExerciseDetails
+                            exercise={selectedExercise}
+                            onAdd={handleAddExercise}
+                            onBack={() => setSelectedExercise(null)}
+                        />
+                    </div>
+                ) : (
+                    <>
+                        <div className="shrink-0 border-b border-slate-100 bg-slate-50/60">
+                            <ExerciseFilters
+                                search={search}
+                                onSearchChange={updateSearch}
+                                categoryFilter={categoryFilter}
+                                onCategoryChange={updateCategory}
+                                difficultyFilter={difficultyFilter}
+                                onDifficultyChange={updateDifficulty}
+                                categories={categories}
+                                difficulties={difficulties}
+                                resultsCount={total}
+                            />
+                        </div>
 
-      {/* ================= MODAL STYLES ================= */}
-      <style>{`
-        .modal-scroll::-webkit-scrollbar {
-          width: 8px;
-        }
+                        {selectedTrainee?.trainee?.user_profile
+                            ?.medical_restrictions && (
+                            <div className="mx-4 mt-4 flex shrink-0 items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-amber-900 sm:mx-7">
+                                <AlertCircle
+                                    size={20}
+                                    className="mt-0.5 shrink-0"
+                                />
+                                <div>
+                                    <p className="text-sm font-bold">
+                                        تنبيه صحي
+                                    </p>
+                                    <p className="mt-1 text-xs leading-6">
+                                        يجب مراعاة القيود الصحية للمتدرب عند
+                                        اختيار التمارين.
+                                    </p>
+                                    <p className="mt-1 whitespace-pre-wrap text-xs font-medium leading-6">
+                                        {
+                                            selectedTrainee.trainee.user_profile
+                                                .medical_restrictions
+                                        }
+                                    </p>
+                                </div>
+                            </div>
+                        )}
 
-        .modal-scroll::-webkit-scrollbar-track {
-          background: transparent;
-        }
+                        <main className="min-h-0 flex-1 overflow-y-auto bg-white px-4 py-5 sm:px-7">
+                            {isLoading ? (
+                                <div className="flex h-full min-h-52 flex-col items-center justify-center gap-3 text-slate-500">
+                                    <LoaderCircle
+                                        size={31}
+                                        className="animate-spin text-[#407437]"
+                                    />
+                                    <p className="text-sm">
+                                        جاري تحميل التمارين...
+                                    </p>
+                                </div>
+                            ) : isError ? (
+                                <div className="flex min-h-52 flex-col items-center justify-center gap-3 text-center">
+                                    <AlertCircle
+                                        size={34}
+                                        className="text-red-500"
+                                    />
+                                    <p className="text-sm font-semibold text-slate-900">
+                                        تعذر تحميل التمارين
+                                    </p>
+                                    <p className="text-xs text-slate-500">
+                                        تحققي من الاتصال وحاولي مرة أخرى.
+                                    </p>
+                                    <button
+                                        type="button"
+                                        onClick={() => refetch()}
+                                        className="mt-1 inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm hover:bg-slate-50"
+                                    >
+                                        <RotateCcw size={15} /> إعادة المحاولة
+                                    </button>
+                                </div>
+                            ) : exercises.length === 0 ? (
+                                <div className="flex min-h-52 flex-col items-center justify-center gap-2 text-center">
+                                    <span className="grid h-14 w-14 place-items-center rounded-2xl bg-green-50 text-[#407437]">
+                                        <Dumbbell />
+                                    </span>
+                                    <p className="mt-2 text-sm font-semibold text-slate-900">
+                                        لا توجد تمارين مطابقة
+                                    </p>
+                                    <p className="text-xs text-slate-500">
+                                        جرّبي تغيير البحث أو خيارات التصفية.
+                                    </p>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                                    {exercises.map((exercise) => (
+                                        <ExerciseCard
+                                            key={exercise.id}
+                                            exercise={exercise}
+                                            onSelect={() =>
+                                                setSelectedExercise(exercise)
+                                            }
+                                        />
+                                    ))}
+                                </div>
+                            )}
+                        </main>
 
-        .modal-scroll::-webkit-scrollbar-thumb {
-          background: #314158;
-          border-radius: 999px;
-          border: 2px solid #fff;
-        }
-
-        .modal-scroll::-webkit-scrollbar-thumb:hover {
-          background: #314158;
-        }
-
-        .modal-scroll {
-          scrollbar-width: thin;
-          scrollbar-color: #bbf7d0 transparent;
-        }
-
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-          }
-
-          to {
-            opacity: 1;
-          }
-        }
-
-        @keyframes scaleIn {
-          from {
-            opacity: 0;
-            transform: scale(0.96) translateY(10px);
-          }
-
-          to {
-            opacity: 1;
-            transform: scale(1) translateY(0);
-          }
-        }
-
-        .animate-fadeIn {
-          animation: fadeIn 0.2s ease-out;
-        }
-
-        .animate-scaleIn {
-          animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-      `}</style>
-    </div>
-  );
+                        <footer className="flex shrink-0 flex-col gap-3 border-t border-slate-100 bg-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-7">
+                            <div className="text-center text-xs text-slate-500 sm:text-right">
+                                {total > 0
+                                    ? `${total} تمرين • الصفحة ${currentPage} من ${lastPage}`
+                                    : "مكتبة التمارين"}
+                                {isFetching && !isLoading && (
+                                    <span className="mr-2 text-[#407437]">
+                                        جاري التحديث...
+                                    </span>
+                                )}
+                            </div>
+                            <div className="flex items-center justify-center gap-2">
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        setPage((p) => Math.max(1, p - 1))
+                                    }
+                                    disabled={page <= 1 || isFetching}
+                                    className="inline-flex h-10 items-center gap-1 rounded-xl border border-slate-200 px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+                                >
+                                    <ChevronRight size={17} /> السابق
+                                </button>
+                                <span className="min-w-14 rounded-lg bg-green-50 px-3 py-2 text-center text-sm font-bold text-[#407437]">
+                                    {currentPage}
+                                </span>
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        setPage((p) =>
+                                            Math.min(lastPage, p + 1),
+                                        )
+                                    }
+                                    disabled={page >= lastPage || isFetching}
+                                    className="inline-flex h-10 items-center gap-1 rounded-xl border border-slate-200 px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+                                >
+                                    التالي <ChevronLeft size={17} />
+                                </button>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={handleClose}
+                                className="hidden rounded-xl px-4 py-2 text-sm font-medium text-slate-500 transition hover:bg-slate-100 sm:block"
+                            >
+                                إغلاق
+                            </button>
+                        </footer>
+                    </>
+                )}
+            </section>
+        </div>
+    );
 };
 
 export default ExerciseLibraryModal;

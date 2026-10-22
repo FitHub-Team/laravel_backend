@@ -15,6 +15,12 @@ import ChallengesPage from "../pages/coach/challenges/ChallengesPage";
 
 import TraineeProfile from "../pages/coach/trainees/TraineeProfile";
 import RecipeLibrary from "../pages/coach/recipes/RecipeLibrary";
+import VersionsPage from "../pages/coach/Versions/VersionsPage";
+import CurrentPlansPage from "../pages/coach/workout/CurrentPlansPage";
+import EditWorkoutPlan from "../pages/coach/workout/EditWorkoutPlan";
+import WorkoutPlanDetails from "../pages/coach/workout/WorkoutPlanDetails";
+import TraineeVersionsPage from "../pages/coach/Versions/TraineeVersionsPage";
+import NutritionPlanPage from "../pages/coach/nutritionPlan/NutritionPlanPage";
 
 // Components
 import ProtectedRoute from "../components/common/ProtectedRoute";
@@ -41,28 +47,43 @@ const AppRoutes = () => {
             >
                 {/* Dashboard */}
                 <Route index element={<Dashboard />} />
-
                 {/* Trainees */}
                 <Route path="subscribers" element={<SubscribersTable />} />
-
                 <Route
                     path="subscribers-request"
                     element={<SubscribersRequset />}
                 />
-
+                <Route path="trainees/:id" element={<TraineeProfile />} />
                 {/* Workout */}
                 <Route path="workout-plan" element={<WorkoutPlan />} />
-
+                {/* Current Plans */}
+                <Route path="current-plans" element={<CurrentPlansPage />} />
+                {/* View Plan */}
+                <Route
+                    path="workout-plan/:planId"
+                    element={<WorkoutPlanDetails />}
+                />
+                {/* Edit Plan */}
+                <Route
+                    path="workout-plan/:planId/edit"
+                    element={<EditWorkoutPlan />}
+                />
                 {/* Custom Exercises */}
                 <Route path="exercises" element={<CustomExercises />} />
-
                 {/* Coach Profile */}
                 <Route path="coach/profile" element={<CoachProfile />} />
-                <Route path="trainees/:id" element={<TraineeProfile />} />
+                {/* Recipes */}
                 <Route path="recipes" element={<RecipeLibrary />} />
-               
+                {/* Versions */}
+                <Route path="versions" element={<VersionsPage />} />
+                <Route
+                    path="versions/:traineeId"
+                    element={<TraineeVersionsPage />}
+                />
+                {/* Challenges */}
+                <Route path="challenges" element={<ChallengesPage />} />
+                <Route path="nutrition-plan" element={<NutritionPlanPage />} />
             </Route>
-             <Route path="challenges" element={<ChallengesPage />} />
         </Routes>
     );
 };

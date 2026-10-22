@@ -29,6 +29,12 @@ class CustomExerciseRequest extends FormRequest
             'equipment'    => ['nullable', 'string', 'max:255'],
             'difficulty'   => ['required', 'string', 'max:255'],
             'instructions' => ['required', 'string'],
+            'image' => [
+                'nullable',
+                'image',
+                'mimes:jpg,jpeg,png,webp',
+                'max:2048',
+            ],
         ];
     }
 }

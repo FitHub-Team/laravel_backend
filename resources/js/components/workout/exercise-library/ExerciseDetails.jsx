@@ -1,8 +1,9 @@
+
 import {
+  ArrowRight,
   Dumbbell,
   Plus,
   FileText,
-  Info,
   Target,
   TrendingUp,
   Layers,
@@ -19,275 +20,335 @@ import {
   translateForceType,
 } from "../../../utils/exerciseTranslations";
 
+// Arabic value first, English fallback
+const localizedValue = (arabic, english, translateFn) => {
+  const ar = typeof arabic === "string" ? arabic.trim() : "";
+
+  if (ar) return ar;
+
+  const en =
+    typeof english === "string" ? english.trim() : "";
+
+  if (!en) return "غير محدد";
+
+  return translateFn?.(en) || en;
+};
+
 const ExerciseDetails = ({ exercise, onAdd, onBack }) => {
-  // ألوان دلالية لمستوى الصعوبة
+  if (!exercise) return null;
+
+  const name =
+    exercise.name_ar?.trim() ||
+    exercise.name ||
+    "تمرين بدون اسم";
+
+  const description =
+    exercise.description_ar?.trim() ||
+    exercise.description?.trim() ||
+    "";
+
+  const muscleGroup = localizedValue(
+    exercise.muscle_group_ar,
+    exercise.muscle_group,
+    translateMuscleGroup
+  );
+
+  const equipment = localizedValue(
+    exercise.equipment_ar,
+    exercise.equipment,
+    translateEquipment
+  );
+
+  const category = localizedValue(
+    exercise.type_ar,
+    exercise.type ?? exercise.category,
+    translateCategory
+  );
+
+  const difficulty = localizedValue(
+    exercise.difficulty_level_ar,
+    exercise.difficulty_level,
+    translateDifficulty
+  );
+
+  const difficultyKey = String(
+    exercise.difficulty_level || ""
+  )
+    .trim()
+    .toLowerCase();
+
   const difficultyStyles = {
-    beginner:     "bg-blue-50 text-blue-700 ring-blue-200",
-    intermediate: "bg-amber-50 text-amber-700 ring-amber-200",
-    advanced:     "bg-orange-50 text-orange-700 ring-orange-200",
-    expert:       "bg-red-50 text-red-700 ring-red-200",
+    beginner:
+      "bg-emerald-50 text-emerald-700 border-emerald-200",
+    intermediate:
+      "bg-amber-50 text-amber-700 border-amber-200",
+    advanced:
+      "bg-orange-50 text-orange-700 border-orange-200",
+    expert:
+      "bg-red-50 text-red-700 border-red-200",
   };
 
   const difficultyStyle =
-    difficultyStyles[exercise.difficulty_level] ||
-    "bg-slate-50 text-slate-600 ring-slate-200";
+    difficultyStyles[difficultyKey] ||
+    "bg-slate-100 text-slate-600 border-slate-200";
+
+  const mechanics = exercise.mechanics
+    ? translateMechanics(exercise.mechanics)
+    : null;
+
+  const forceType = exercise.force_type
+    ? translateForceType(exercise.force_type)
+    : null;
 
   return (
-    <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+    <div
+      dir="rtl"
+      className="flex min-h-0 flex-1 flex-col overflow-hidden bg-white"
+    >
+      {/* Scrollable content */}
+      <div className="modal-scroll min-h-0 flex-1 overflow-y-auto">
+        <div className="space-y-6 p-4 sm:p-6">
 
-      {/* Content */}
-      <div className="flex-1 overflow-y-auto modal-scroll">
-        <div className="p-6 space-y-5">
-
-          {/* ===== Header ===== */}
-          <div className="flex items-center gap-4">
-
-            {/* الأيقونة الرئيسية - فُضّل تفضل خضراء لأنها هوية */}
-            <div className="flex-shrink-0 w-14 h-14 rounded-2xl bg-green-50 flex items-center justify-center">
-              <Dumbbell
-                size={26}
-                className="text-green-700"
-                strokeWidth={1.8}
-              />
+          {/* Exercise heading */}
+          <div className="flex items-start gap-3 sm:gap-4">
+            <div
+              className="
+                flex h-12 w-12 shrink-0 items-center
+                justify-center rounded-2xl
+                bg-[#407437]/10 text-[#407437]
+                sm:h-14 sm:w-14
+              "
+            >
+              <Dumbbell size={25} strokeWidth={1.8} />
             </div>
 
-            <div className="flex-1 min-w-0">
-              <h3 className="text-xl font-bold text-slate-800 leading-tight truncate">
-                {exercise.name}
+            <div className="min-w-0 flex-1">
+              <h3 className="text-lg font-bold leading-7 text-slate-800 sm:text-xl">
+                {name}
               </h3>
 
-              <p className="text-sm text-slate-400 mt-0.5 truncate">
-                {translateMuscleGroup(exercise.muscle_group)}
+              <p className="mt-1 text-sm text-slate-500">
+                {muscleGroup}
               </p>
-            </div>
 
-            {/* شارة الصعوبة - ألوان دلالية */}
+              {exercise.name_ar && exercise.name && (
+                <p
+                  dir="ltr"
+                  className="mt-1 text-left text-xs text-slate-400"
+                >
+                  {exercise.name}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Summary badges */}
+          <div className="flex flex-wrap items-center gap-2">
             <span
               className={`
-                flex-shrink-0
-                text-[11px]
-                font-semibold
-                px-3
-                py-1
-                rounded-full
-                ring-1
-                ring-inset
+                inline-flex items-center rounded-full
+                border px-3 py-1.5
+                text-xs font-semibold
                 ${difficultyStyle}
               `}
             >
-              {translateDifficulty(exercise.difficulty_level)}
+              {difficulty}
+            </span>
+
+            <span
+              className="
+                rounded-full bg-[#407437]/10
+                px-3 py-1.5 text-xs font-medium
+                text-[#407437]
+              "
+            >
+              {category}
             </span>
           </div>
 
-          {/* ===== Description ===== */}
-          {exercise.description && (
-            <div className="rounded-2xl bg-slate-50 border border-slate-100 p-4">
-
-              <div className="flex items-center gap-2 mb-2">
+          {/* Description */}
+          {description && (
+            <section
+              className="
+                rounded-2xl border border-slate-100
+                bg-slate-50/70 p-4 sm:p-5
+              "
+            >
+              <div className="mb-3 flex items-center gap-2">
                 <FileText
-                  size={13}
-                  className="text-slate-400"
+                  size={17}
+                  className="text-[#407437]"
                 />
 
-                <h4 className="text-xs font-bold text-slate-700">
+                <h4 className="text-sm font-bold text-slate-800">
                   وصف التمرين
                 </h4>
               </div>
 
-              <p className="text-[13px] text-slate-600 leading-6">
-                {exercise.description}
+              <p
+                dir={exercise.description_ar?.trim() ? "rtl" : "auto"}
+                className="whitespace-pre-line text-sm leading-7 text-slate-600"
+              >
+                {description}
               </p>
-            </div>
+            </section>
           )}
 
-          {/* ===== Info Section ===== */}
-          <div>
-
-            <div className="flex items-center gap-2 mb-3">
-
-              <div className="w-6 h-6 rounded-lg bg-slate-100 flex items-center justify-center">
-                <Info
-                  size={13}
-                  className="text-slate-500"
-                />
+          {/* Information */}
+          <section>
+            <div className="mb-3 flex items-center gap-2">
+              <div
+                className="
+                  flex h-8 w-8 items-center
+                  justify-center rounded-lg
+                  bg-[#407437]/10 text-[#407437]
+                "
+              >
+                <Dumbbell size={16} />
               </div>
 
-              <h4 className="text-sm font-bold text-slate-700">
+              <h4 className="text-sm font-bold text-slate-800">
                 معلومات التمرين
               </h4>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <InfoRow
                 icon={Target}
                 label="العضلات المستهدفة"
-                value={translateMuscleGroup(exercise.muscle_group)}
+                value={muscleGroup}
               />
 
               <InfoRow
                 icon={TrendingUp}
                 label="مستوى الصعوبة"
-                value={translateDifficulty(exercise.difficulty_level)}
+                value={difficulty}
                 badgeStyle={difficultyStyle}
               />
 
               <InfoRow
                 icon={Dumbbell}
-                label="المعدات"
-                value={translateEquipment(exercise.equipment)}
+                label="المعدات المستخدمة"
+                value={equipment}
               />
 
               <InfoRow
                 icon={Layers}
-                label="التصنيف"
-                value={translateCategory(exercise.category)}
+                label="تصنيف التمرين"
+                value={category}
               />
 
-              <InfoRow
-                icon={Activity}
-                label="نوع الحركة"
-                value={translateMechanics(exercise.mechanics)}
-              />
+              {mechanics && (
+                <InfoRow
+                  icon={Activity}
+                  label="نوع الحركة"
+                  value={mechanics}
+                />
+              )}
 
-              <InfoRow
-                icon={Zap}
-                label="نوع القوة"
-                value={translateForceType(exercise.force_type)}
-              />
-
+              {forceType && (
+                <InfoRow
+                  icon={Zap}
+                  label="نوع القوة"
+                  value={forceType}
+                />
+              )}
             </div>
-          </div>
+          </section>
         </div>
       </div>
 
-      {/* ===== Footer ===== */}
-      <div className="flex items-center gap-3 px-6 py-4 border-t border-slate-100 bg-white">
+      {/* Sticky actions */}
+      <div
+        className="
+          shrink-0 border-t border-slate-100
+          bg-white px-4 py-4 sm:px-6
+        "
+      >
+        <div className="flex flex-col-reverse gap-3 sm:flex-row">
+          <button
+            type="button"
+            onClick={() => onAdd?.(exercise)}
+            className="
+              flex h-11 flex-1 items-center
+              justify-center gap-2 rounded-xl
+              bg-[#407437] px-5 text-sm font-bold
+              text-white shadow-sm
+              transition-colors hover:bg-[#335e2c]
+              focus-visible:outline-none
+              focus-visible:ring-2
+              focus-visible:ring-[#407437]
+              focus-visible:ring-offset-2
+            "
+          >
+            <Plus size={18} />
+            إضافة إلى الخطة
+          </button>
 
-        {/* الزر الرئيسي - يفضل أخضر لأنه CTA */}
-        <button
-          type="button"
-          onClick={() => onAdd(exercise)}
-          className="
-            group
-            flex-1
-            h-[46px]
-            rounded-full
-            bg-green-700
-            text-white
-            text-sm
-            font-bold
-            hover:bg-green-800
-            transition-all
-            flex
-            items-center
-            justify-center
-            gap-2
-            shadow-[0_8px_20px_-8px_rgba(21,128,61,0.45)]
-          "
-        >
-          <Plus
-            size={17}
-            className="transition-transform group-hover:rotate-90 duration-300"
-          />
-
-          إضافة إلى الخطة
-        </button>
-
-        {/* زر الرجوع - رمادي محايد */}
-        <button
-          type="button"
-          onClick={onBack}
-          className="
-            px-6
-            h-[46px]
-            rounded-full
-            border
-            border-slate-200
-            bg-white
-            text-slate-600
-            text-sm
-            font-semibold
-            hover:bg-slate-50
-            hover:text-slate-800
-            hover:border-slate-300
-            transition
-          "
-        >
-          رجوع
-        </button>
-
+          <button
+            type="button"
+            onClick={onBack}
+            className="
+              flex h-11 items-center justify-center
+              gap-2 rounded-xl border border-slate-200
+              bg-white px-5 text-sm font-semibold
+              text-slate-600 transition-colors
+              hover:bg-slate-50 hover:text-slate-900
+              focus-visible:outline-none
+              focus-visible:ring-2
+              focus-visible:ring-slate-300
+            "
+          >
+            <ArrowRight size={17} />
+            رجوع للمكتبة
+          </button>
+        </div>
       </div>
     </div>
   );
 };
 
-/* ===== InfoRow ===== */
-
+// Reusable information card
 const InfoRow = ({ icon: Icon, label, value, badgeStyle }) => {
   return (
     <div
       className="
-        flex
-        items-center
-        gap-3
-        p-3
-        rounded-xl
-        bg-white
-        border
-        border-slate-100
-        hover:border-slate-200
-        hover:bg-slate-50/60
-        transition-all
+        flex min-w-0 items-center gap-3
+        rounded-xl border border-slate-200/80
+        bg-white p-3.5
       "
     >
-
       <div
         className="
-          w-9
-          h-9
-          rounded-lg
-          flex
-          items-center
-          justify-center
-          flex-shrink-0
-          bg-slate-50
-          text-slate-500
+          flex h-10 w-10 shrink-0 items-center
+          justify-center rounded-xl
+          bg-slate-50 text-slate-500
         "
       >
-        <Icon size={16} />
+        <Icon size={18} strokeWidth={1.8} />
       </div>
 
-      <div className="flex-1 min-w-0">
-
-        <p className="text-[11px] text-slate-400">
+      <div className="min-w-0 flex-1">
+        <p className="mb-1 text-xs text-slate-500">
           {label}
         </p>
 
-        {/* شارة الصعوبة بتظهر بألوانها الدلالية */}
         {badgeStyle ? (
           <span
             className={`
-              inline-block
-              mt-0.5
-              text-[11px]
-              font-semibold
-              px-2
-              py-0.5
-              rounded-full
-              ring-1
-              ring-inset
+              inline-flex max-w-full rounded-full
+              border px-2.5 py-1
+              text-xs font-semibold
               ${badgeStyle}
             `}
           >
             {value || "غير محدد"}
           </span>
         ) : (
-          <p className="text-sm font-bold text-slate-800 truncate">
+          <p className="break-words text-sm font-semibold leading-6 text-slate-800">
             {value || "غير محدد"}
           </p>
         )}
-
       </div>
     </div>
   );

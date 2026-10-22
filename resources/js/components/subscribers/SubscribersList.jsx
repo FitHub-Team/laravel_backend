@@ -7,7 +7,7 @@ const SubscribersList = ({ trainees, loading }) => {
   const navigate = useNavigate();
 
   const goToWorkoutPlan = (traineeId) => {
-    navigate(`/dashboard/WorkoutPlan?trainee=${traineeId}`);
+    navigate(`/dashboard/workout-plan?trainee=${traineeId}`);
   };
 
   return (

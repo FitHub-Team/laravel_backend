@@ -1,3 +1,4 @@
+
 <?php
 
 use Illuminate\Database\Migrations\Migration;
@@ -6,16 +7,15 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::table('exercises', function (Blueprint $table) {
             $table->string('name_ar')->nullable();
             $table->text('description_ar')->nullable();
+            $table->string('type_ar')->nullable();
             $table->string('muscle_group_ar')->nullable();
             $table->string('equipment_ar')->nullable();
+            $table->string('difficulty_level_ar')->nullable();
         });
     }
 
@@ -25,8 +25,10 @@ return new class extends Migration
             $table->dropColumn([
                 'name_ar',
                 'description_ar',
+                'type_ar',
                 'muscle_group_ar',
                 'equipment_ar',
+                'difficulty_level_ar',
             ]);
         });
     }

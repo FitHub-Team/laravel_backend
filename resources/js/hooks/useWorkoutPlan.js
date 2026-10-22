@@ -27,7 +27,7 @@ const dayNames = {
   "الخميس": "thursday", "الجمعة": "friday", "السبت": "saturday",
 };
 
-const getId = (item) => item?.exercise_id ?? item?.exercise?.id ?? item?.id;
+const getId = (item) => item?.custom_exercise_id ?? item?.exercise_id ?? item?.exercise?.id ?? item?.id;
 const normalizeItem = (item) => {
   const nested = item.exercise && typeof item.exercise === "object" ? item.exercise : null;
   const id = getId(item);
@@ -35,10 +35,10 @@ const normalizeItem = (item) => {
     ...item,
     exercise_id: id,
     exercise: nested ?? (item.name ? { id, name: item.name, description: item.description, muscle_group: item.muscle_group ?? item.category, equipment: item.equipment, difficulty_level: item.difficulty_level } : null),
-    sets: item.sets ?? 3,
-    reps: String(item.reps ?? "10-12"),
-    rest_seconds: item.rest_seconds ?? item.rest_time ?? item.rest ?? 60,
-    notes: item.notes ?? "",
+    sets: item.sets ,
+    reps: String(item.reps),
+    rest_seconds: item.rest_seconds ?? item.rest_time ?? item.rest ,
+    notes: item.notes ,
   };
 };
 
@@ -157,7 +157,12 @@ export default function useWorkoutPlan(traineeId) {
 
   const addExercise = (exercise) => {
     if (!exercise) return;
-    const item = normalizeItem({ ...exercise, exercise_id: getId(exercise), sets: 3, reps: "10-12", rest_seconds: 60, notes: "" });
+    const item = normalizeItem({
+      ...exercise, exercise_id:
+        exercise.custom_exercise_id != null
+          ? null
+          : getId(exercise),
+    });
     if (!Number.isInteger(Number(item.exercise_id)) || Number(item.exercise_id) <= 0) {
       showFlash("لا يمكن إضافة التمرين: معرّفه غير صالح");
       return;
@@ -202,18 +207,24 @@ export default function useWorkoutPlan(traineeId) {
     setError(null);
     try {
       const allExercises = (workoutPlan?.days ?? []).flatMap((day) =>
-        (day.exercises ?? []).map((exercise) => {
-          const exerciseId = Number(getId(exercise));
-          const sets = Number(exercise.sets);
-          const rest = Number(exercise.rest_seconds ?? exercise.rest_time ?? 60);
-          const reps = String(exercise.reps ?? "").trim();
-          if (!Number.isInteger(exerciseId) || exerciseId <= 0 ||
-            !Number.isInteger(sets) || sets < 1 ||
-            !Number.isInteger(rest) || rest < 0 || !reps) {
-            throw new Error("هناك تمرين ببيانات غير صالحة. راجعي المجموعات والتكرارات والراحة.");
-          }
-          return { day_of_week: day.day, exercise_id: exerciseId, sets, reps, rest_time: rest, notes: exercise.notes ?? null };
-        })
+        (day.exercises ?? []).map((exercise) => ({
+          day_of_week: day.day,
+
+          exercise_id:
+            exercise.custom_exercise_id != null
+              ? null
+              : Number(exercise.exercise_id),
+
+          custom_exercise_id:
+            exercise.custom_exercise_id ?? null,
+
+          sets: Number(exercise.sets),
+          reps: String(exercise.reps ?? "").trim(),
+          rest_time: Number(
+            exercise.rest_seconds ?? exercise.rest_time
+          ),
+          notes: exercise.notes ?? null,
+        }))
       );
       if (!allExercises.length) throw new Error("أضيفي تمرينًا واحدًا على الأقل قبل الحفظ");
       const payload = {
