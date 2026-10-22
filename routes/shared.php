@@ -18,13 +18,23 @@ use App\Http\Controllers\Api\user\RequestSubscriptionController;
 use App\Http\Controllers\Api\user\WorkoutPlanController
     as UserWorkoutPlanController;
 
-// Logout
+/*
+|--------------------------------------------------------------------------
+| Authentication
+|--------------------------------------------------------------------------
+*/
+
 Route::post('/logout', [
     AuthController::class,
     'logout',
 ]);
 
-// Browse coaches
+/*
+|--------------------------------------------------------------------------
+| Browse Coaches
+|--------------------------------------------------------------------------
+*/
+
 Route::get('/coaches', [
     BrowseCoachController::class,
     'index',
@@ -35,7 +45,30 @@ Route::get('/coaches/{id}', [
     'showPublicProfile',
 ]);
 
-// Health information
+// Added from main: Coach Reviews
+Route::get('/coaches/{id}/reviews', [
+    BrowseCoachController::class,
+    'getReviews',
+]);
+
+// Added from main: Subscription Status
+Route::get('/coaches/{id}/subscription-status', [
+    BrowseCoachController::class,
+    'getSubscriptionStatus',
+]);
+
+// Added from main: Subscription Details
+Route::get('/coaches/{id}/subscription-details', [
+    BrowseCoachController::class,
+    'getSubscriptionDetails',
+]);
+
+/*
+|--------------------------------------------------------------------------
+| Health Information
+|--------------------------------------------------------------------------
+*/
+
 Route::prefix('health-information')->group(function () {
 
     Route::get('/show', [
@@ -49,7 +82,12 @@ Route::prefix('health-information')->group(function () {
     ]);
 });
 
-// Goal information
+/*
+|--------------------------------------------------------------------------
+| Goal Information
+|--------------------------------------------------------------------------
+*/
+
 Route::prefix('goal-information')->group(function () {
 
     Route::get('/show', [
@@ -63,7 +101,12 @@ Route::prefix('goal-information')->group(function () {
     ]);
 });
 
-// Subscription requests
+/*
+|--------------------------------------------------------------------------
+| Subscription Requests
+|--------------------------------------------------------------------------
+*/
+
 Route::post('/subscription-request', [
     RequestSubscriptionController::class,
     'requestSubscription',
@@ -74,13 +117,23 @@ Route::get('/subscription-requests', [
     'getMyRequests',
 ]);
 
-// Shared workout plans endpoint
+/*
+|--------------------------------------------------------------------------
+| Shared Workout Plans
+|--------------------------------------------------------------------------
+*/
+
 Route::get('/workout-plans', [
     UserWorkoutPlanController::class,
     'index',
 ]);
 
-// Current authenticated user
+/*
+|--------------------------------------------------------------------------
+| Current Authenticated User
+|--------------------------------------------------------------------------
+*/
+
 Route::get('/user', function (Request $request) {
 
     return response()->json([
@@ -89,7 +142,12 @@ Route::get('/user', function (Request $request) {
     ]);
 });
 
-// Chat
+/*
+|--------------------------------------------------------------------------
+| Chat
+|--------------------------------------------------------------------------
+*/
+
 Route::get('/chat/{userId}', [
     ChatController::class,
     'index',
