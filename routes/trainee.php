@@ -16,6 +16,20 @@ use App\Http\Controllers\Api\user\NutritionPlanController
 
 use App\Http\Controllers\Api\user\TraineeProgressController;
 
+
+use App\Http\Controllers\Api\user\DashboardController as UserDashboardController;
+
+/*
+|--------------------------------------------------------------------------
+| Dashboard
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/dashboard', [
+    UserDashboardController::class,
+    'index',
+]);
+
 /*
 |--------------------------------------------------------------------------
 | Profile Settings
