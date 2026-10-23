@@ -1,46 +1,75 @@
+
 import { NavLink } from "react-router-dom";
+import { ClipboardList, History } from "lucide-react";
 
-export default function PlansTabs() {
-    const baseClass =
-        "px-4 py-2.5 text-sm font-semibold rounded-xl transition";
+const DEFAULT_TABS = [
+    {
+        label: "الخطط الحالية",
+        to: "/dashboard/current-plans",
+        icon: ClipboardList,
+    },
+    {
+        label: "الإصدارات السابقة",
+        to: "/dashboard/versions",
+        icon: History,
+    },
+];
 
+export default function PlansTabs({
+    tabs = DEFAULT_TABS,
+    className = "",
+}) {
     return (
-        <div
+        <nav
             dir="rtl"
-            className="
-                mb-6
-                flex w-fit items-center gap-2
-                rounded-2xl
-                border border-gray-200
-                bg-white
-                p-1.5
-            "
+            aria-label="التنقل بين أقسام الخطط"
+            className={`mb-6 w-full ${className}`}
         >
-            <NavLink
-                to="/dashboard/current-plans"
-                className={({ isActive }) =>
-                    `${baseClass} ${
-                        isActive
-                            ? "bg-[#407437] text-white"
-                            : "text-gray-500 hover:bg-gray-50 hover:text-[#407437]"
-                    }`
-                }
+            <div
+                className="
+                    inline-flex w-full items-center gap-1
+                    rounded-xl bg-gray-100 p-1
+                    sm:w-auto
+                "
             >
-                الخطط الحالية
-            </NavLink>
+                {tabs.map(({ label, to, icon: Icon }) => (
+                    <NavLink
+                        key={to}
+                        to={to}
+                        className={({ isActive }) => `
+                            flex min-h-11 min-w-0 flex-1
+                            items-center justify-center gap-2
+                            rounded-lg px-4 py-2.5
+                            text-sm font-medium
+                            transition-colors duration-200
+                            sm:flex-none sm:min-w-40
+                            focus-visible:outline-none
+                            focus-visible:ring-2
+                            focus-visible:ring-[#407437]/40
+                            ${
+                                isActive
+                                    ? "bg-white font-semibold text-[#407437] shadow-sm"
+                                    : "text-gray-500 hover:bg-white/60 hover:text-gray-800"
+                            }
+                        `}
+                    >
+                        {({ isActive }) => (
+                            <>
+                                <Icon
+                                    size={18}
+                                    strokeWidth={isActive ? 2 : 1.75}
+                                    className="shrink-0"
+                                    aria-hidden="true"
+                                />
 
-            <NavLink
-                to="/dashboard/versions"
-                className={({ isActive }) =>
-                    `${baseClass} ${
-                        isActive
-                            ? "bg-[#407437] text-white"
-                            : "text-gray-500 hover:bg-gray-50 hover:text-[#407437]"
-                    }`
-                }
-            >
-                الإصدارات السابقة
-            </NavLink>
-        </div>
+                                <span className="truncate">
+                                    {label}
+                                </span>
+                            </>
+                        )}
+                    </NavLink>
+                ))}
+            </div>
+        </nav>
     );
 }

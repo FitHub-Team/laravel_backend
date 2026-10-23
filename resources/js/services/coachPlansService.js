@@ -30,4 +30,9 @@ export const cancelActivePlan = async (planId) => {
   return response.data;
 };
 
+// Get all workout plan versions for the authenticated coach
+export const getAllWorkoutPlanVersions = async () => {
+    const response = await api.get("/coach/workout-plans/versions");
 
+    return response.data.data;
+};

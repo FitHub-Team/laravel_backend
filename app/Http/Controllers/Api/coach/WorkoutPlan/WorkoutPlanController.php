@@ -106,6 +106,7 @@ class WorkoutPlanController extends Controller
             ->where('coach_id', $request->user()->id)
             ->where('trainee_id', $traineeId)
             ->where('status', '!=', 'draft')
+            ->with('trainee')
             ->withCount('workoutExercises')
             ->orderByDesc('version')
             ->get([
@@ -144,6 +145,7 @@ class WorkoutPlanController extends Controller
             ->where('status', '!=', 'draft')
             ->whereKey($planId)
             ->with([
+                'trainee',
                 'days',
                 'workoutExercises.exercise',
                 'workoutExercises.customExercise',
@@ -200,5 +202,18 @@ class WorkoutPlanController extends Controller
             'message' => 'تم إنشاء نسخة جديدة من الخطة بنجاح',
             'data' => $newPlan,
         ], 201);
+    }
+    // get all Plan Version
+    public function getVersionsByCoach(Request $request)
+    {
+        $versions = $this->workoutPlanService->getVersionsByCoach(
+            $request->user()->id
+        );
+
+        return response()->json([
+            'status' => true,
+            'message' => 'عرض الإصدارات لجميع المتدربين',
+            'data' => $versions,
+        ]);
     }
 }

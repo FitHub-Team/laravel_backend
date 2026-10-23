@@ -21,35 +21,27 @@ const statusLabels = {
 };
 
 export default function PlanTopSection({
+    planType = "workout",
     flashMessage,
     dismissFlash,
-
     traineeSearch,
     setTraineeSearch,
-
     showTraineeDropdown,
     setShowTraineeDropdown,
-
     dropdownRef,
-
     filteredTrainees,
     selectedTrainee,
     selectTrainee,
-
     workoutPlan,
-
     onSaveDraft,
     onSendPlan,
-
     isSaving = false,
     isLoading = false,
     canSave = true,
-
     activeSection,
 }) {
     return (
         <div className="space-y-6">
-
             {/* Notification */}
             {flashMessage && (
                 <div
@@ -68,15 +60,9 @@ export default function PlanTopSection({
                     `}
                 >
                     {flashMessage.type === "success" ? (
-                        <CheckCircle2
-                            size={20}
-                            className="mt-0.5 shrink-0"
-                        />
+                        <CheckCircle2 size={20} className="mt-0.5 shrink-0" />
                     ) : (
-                        <AlertCircle
-                            size={20}
-                            className="mt-0.5 shrink-0"
-                        />
+                        <AlertCircle size={20} className="mt-0.5 shrink-0" />
                     )}
 
                     <span className="flex-1 text-sm leading-6">
@@ -105,10 +91,7 @@ export default function PlanTopSection({
                     "
                 >
                     {/* Trainee selector */}
-                    <div
-                        ref={dropdownRef}
-                        className="relative w-full md:w-80"
-                    >
+                    <div ref={dropdownRef} className="relative w-full md:w-80">
                         <label className="mb-1 block text-right text-xs text-gray-500">
                             اختر المشترك لإعداد أو تعديل خطته
                         </label>
@@ -116,9 +99,7 @@ export default function PlanTopSection({
                         <button
                             type="button"
                             onClick={() =>
-                                setShowTraineeDropdown(
-                                    (value) => !value
-                                )
+                                setShowTraineeDropdown((value) => !value)
                             }
                             className="
                                 flex w-full
@@ -131,10 +112,7 @@ export default function PlanTopSection({
                                 hover:bg-gray-100
                             "
                         >
-                            <ChevronDown
-                                size={18}
-                                className="text-gray-400"
-                            />
+                            <ChevronDown size={18} className="text-gray-400" />
 
                             <span className="text-sm font-bold">
                                 {selectedTrainee?.trainee?.full_name ||
@@ -166,9 +144,7 @@ export default function PlanTopSection({
                                         placeholder="ابحث عن المشترك..."
                                         value={traineeSearch}
                                         onChange={(event) =>
-                                            setTraineeSearch(
-                                                event.target.value
-                                            )
+                                            setTraineeSearch(event.target.value)
                                         }
                                         className="
                                             w-full rounded-lg
@@ -182,56 +158,38 @@ export default function PlanTopSection({
                                 </div>
 
                                 <div className="max-h-60 overflow-y-auto">
-                                    {filteredTrainees.map(
-                                        (entry) => (
-                                            <button
-                                                key={entry.id}
-                                                type="button"
-                                                onClick={async () => {
-                                                    setShowTraineeDropdown(
-                                                        false
-                                                    );
+                                    {filteredTrainees.map((entry) => (
+                                        <button
+                                            key={entry.id}
+                                            type="button"
+                                            onClick={async () => {
+                                                setShowTraineeDropdown(false);
 
-                                                    setTraineeSearch(
-                                                        ""
-                                                    );
+                                                setTraineeSearch("");
 
-                                                    await selectTrainee(
-                                                        entry
-                                                    );
-                                                }}
-                                                className="
+                                                await selectTrainee(entry);
+                                            }}
+                                            className="
                                                     w-full
                                                     border-b border-gray-50
                                                     px-4 py-3
                                                     text-right
                                                     hover:bg-emerald-50
                                                 "
-                                            >
-                                                <div className="text-sm font-bold">
-                                                    {
-                                                        entry
-                                                            .trainee
-                                                            ?.full_name
-                                                    }
-                                                </div>
+                                        >
+                                            <div className="text-sm font-bold">
+                                                {entry.trainee?.full_name}
+                                            </div>
 
-                                                <div className="mt-1 text-xs text-gray-400">
-                                                    {
-                                                        entry
-                                                            .trainee
-                                                            ?.email
-                                                    }
-                                                </div>
-                                            </button>
-                                        )
-                                    )}
+                                            <div className="mt-1 text-xs text-gray-400">
+                                                {entry.trainee?.email}
+                                            </div>
+                                        </button>
+                                    ))}
 
-                                    {filteredTrainees.length ===
-                                        0 && (
+                                    {filteredTrainees.length === 0 && (
                                         <p className="p-4 text-center text-sm text-gray-400">
-                                            لا يوجد مشترك
-                                            بهذا الاسم
+                                            لا يوجد مشترك بهذا الاسم
                                         </p>
                                     )}
                                 </div>
@@ -244,27 +202,23 @@ export default function PlanTopSection({
                         <div className="text-sm text-gray-600">
                             <p>
                                 الهدف:{" "}
-                                {selectedTrainee.trainee
-                                    ?.user_profile?.goal
+                                {selectedTrainee.trainee?.user_profile?.goal
                                     ?.title ?? "غير محدد"}
                             </p>
 
                             <p className="mt-1 text-xs">
                                 الحالة:{" "}
-                                {statusLabels[
-                                    workoutPlan?.status
-                                ] ?? "الخطة لم ترسل بعد"}
-
+                                {statusLabels[workoutPlan?.status] ??
+                                    "الخطة لم ترسل بعد"}
                                 {workoutPlan?.updated_at
                                     ? ` • آخر تحديث: ${formatLastUpdated(
-                                          workoutPlan.updated_at
+                                          workoutPlan.updated_at,
                                       )}`
                                     : ""}
                             </p>
 
                             <p className="mt-1 text-xs text-[#407437]">
-                                الإصدار: v
-                                {workoutPlan?.version ?? 0}.0
+                                الإصدار: v{workoutPlan?.version ?? 0}.0
                             </p>
                         </div>
                     )}
@@ -276,11 +230,7 @@ export default function PlanTopSection({
                                 title="حفظ كمسودة"
                                 Icon={Save}
                                 onClick={onSaveDraft}
-                                disabled={
-                                    isSaving ||
-                                    isLoading ||
-                                    !canSave
-                                }
+                                disabled={isSaving || isLoading || !canSave}
                                 color="bg-[#407437] text-white"
                             />
 
@@ -288,11 +238,7 @@ export default function PlanTopSection({
                                 title="إرسال الخطة للمشترك"
                                 Icon={Send}
                                 onClick={onSendPlan}
-                                disabled={
-                                    isSaving ||
-                                    isLoading ||
-                                    !canSave
-                                }
+                                disabled={isSaving || isLoading || !canSave}
                                 color="bg-[#407437] text-white"
                             />
                         </div>
@@ -322,19 +268,16 @@ export default function PlanTopSection({
                         </h3>
 
                         <p className="text-sm text-gray-500">
-                            اختر مشتركًا من القائمة بالأعلى
-                            لعرض أو إنشاء الخطة.
+                            اختر مشتركًا من القائمة بالأعلى لعرض أو إنشاء الخطة.
                         </p>
                     </div>
                 </section>
             )}
 
             {/* Navigation */}
-            {selectedTrainee && (
-                <WorkoutActions
-                    activeSection={activeSection}
-                />
-            )}
+           {selectedTrainee && planType === "workout" && (
+    <WorkoutActions activeSection={activeSection} />
+)}
         </div>
     );
 }

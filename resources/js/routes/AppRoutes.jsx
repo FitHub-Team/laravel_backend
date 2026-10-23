@@ -15,12 +15,13 @@ import ChallengesPage from "../pages/coach/challenges/ChallengesPage";
 
 import TraineeProfile from "../pages/coach/trainees/TraineeProfile";
 import RecipeLibrary from "../pages/coach/recipes/RecipeLibrary";
-import VersionsPage from "../pages/coach/Versions/VersionsPage";
+import WorkoutPlanVersions from "../pages/coach/Versions/WorkoutPlanVersions";
 import CurrentPlansPage from "../pages/coach/workout/CurrentPlansPage";
 import EditWorkoutPlan from "../pages/coach/workout/EditWorkoutPlan";
 import WorkoutPlanDetails from "../pages/coach/workout/WorkoutPlanDetails";
 import TraineeVersionsPage from "../pages/coach/Versions/TraineeVersionsPage";
 import NutritionPlanPage from "../pages/coach/nutritionPlan/NutritionPlanPage";
+import VersionDetailsPage from "../pages/coach/Versions/VersionDetailsPage";
 
 // Components
 import ProtectedRoute from "../components/common/ProtectedRoute";
@@ -75,10 +76,14 @@ const AppRoutes = () => {
                 {/* Recipes */}
                 <Route path="recipes" element={<RecipeLibrary />} />
                 {/* Versions */}
-                <Route path="versions" element={<VersionsPage />} />
+                <Route path="versions" element={<WorkoutPlanVersions />} />
                 <Route
                     path="versions/:traineeId"
                     element={<TraineeVersionsPage />}
+                />
+                <Route
+                    path="/dashboard/versions/:traineeId/:planId"
+                    element={<VersionDetailsPage />}
                 />
                 {/* Challenges */}
                 <Route path="challenges" element={<ChallengesPage />} />

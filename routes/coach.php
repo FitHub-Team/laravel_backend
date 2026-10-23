@@ -187,6 +187,7 @@ Route::group(['prefix' => 'workout-plans'], function () {
         WorkoutPlanController::class,
         'cancel',
     ]);
+      Route::get('/versions', [WorkoutPlanController::class, 'getVersionsByCoach']);
 });
 
 
@@ -247,6 +248,7 @@ Route::prefix('trainees')->group(function () {
         'showVersion',
     ]);
 });
+// 
 
 /*
 |--------------------------------------------------------------------------

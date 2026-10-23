@@ -1,7 +1,11 @@
 import NavItem from "./NavItem";
 import { useNavigate, useLocation } from "react-router-dom";
+import SidebarDropdown from "./SidebarDropdown";
 
 import {
+    ClipboardList,
+    History,
+    ListChecks,
     Home,
     Users,
     FileText,
@@ -13,6 +17,8 @@ import {
     Settings,
     Dumbbell,
     Utensils,
+    ClipboardPlus,
+       CalendarPlus
 } from "lucide-react";
 
 import logo from "../../assets/logo-dashboard.png";
@@ -31,7 +37,16 @@ function Sidebar({ dashboardData }) {
     };
 
     return (
-        <aside className="fixed top-0 right-0 w-64 h-screen bg-white border-l border-gray-200 flex flex-col hidden lg:flex rtl">
+        <aside
+            dir="rtl"
+            className="
+        fixed inset-y-0 right-0 z-40
+        hidden h-dvh w-64
+        flex-col overflow-hidden
+        border-l border-gray-200
+        bg-white lg:flex
+    "
+        >
             <div className="flex-1 overflow-y-auto sidebar-scroll">
                 {/* Header */}
                 <div className="w-full flex items-center justify-between px-5 py-4 border-b border-[#F1F5F9] shrink-0">
@@ -133,17 +148,51 @@ function Sidebar({ dashboardData }) {
                         label="مكتبة الوصفات"
                         active={location.pathname === "/dashboard/recipes"}
                     />
-                    <NavItem
-                        icon={<FileText size={20} />}
-                        label="خطط التمارين"
-                        to="/dashboard/current-plans"
-                        active={location.pathname === "/dashboard/current-plans"}
+
+                    <SidebarDropdown
+                        icon={ClipboardList}
+                        label="إدارة خطط التمارين"
+                        matchPaths={["/dashboard/workout-plan"]}
+                        items={[
+                            {
+                                label: "الخطط الحالية",
+                                to: "/dashboard/current-plans",
+                                icon: ListChecks,
+                            },
+                            {
+                                label: "الإصدارات السابقة",
+                                to: "/dashboard/versions",
+                                icon: History,
+                            },
+                            {
+                                label: "إنشاء خطة جديدة",
+                                to: "/dashboard/workout-plan",
+                                icon: ClipboardPlus,
+                            },
+                        ]}
                     />
-                    <NavItem
-                        icon={<FileText size={20} />}
-                        label="انشاء خطة"
-                        to="/dashboard/workout-plan"
-                        active={location.pathname === "/dashboard/workout-plan"}
+
+                    <SidebarDropdown
+                        icon={Utensils}
+                        label="إدارة خطط التغذية"
+                        matchPaths={["/dashboard/nutrition-plan"]}
+                        items={[
+                            {
+                                label: "الخطط الحالية",
+                                to: "/dashboard/nutrition-plans",
+                                icon: ListChecks,
+                            },
+                            {
+                                label: "الإصدارات السابقة",
+                                to: "/dashboard/nutrition-versions",
+                                icon: History,
+                            },
+                            {
+                                label: "إنشاء خطة تغذية",
+                                to: "/dashboard/nutrition-plan",
+                                icon: CalendarPlus,
+                            },
+                        ]}
                     />
 
                     {/* <NavItem icon={<Bookmark size={20} />} label="الحزم" /> */}

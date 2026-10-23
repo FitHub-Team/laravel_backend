@@ -23,6 +23,7 @@ class WorkoutPlanQueryService
             ->where('coach_id', $coachId)
             ->where('trainee_id', $traineeId)
             ->whereIn('status', ['draft', 'active'])
+            ->with('trainee')
             ->orderByRaw("CASE WHEN status = 'draft' THEN 0 ELSE 1 END")
             ->orderByDesc('id')
             ->first();
@@ -63,6 +64,39 @@ class WorkoutPlanQueryService
                 'start_date',
                 'end_date',
                 'created_at',
+                'updated_at',
+            ])
+            ->unique('trainee_id')
+            ->sortByDesc('updated_at')
+            ->values();
+    }
+    public function getVersionsByCoach(int $coachId): Collection
+    {
+        return WorkoutPlan::query()
+            ->where('coach_id', $coachId)
+            ->where('status', 'completed')
+            ->with('trainee')
+            ->withCount('workoutExercises')
+
+
+            // Count completed versions for each trainee
+            ->withCount([
+                'trainee as versions_count' => function ($query) use ($coachId) {
+                    $query->whereHas('workoutPlans', function ($plans) use ($coachId) {
+                        $plans->where('coach_id', $coachId)
+                            ->where('status', 'completed');
+                    });
+                },
+            ])
+
+            ->orderByDesc('version')
+            ->orderByDesc('id')
+            ->get([
+                'id',
+                'coach_id',
+                'trainee_id',
+                'version',
+                'status',
                 'updated_at',
             ])
             ->unique('trainee_id')

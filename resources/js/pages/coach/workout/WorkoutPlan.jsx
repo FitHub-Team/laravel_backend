@@ -1,23 +1,25 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+
 import {
     Save,
     Send,
-    ChevronDown,
-    Search,
     UserRound,
     X,
     CheckCircle2,
     AlertCircle,
 } from "lucide-react";
+
 import { useSearchParams } from "react-router-dom";
 
 import Button from "../../../components/common/Button";
+import TraineeSelector from "../../../components/common/TraineeSelector";
+
 import WorkoutActions from "../../../components/workout/WorkoutActions";
 import WorkoutDay from "../../../components/workout/WorkoutDay";
 import WorkoutTable from "../../../components/workout/WorkoutTable";
-import NutritionPlan from "../../../components/Nutrition/NutritionPlan";
-import VersionsPage from "../Versions/VersionsPage";
 
+import TraineeVersionsPage from "../Versions/TraineeVersionsPage";
+import NutritionPlanBuilder from "../../../components/Nutrition/NutritionPlanBuilder";
 
 import useWorkoutPlan from "../../../hooks/useWorkoutPlan";
 import { formatLastUpdated } from "../../../utils/dateHelper";
@@ -31,12 +33,7 @@ const statusLabels = {
 
 export default function WorkoutPlan() {
     const [searchParams] = useSearchParams();
-
-    const [traineeSearch, setTraineeSearch] = useState("");
-    const [showTraineeDropdown, setShowTraineeDropdown] = useState(false);
     const [activeSection, setActiveSection] = useState("workout");
-
-    const dropdownRef = useRef(null);
 
     const {
         daysOfWeek,
@@ -64,6 +61,8 @@ export default function WorkoutPlan() {
         flashMessage,
         dismissFlash,
         showFlash,
+        isTraineesLoading,
+        traineesError,
     } = useWorkoutPlan(searchParams.get("trainee"));
 
     const traineeId = selectedTrainee?.trainee?.id ?? null;
@@ -87,12 +86,7 @@ export default function WorkoutPlan() {
         };
     }, []);
 
-    // Filter trainees
-    const filteredTrainees = trainees.filter((entry) =>
-        entry.trainee?.full_name
-            ?.toLowerCase()
-            .includes(traineeSearch.toLowerCase()),
-    );
+  
 
     const save = (status) => saveWorkoutPlan(status);
 
@@ -113,48 +107,7 @@ export default function WorkoutPlan() {
 
         return () => clearTimeout(timer);
     }, [flashMessage, dismissFlash]);
-    const mockNutritionSummary = {
-        totalCalories: 2100,
-        protein: 175,
-        carbs: 220,
-        fat: 65,
-        savedCalories: 2100,
-    };
 
-    const mockNutritionMeals = [
-        {
-            id: 1,
-            meal_name: "وجبة الإفطار",
-            components: "3 بيضات، خبز أسمر، خضار، لبن",
-            calories: 500,
-            time_to_eat: "08:00",
-            foods: [],
-        },
-        {
-            id: 2,
-            meal_name: "وجبة خفيفة",
-            components: "موزة، زبادي، لوز",
-            calories: 300,
-            time_to_eat: "11:00",
-            foods: [],
-        },
-        {
-            id: 3,
-            meal_name: "وجبة الغداء",
-            components: "صدر دجاج، أرز، سلطة",
-            calories: 750,
-            time_to_eat: "14:00",
-            foods: [],
-        },
-        {
-            id: 4,
-            meal_name: "وجبة العشاء",
-            components: "تونة، خبز أسمر، خضار",
-            calories: 550,
-            time_to_eat: "19:00",
-            foods: [],
-        },
-    ];
     return (
         <div dir="rtl" className="mx-auto max-w-6xl space-y-6">
             {/* Notification */}
@@ -192,78 +145,18 @@ export default function WorkoutPlan() {
             {/* Trainee selector and plan actions */}
             <section className="rounded-xl bg-white p-4 shadow-sm">
                 <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
-                    <div className="relative w-full md:w-80" ref={dropdownRef}>
-                        <label className="mb-1 block text-right text-xs text-gray-500">
-                            اختر المشترك لإعداد أو تعديل خطته
-                        </label>
+                    <TraineeSelector
+                        trainees={trainees}
+                        selectedTrainee={selectedTrainee}
+                        onSelectTrainee={selectTrainee}
+                        isLoading={isTraineesLoading}
+                    />
 
-                        <button
-                            type="button"
-                            onClick={() =>
-                                setShowTraineeDropdown((value) => !value)
-                            }
-                            className="flex w-full items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3 text-right hover:bg-gray-100"
-                        >
-                            <ChevronDown size={18} className="text-gray-400" />
-
-                            <span className="text-sm font-bold">
-                                {selectedTrainee?.trainee?.full_name ||
-                                    "اختر المشترك"}
-                            </span>
-                        </button>
-
-                        {showTraineeDropdown && (
-                            <div className="absolute right-0 top-full z-50 mt-2 w-full overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg">
-                                <div className="relative border-b p-3">
-                                    <Search
-                                        size={16}
-                                        className="absolute right-6 top-6 text-gray-400"
-                                    />
-
-                                    <input
-                                        autoFocus
-                                        type="text"
-                                        placeholder="ابحث عن المشترك..."
-                                        value={traineeSearch}
-                                        onChange={(event) =>
-                                            setTraineeSearch(event.target.value)
-                                        }
-                                        className="w-full rounded-lg border border-gray-200 bg-gray-50 py-2 pl-3 pr-9 text-sm outline-none"
-                                    />
-                                </div>
-
-                                <div className="max-h-60 overflow-y-auto">
-                                    {filteredTrainees.map((entry) => (
-                                        <button
-                                            key={entry.id}
-                                            type="button"
-                                            onClick={async () => {
-                                                setShowTraineeDropdown(false);
-                                                setTraineeSearch("");
-
-                                                await selectTrainee(entry);
-                                            }}
-                                            className="w-full border-b border-gray-50 px-4 py-3 text-right hover:bg-emerald-50"
-                                        >
-                                            <div className="text-sm font-bold">
-                                                {entry.trainee?.full_name}
-                                            </div>
-
-                                            <div className="mt-1 text-xs text-gray-400">
-                                                {entry.trainee?.email}
-                                            </div>
-                                        </button>
-                                    ))}
-
-                                    {filteredTrainees.length === 0 && (
-                                        <p className="p-4 text-center text-sm text-gray-400">
-                                            لا يوجد مشترك بهذا الاسم
-                                        </p>
-                                    )}
-                                </div>
-                            </div>
-                        )}
-                    </div>
+                    {traineesError && (
+                        <p className="mt-2 text-sm text-red-600">
+                            {traineesError}
+                        </p>
+                    )}
 
                     {/* Selected trainee information */}
                     {selectedTrainee && (
@@ -292,7 +185,7 @@ export default function WorkoutPlan() {
                     )}
 
                     {/* Save and send buttons */}
-                    {selectedTrainee && (
+                    {selectedTrainee && activeSection === "workout" && (
                         <div className="flex flex-wrap gap-3">
                             <Button
                                 title="حفظ كمسودة"
@@ -342,6 +235,7 @@ export default function WorkoutPlan() {
                     <WorkoutActions
                         activeSection={activeSection}
                         onSectionChange={setActiveSection}
+                        traineeId={traineeId}
                     />
 
                     {/* Workout section */}
@@ -371,21 +265,12 @@ export default function WorkoutPlan() {
 
                     {/* Nutrition section */}
                     {activeSection === "nutrition" && (
-                        <NutritionPlan
-                            summary={mockNutritionSummary}
-                            meals={mockNutritionMeals}
-                            onAddFood={(mealId) => {
-                                console.log("Add food to meal:", mealId);
-                            }}
-                            onDeleteFood={(foodId) => {
-                                console.log("Delete food:", foodId);
-                            }}
-                        />
+                        <NutritionPlanBuilder traineeId={traineeId} />
                     )}
 
                     {/* Versions section, displayed within this page */}
                     {activeSection === "versions" && (
-                        <VersionsPage
+                        <TraineeVersionsPage
                             traineeId={traineeId}
                             traineeName={traineeName}
                             onBack={() => setActiveSection("workout")}

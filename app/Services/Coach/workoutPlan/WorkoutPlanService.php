@@ -473,4 +473,9 @@ class WorkoutPlanService
             ]);
         });
     }
+    public function getVersionsByCoach(int $coachId): Collection
+    {
+        return $this->queries->getVersionsByCoach($coachId);
+    }
+   
 }
