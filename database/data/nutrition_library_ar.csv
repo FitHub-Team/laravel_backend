@@ -1,0 +1,75 @@
+﻿id,Food,Food_ar,Measure,Measure_ar,Grams,Calories,Protein,Fat,Sat.Fat,Fiber,Carbs,Category,Category_ar,FitHub_Macro_Group,FitHub_Macro_Group_ar
+1,Cows' milk,حليب البقر,1 qt.,ربع جالون,976,660,32,40,36,0,48.0,Dairy products,منتجات الألبان,High-Carbs,عالي الكربوهيدرات
+2,Milk skim,حليب خالي الدسم,1 qt.,ربع جالون,984,360,36,0,t,0,52.0,Dairy products,منتجات الألبان,High-Carbs,عالي الكربوهيدرات
+3,Buttermilk,لبن رائب,1 cup,كوب واحد,246,127,9,5,4,0,13.0,Dairy products,منتجات الألبان,High-Carbs,عالي الكربوهيدرات
+4,Fortified milk,حليب مدعّم,6 cups,6 أكواب,1419,1373,89,42,23,1.4,119.0,Dairy products,منتجات الألبان,High-Carbs,عالي الكربوهيدرات
+5,Powdered milk,حليب مجفف,1 cup,كوب واحد,103,515,27,28,24,0,39.0,Dairy products,منتجات الألبان,High-Carbs,عالي الكربوهيدرات
+6,Goats' milk,حليب الماعز,1 cup,كوب واحد,244,165,8,10,8,0,11.0,Dairy products,منتجات الألبان,High-Carbs,عالي الكربوهيدرات
+7,skim. milk,حليب منزوع الدسم,1 cup,كوب واحد,250,128,18,4,3,1,13.0,Dairy products,منتجات الألبان,High-Protein,عالي البروتين
+8,Ice milk,آيس كريم الحليب,1 cup,كوب واحد,190,275,9,10,9,0,32.0,Dairy products,منتجات الألبان,High-Carbs,عالي الكربوهيدرات
+9,Cheese,جبن,1 cup,كوب واحد,225,240,30,11,10,0,6.0,Dairy products,منتجات الألبان,High-Protein,عالي البروتين
+10,Cream cheese,جبنة كريمية,1 oz.,أونصة واحدة,28,105,2,11,10,0,1.0,Dairy products,منتجات الألبان,Healthy-Fats,دهون صحية
+11,Processed cheese,جبن مطبوخ,1 oz.,أونصة واحدة,28,105,7,9,8,0,0.0,Dairy products,منتجات الألبان,Healthy-Fats,دهون صحية
+12,Eggs raw,بيض نيئ,2,حبتان,100,150,12,12,10,0,0.0,Dairy products,منتجات الألبان,High-Protein,عالي البروتين
+13,Eggs Scrambled or fried,بيض مخفوق أو مقلي,2,حبتان,128,220,13,16,14,0,1.0,Dairy products,منتجات الألبان,Healthy-Fats,دهون صحية
+14,Olive oil,زيت الزيتون,1T.,ملعقة كبيرة,14,125,0,14,3,0,0.0,"Fats, Oils, Shortenings",الدهون والزيوت ومواد التقصير,Healthy-Fats,دهون صحية
+15,Beef,لحم البقر,3 oz.,3 أونصات,85,245,23,16,15,0,0.0,"Meat, Poultry",اللحوم والدواجن,High-Protein,عالي البروتين
+16,Roast beef,لحم بقري مشوي,3 oz.,3 أونصات,85,390,16,36,35,0,0.0,"Meat, Poultry",اللحوم والدواجن,Healthy-Fats,دهون صحية
+17,Corned beef,لحم بقري محفوظ ومملح,3 oz.,3 أونصات,85,185,22,10,9,0,0.0,"Meat, Poultry",اللحوم والدواجن,High-Protein,عالي البروتين
+18,Corned beef hash canned,هاش اللحم البقري المعلب,3 oz.,3 أونصات,85,120,12,8,7,t,6.0,"Meat, Poultry",اللحوم والدواجن,High-Protein,عالي البروتين
+19,Corned beef hash Dried,هاش اللحم البقري المجفف,2 oz.,أونصتان,56,115,19,4,4,0,0.0,"Meat, Poultry",اللحوم والدواجن,High-Protein,عالي البروتين
+20,Corned beef hash Stew,يخنة هاش اللحم البقري,1 cup,كوب واحد,235,185,15,10,9,t,15.0,"Meat, Poultry",اللحوم والدواجن,High-Protein,عالي البروتين
+21,chicken,دجاج,3 oz.,3 أونصات,85,185,23,9,7,0,0.0,"Meat, Poultry",اللحوم والدواجن,High-Protein,عالي البروتين
+22,"Fried, breast or leg and thigh chicken",دجاج مقلي، صدر أو ساق وفخذ,3 oz.,3 أونصات,85,245,25,15,11,0,0.0,"Meat, Poultry",اللحوم والدواجن,High-Protein,عالي البروتين
+23,Roasted chicken,دجاج مشوي,3 1/2 oz.,3 أونصات ونصف,100,290,25,20,16,0,0.0,"Meat, Poultry",اللحوم والدواجن,High-Protein,عالي البروتين
+24,"Chicken livers, fried",كبدة دجاج مقلية,3 med.,3 حبات متوسطة,100,140,22,14,12,0,2.3,"Meat, Poultry",اللحوم والدواجن,High-Protein,عالي البروتين
+25,Crab meat,لحم السلطعون,3 oz.,3 أونصات,85,90,14,2,0,0,1.0,"Fish, Seafood",الأسماك والمأكولات البحرية,High-Protein,عالي البروتين
+26,Fish sticks fried,أصابع سمك مقلية,5,5 قطع,112,200,19,10,5,0,8.0,"Fish, Seafood",الأسماك والمأكولات البحرية,High-Protein,عالي البروتين
+27,Swordfish,سمك أبو سيف,1 steak,شريحة واحدة,100,180,27,6,0,0,0.0,"Fish, Seafood",الأسماك والمأكولات البحرية,High-Protein,عالي البروتين
+28,Steamed cabbage,ملفوف مطهو على البخار,1 cup,كوب واحد,170,40,2,0,0,1.3,9.0,Vegetables A-E,الخضراوات (A–E),High-Carbs,عالي الكربوهيدرات
+29,Cucumbers,خيار,8,8 حبات,50,6,0,0,0,0.2,1.0,Vegetables A-E,الخضراوات (A–E),High-Carbs,عالي الكربوهيدرات
+30,Eggplant,باذنجان,1 cup,كوب واحد,180,30,2,0,0,1.0,9.0,Vegetables A-E,الخضراوات (A–E),High-Carbs,عالي الكربوهيدرات
+31,Lentils,عدس,1 cup,كوب واحد,200,212,15,0,0,2.4,38.0,Vegetables F-P,الخضراوات والبقوليات (F–P),High-Carbs,عالي الكربوهيدرات
+32,Peppers with beef and crumbs,فلفل محشو باللحم البقري وفتات الخبز,1 med.,حبة متوسطة,150,255,19,9,8,1,24.0,Vegetables R-Z,الخضراوات (R–Z),High-Carbs,عالي الكربوهيدرات
+33,"Potatoes, baked",بطاطا مخبوزة,1 med.,حبة متوسطة,100,100,2,0,0,0.5,22.0,Vegetables R-Z,الخضراوات (R–Z),High-Carbs,عالي الكربوهيدرات
+34,Potatoes Mashed with milk and butter,بطاطا مهروسة بالحليب والزبدة,1 cup,كوب واحد,200,230,4,12,11,0.7,28.0,Vegetables R-Z,الخضراوات (R–Z),High-Carbs,عالي الكربوهيدرات
+35,"Potatoes, pan-tried",بطاطا مقلية في المقلاة,3/4 cup,ثلاثة أرباع كوب,100,268,4,14,6,0.40,33.0,Vegetables R-Z,الخضراوات (R–Z),High-Carbs,عالي الكربوهيدرات
+36,Scalloped with cheese potatoes,بطاطا بالجبن في الفرن,3/4 cup,ثلاثة أرباع كوب,100,145,6,8,7,0.40,14.0,Vegetables R-Z,الخضراوات (R–Z),High-Carbs,عالي الكربوهيدرات
+37,Steamed potatoes before peeling,بطاطا مطهوة على البخار قبل التقشير,1 med.,حبة متوسطة,100,80,2,0,0,0.40,19.0,Vegetables R-Z,الخضراوات (R–Z),High-Carbs,عالي الكربوهيدرات
+38,Potato chips,رقائق البطاطا,10,10,20,110,1,7,4,t,10.0,Vegetables R-Z,الخضراوات (R–Z),High-Carbs,عالي الكربوهيدرات
+39,Spinach,سبانخ,1 cup,كوب واحد,100,26,3,0,0,1,3.0,Vegetables R-Z,الخضراوات (R–Z),High-Protein,عالي البروتين
+40,Sweet potatoes,بطاطا حلوة,1 med.,حبة متوسطة,110,155,2,1,0,1,36.0,Vegetables R-Z,الخضراوات (R–Z),High-Carbs,عالي الكربوهيدرات
+41,Tomatoes,طماطم,1 cup,كوب واحد,240,50,2,0,0,1,9.0,Vegetables R-Z,الخضراوات (R–Z),High-Carbs,عالي الكربوهيدرات
+42,Tomato juice,عصير الطماطم,1 cup,كوب واحد,240,50,2,0,0,0.6,10.0,Vegetables R-Z,الخضراوات (R–Z),High-Carbs,عالي الكربوهيدرات
+43,Tomato catsup,كاتشب الطماطم,1 T.,1 T.,17,15,0,0,0,t,4.0,Vegetables R-Z,الخضراوات (R–Z),High-Carbs,عالي الكربوهيدرات
+44,Apple juice canned,عصير تفاح معلب,1 cup,كوب واحد,250,125,0,0,0,0,34.0,Fruits A-F,الفواكه (A–F),High-Carbs,عالي الكربوهيدرات
+45,Apple vinegar,خل التفاح,1/3 cup,ثلث كوب,100,14,0,0,0,0,3.0,Fruits A-F,الفواكه (A–F),High-Carbs,عالي الكربوهيدرات
+46,"Apples, raw",تفاح طازج,1 med,حبة متوسطة,130,70,0,0,0,1,18.0,Fruits A-F,الفواكه (A–F),High-Carbs,عالي الكربوهيدرات
+47,Banana,موز,1 med.,حبة متوسطة,150,85,1,0,0,0.9,23.0,Fruits A-F,الفواكه (A–F),High-Carbs,عالي الكربوهيدرات
+48,Dates,تمر,1 cup,كوب واحد,178,505,4,0,0,3.6,134.0,Fruits A-F,الفواكه (A–F),High-Carbs,عالي الكربوهيدرات
+49,"Oranges 3"" diameter",برتقال بقطر 3 بوصات,1 med.,حبة متوسطة,180,60,2,0,t,1,16.0,Fruits G-P,الفواكه (G–P),High-Carbs,عالي الكربوهيدرات
+50,Orange juice,عصير البرتقال,8 oz. or,8 أونصات أو,250,112,2,0,0,0.2,25.0,Fruits G-P,الفواكه (G–P),High-Carbs,عالي الكربوهيدرات
+51,Pineapple,أناناس,1 large slice,شريحة كبيرة واحدة,122,95,0,0,0,0.4,26.0,Fruits G-P,الفواكه (G–P),High-Carbs,عالي الكربوهيدرات
+52,Pineapple Crushed,أناناس مهروس,1 cup,كوب واحد,260,205,1,0,0,0.7,55.0,Fruits G-P,الفواكه (G–P),High-Carbs,عالي الكربوهيدرات
+53,Pineapple juice,عصير الأناناس,1 cup,كوب واحد,250,120,1,0,0,0.2,32.0,Fruits G-P,الفواكه (G–P),High-Carbs,عالي الكربوهيدرات
+54,"Bread, cracked wheat",خبز القمح المجروش,1 slice,شريحة واحدة,23,60,2,1,1,0.10,12.0,"Breads, cereals, fastfood,grains",الخبز والحبوب والوجبات السريعة والحبوب الكاملة,High-Carbs,عالي الكربوهيدرات
+55,Corn bread ground meal,خبز الذرة من دقيق الذرة,1 serving,حصة واحدة,50,100,3,4,2,0.30,15.0,"Breads, cereals, fastfood,grains",الخبز والحبوب والوجبات السريعة والحبوب الكاملة,High-Carbs,عالي الكربوهيدرات
+56,Baked with cheese,مخبوز بالجبن,1 cup,كوب واحد,220,475,18,25,24,t,44.0,"Breads, cereals, fastfood,grains",الخبز والحبوب والوجبات السريعة والحبوب الكاملة,High-Carbs,عالي الكربوهيدرات
+57,Puffed rice,أرز منفوخ,1 cup,كوب واحد,14,55,0,0,0,t,12.0,"Breads, cereals, fastfood,grains",الخبز والحبوب والوجبات السريعة والحبوب الكاملة,High-Carbs,عالي الكربوهيدرات
+58,Rice,أرز,1 cup,كوب واحد,208,748,15,3,0,1.2,154.0,"Breads, cereals, fastfood,grains",الخبز والحبوب والوجبات السريعة والحبوب الكاملة,High-Carbs,عالي الكربوهيدرات
+59,Rice flakes,رقائق الأرز,1 cup,كوب واحد,30,115,2,0,0,0.1,26.0,"Breads, cereals, fastfood,grains",الخبز والحبوب والوجبات السريعة والحبوب الكاملة,High-Carbs,عالي الكربوهيدرات
+60,Rice polish,نخالة الأرز,1/2 cup,نصف كوب,50,132,6,6,0,1.2,28.0,"Breads, cereals, fastfood,grains",الخبز والحبوب والوجبات السريعة والحبوب الكاملة,High-Carbs,عالي الكربوهيدرات
+61,Spaghetti with meat sauce,سباغيتي بصلصة اللحم,1 cup,كوب واحد,250,285,13,10,6,0.50,35.0,"Breads, cereals, fastfood,grains",الخبز والحبوب والوجبات السريعة والحبوب الكاملة,High-Carbs,عالي الكربوهيدرات
+62,with tomatoes and cheese,مع الطماطم والجبن,1 cup,كوب واحد,250,210,6,5,3,0.50,36.0,"Breads, cereals, fastfood,grains",الخبز والحبوب والوجبات السريعة والحبوب الكاملة,High-Carbs,عالي الكربوهيدرات
+63,Spanish rice,أرز على الطريقة الإسبانية,1 cup,كوب واحد,250,217,4,4,0,1.20,40.0,"Breads, cereals, fastfood,grains",الخبز والحبوب والوجبات السريعة والحبوب الكاملة,High-Carbs,عالي الكربوهيدرات
+64,Beef soup,شوربة لحم البقر,1 cup,كوب واحد,250,100,6,4,4,0.50,11.0,Soups,الشوربات,High-Carbs,عالي الكربوهيدرات
+65,chicken soup,شوربة الدجاج,1 cup,كوب واحد,250,75,4,2,2,0,10.0,Soups,الشوربات,High-Carbs,عالي الكربوهيدرات
+66,Tomato soup,شوربة الطماطم,1 cup,كوب واحد,245,175,6,7,6,0.50,22.0,Soups,الشوربات,High-Carbs,عالي الكربوهيدرات
+67,Apple betty,حلوى التفاح بيتي,1 serving,حصة واحدة,100,150,1,4,0,0.5,29.0,"Desserts, sweets",الحلويات,High-Carbs,عالي الكربوهيدرات
+68,Bread pudding,بودينغ الخبز,3/4 cup,ثلاثة أرباع كوب,200,374,11,12,11,0.20,56.0,"Desserts, sweets",الحلويات,High-Carbs,عالي الكربوهيدرات
+69,Gingerbread,كعكة الزنجبيل,1 slice,شريحة واحدة,55,180,2,7,6,t,28.0,"Desserts, sweets",الحلويات,High-Carbs,عالي الكربوهيدرات
+70,Milk chocolate,شوكولاتة بالحليب,2-oz. bar,لوح بوزن أونصتين,56,290,2,6,6,0.2,44.0,"Desserts, sweets",الحلويات,High-Carbs,عالي الكربوهيدرات
+71,Doughnuts,دونات,1,1,33,135,2,7,4,t,17.0,"Desserts, sweets",الحلويات,High-Carbs,عالي الكربوهيدرات
+72,Brazil nuts,جوز البرازيل,1/2 cup,نصف كوب,70,457,10,47,31,2,7.0,Seeds and Nuts,البذور والمكسرات,Healthy-Fats,دهون صحية
+73,Peanuts,الفول السوداني,1/3 cup,ثلث كوب,50,290,13,25,16,1.2,9.0,Seeds and Nuts,البذور والمكسرات,Healthy-Fats,دهون صحية
+74,Walnuts,الجوز,1/2 cup,نصف كوب,50,325,7,32,7,1,8.0,Seeds and Nuts,البذور والمكسرات,Healthy-Fats,دهون صحية

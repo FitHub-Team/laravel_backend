@@ -6,7 +6,7 @@ import TraineeSelector from "../../../components/common/TraineeSelector";
 import useCoachTrainees from "../../../hooks/useCoachTrainees";
 import Button from "../../../components/common/Button";
 import Actions from "../../../components/workout/WorkoutActions";
-
+import NutritionDays from "../../../components/Nutrition/NutritionDays";
 const STORAGE_KEY = "superfit_nutrition_plans";
 
 // Default meals (Frontend only)
@@ -79,11 +79,8 @@ export default function NutritionPlanPage() {
         selectTrainee,
         isTraineesLoading,
         traineesError,
-        activeSection,
-        setActiveSection,
-        onSectionChange,
     } = useCoachTrainees(traineeId);
-
+    const [selectedDay, setSelectedDay] = useState("saturday");
     // Nutrition plans are currently stored locally
     const [plans] = useState(readPlans);
 
@@ -178,13 +175,14 @@ export default function NutritionPlanPage() {
                     {/* // )} } */}
                 </div>
             </section>
-            {/* <Actions
-                        activeSection={activeSection}
-                        onSectionChange={setActiveSection}
-                        traineeId={traineeId}
-                    /> */}
-            <Actions activeSection="nutrition" traineeId={selectedTraineeId} />
 
+            <Actions activeSection="nutrition" traineeId={selectedTraineeId} />
+           
+         
+            <NutritionDays
+                selectedDay={selectedDay}
+                onSelectDay={setSelectedDay}
+            />
             {/* No trainee selected */}
             {!selectedTrainee ? (
                 <section
@@ -207,17 +205,6 @@ export default function NutritionPlanPage() {
                 </section>
             ) : (
                 <>
-                    {/* Page heading */}
-                    <div>
-                        <h1 className="text-2xl font-bold text-[#1A3D27]">
-                            خطة التغذية
-                        </h1>
-
-                        <p className="mt-2 text-sm text-gray-500">
-                            إعداد وإدارة الخطة الغذائية للمشترك
-                        </p>
-                    </div>
-
                     {/* Nutrition content */}
                     <NutritionPlan
                         key={selectedTraineeId}

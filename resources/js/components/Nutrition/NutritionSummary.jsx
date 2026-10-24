@@ -47,6 +47,7 @@ const NutritionSummary = ({
 
       {/* العنوان + إجمالي السعرات المحفوظة */}
       <div className="flex flex-wrap items-center justify-between gap-3">
+        
         <h3 className="text-sm font-bold text-slate-800">
           الأهداف اليومية للماكروز والسعرات
         </h3>
