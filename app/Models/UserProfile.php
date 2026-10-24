@@ -8,20 +8,25 @@ use Carbon\Carbon;
 class UserProfile extends Model
 {
     protected $fillable = [
-        // Onboarding Fields
-        'gender',
-        'height',
-        'weight',
-        'date_of_birth',
-        'goal_id',
-        'activity_level_id',
-        'health_condition_note',
-        'dietary_restriction_note',
-        'training_location',
-        'profile_photo',
-        'available_days',
-        'disclaimer_accepted',
-    ];
+    // Onboarding Fields
+    'gender',
+    'height',
+    'weight',
+    'date_of_birth',
+    'goal_id',
+    'activity_level_id',
+    'health_condition_note',
+    'dietary_restriction_note',
+    'training_location',
+    'profile_photo',
+    'available_days',
+    'disclaimer_accepted',
+    
+    // Fields for TraineeGoal update
+    'target_weight',
+    'goal_duration',
+    'additional_notes',
+];
 
     protected $casts = [
         'available_days' => 'array',

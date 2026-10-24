@@ -34,14 +34,23 @@ class TraineeGoalController extends Controller
         }
 
         $validated = $request->validate([
-            'goal_id'           => 'sometimes|exists:goals,id',
-            'target_weight'     => 'sometimes|string',
-            'goal_duration'     => 'sometimes|string',
-            'activity_level_id' => 'sometimes|exists:activity_levels,id',
-            'notes'             => 'nullable|string',
+            'goal_id'           => 'sometimes|nullable|exists:goals,id',
+            'target_weight'     => 'sometimes|nullable|string',
+            'goal_duration'     => 'sometimes|nullable|string',
+            'activity_level_id' => 'sometimes|nullable|exists:activity_levels,id',
+            'notes'             => 'sometimes|nullable|string',
+            'additional_notes'  => 'sometimes|nullable|string',
         ]);
 
+        if (array_key_exists('notes', $validated)) {
+            $validated['additional_notes'] = $validated['notes'];
+            unset($validated['notes']);
+        }
+
+        // تنفيذ التحديث
         $profile->update($validated);
+        
+        // إعادة تحميل العلاقات لتحديث البيانات في الـ Resource
         $profile->load(['goal', 'activityLevel']);
 
         return response()->json([
