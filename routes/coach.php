@@ -1,4 +1,3 @@
-
 <?php
 
 use Illuminate\Support\Facades\Route;
@@ -16,7 +15,7 @@ as CoachSettingProfileController;
 use App\Http\Controllers\Api\coach\AvailabilityController;
 use App\Http\Controllers\Api\coach\SubscriptionController
 as CoachSubscriptionController;
-use App\Http\Controllers\Api\coach\NutritionPlanController
+use App\Http\Controllers\Api\coach\NutritionPlan\NutritionPlanController
 as CoachNutritionPlanController;
 use App\Http\Controllers\Api\coach\ProgressController;
 use App\Http\Controllers\Api\coach\RecipeController;
@@ -193,6 +192,39 @@ Route::group(['prefix' => 'workout-plans'], function () {
 
 /*
 |--------------------------------------------------------------------------
+| Current Nutrition Plans
+|--------------------------------------------------------------------------
+*/
+Route::group(['prefix' => 'nutrition-plans'], function () {
+    Route::get('/', [
+        CoachNutritionPlanController::class,
+        'getPlansByCoach',
+    ]);
+
+    Route::patch('/{planId}/send', [
+        CoachNutritionPlanController::class,
+        'send',
+    ]);
+
+    Route::delete('/{planId}', [
+        CoachNutritionPlanController::class,
+        'destroyDraft',
+    ]);
+
+    Route::patch('/{planId}/cancel', [
+        CoachNutritionPlanController::class,
+        'cancel',
+    ]);
+
+    Route::post('/{planId}/duplicate', [
+        CoachNutritionPlanController::class,
+        'duplicate',
+    ]);
+});
+
+
+/*
+|--------------------------------------------------------------------------
 | Trainee Plans and Versions
 |--------------------------------------------------------------------------
 */
@@ -224,10 +256,34 @@ Route::prefix('trainees')->group(function () {
         'storeOrUpdate',
     ]);
 
-    // Nutrition plan
+    // Get trainee nutrition plan (draft or active)
+    Route::get('/{traineeId}/nutrition-plan', [
+        CoachNutritionPlanController::class,
+        'index',
+    ]);
+
+    // Create or update nutrition plan
     Route::post('/{id}/nutrition-plan', [
         CoachNutritionPlanController::class,
         'storeOrUpdate',
+    ]);
+
+    // Compatibility route
+    Route::post('/{id}/nutrition-plan/update', [
+        CoachNutritionPlanController::class,
+        'storeOrUpdate',
+    ]);
+
+    // Nutrition versions
+    Route::get('/{traineeId}/nutrition-plan/versions', [
+        CoachNutritionPlanController::class,
+        'versions',
+    ]);
+
+    // Specific nutrition version
+    Route::get('/{traineeId}/nutrition-plan/versions/{planId}', [
+        CoachNutritionPlanController::class,
+        'showVersion',
     ]);
 
     // Progress

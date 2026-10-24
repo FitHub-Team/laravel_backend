@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
 
 class Recipe extends Model
 {
@@ -55,5 +57,10 @@ class Recipe extends Model
             User::class,
             'coach_id'
         );
+    }
+
+    public function meals(): HasMany
+    {
+        return $this->hasMany(NutritionMeal::class);
     }
 }
