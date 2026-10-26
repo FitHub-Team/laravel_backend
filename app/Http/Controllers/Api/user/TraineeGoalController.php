@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api\user;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\TraineeGoalResource;
+use App\Http\Resources\user\TraineeGoalResource;
 use Illuminate\Http\Request;
 
 class TraineeGoalController extends Controller
@@ -34,18 +34,14 @@ class TraineeGoalController extends Controller
         }
 
         $validated = $request->validate([
-            'goal_id'           => 'sometimes|nullable|exists:goals,id',
-            'target_weight'     => 'sometimes|nullable|string',
-            'goal_duration'     => 'sometimes|nullable|string',
-            'activity_level_id' => 'sometimes|nullable|exists:activity_levels,id',
-            'notes'             => 'sometimes|nullable|string',
-            'additional_notes'  => 'sometimes|nullable|string',
+            'goal_id'           => 'sometimes|exists:goals,id',
+            'target_weight'     => 'sometimes|string',
+            'goal_duration'     => 'sometimes|string',
+            'activity_level_id' => 'sometimes|exists:activity_levels,id',
+            'additional_notes'  => 'sometimes|string',
         ]);
 
-        if (array_key_exists('notes', $validated)) {
-            $validated['additional_notes'] = $validated['notes'];
-            unset($validated['notes']);
-        }
+      
 
         // تنفيذ التحديث
         $profile->update($validated);

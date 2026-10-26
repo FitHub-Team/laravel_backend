@@ -75,10 +75,10 @@ Route::prefix('health-information')->group(function () {
         'show',
     ]);
 
-    Route::put('/update', [
-        HealthInformationController::class,
-        'update',
-    ]);
+    // Route::put('/update', [
+    //     HealthInformationController::class,
+    //     'update',
+    // ]);
 });
 
 /*
@@ -94,10 +94,10 @@ Route::prefix('goal-information')->group(function () {
         'show',
     ]);
 
-    Route::put('/update', [
-        TraineeGoalController::class,
-        'update',
-    ]);
+    // Route::put('/update', [
+    //     TraineeGoalController::class,
+    //     'update',
+    // ]);
 });
 
 /*

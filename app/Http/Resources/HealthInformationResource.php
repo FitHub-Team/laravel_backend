@@ -15,11 +15,11 @@ class HealthInformationResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'health_status'       => $this->health_status ?? 'جيد',
-            'chronic_diseases'    => $this->chronic_diseases ?? 'لا',
-            'previous_injuries'   => $this->previous_injuries ?? 'لا',
-            'current_medications' => $this->current_medications ?? 'لا',
-            'other_details'       => $this->other_details ?? $this->health_condition_note, // ربطها مع الحقل الموجود لديك إن وجد
+            'health_status'       => $this->health_status,
+            'chronic_diseases'    => $this->chronic_diseases,
+            'previous_injuries'   => $this->previous_injuries,
+            'current_medications' => $this->current_medications,
+            'health_condition_note' => $this->health_condition_note, 
         ];
     }
 }

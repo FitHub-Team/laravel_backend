@@ -14,7 +14,6 @@ class UpdateProfileRequest extends FormRequest
     {
         return true;
     }
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -26,33 +25,7 @@ class UpdateProfileRequest extends FormRequest
             'full_name' => ['required', 'string', 'max:100'],
             'gender' => ['sometimes', 'in:male,female'],
             'date_of_birth' => ['sometimes', 'date'],
-            'height' => ['sometimes', 'numeric', 'min:0', 'max:999.99'],
-            'weight' => ['sometimes', 'numeric', 'min:0', 'max:999.99'],
-            'goal_id' => ['sometimes', 'integer', 'exists:goals,id'],
-            'activity_level_id' => ['sometimes', 'integer', 'exists:activity_levels,id'],
-            'health_condition_ids' => ['sometimes', 'array'],
-            'health_condition_ids.*' => [
-                'integer',
-                'exists:health_conditions,id'
-            ],
-            'dietary_restriction_ids' => [
-                'sometimes',
-                'array'
-            ],
-            'dietary_restriction_ids.*' => [
-                'integer',
-                'exists:dietary_restrictions,id'
-            ],
-            'health_condition_note' => ['sometimes', 'nullable'],
-            'dietary_restriction_note' => ['sometimes', 'nullable'],
-           'training_location' => [
-    'sometimes',
-    'in:home,outdoor,home_with_equipment',
-],
-            'available_days' => ['sometimes', 'array'],
-            'available_days.*' => ['string'],
-            'disclaimer_accepted' => ['sometimes', 'boolean'],
-
+            'profile_photo' => ['required', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048']
         ];
     }
 }

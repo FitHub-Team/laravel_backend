@@ -3,21 +3,23 @@
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Api\user\SettingProfileController
-    as UserSettingProfileController;
+as UserSettingProfileController;
 
 use App\Http\Controllers\Api\user\UserProfileController;
 use App\Http\Controllers\Api\user\RequestSubscriptionController;
 
 use App\Http\Controllers\Api\user\WorkoutPlanController
-    as UserWorkoutPlanController;
+as UserWorkoutPlanController;
 
 use App\Http\Controllers\Api\user\NutritionPlanController
-    as UserNutritionPlanController;
+as UserNutritionPlanController;
 
 use App\Http\Controllers\Api\user\TraineeProgressController;
 
 
 use App\Http\Controllers\Api\user\DashboardController as UserDashboardController;
+use App\Http\Controllers\Api\user\HealthInformationController;
+use App\Http\Controllers\Api\user\TraineeGoalController;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,24 +40,27 @@ Route::get('/dashboard', [
 
 Route::prefix('profile/setting')->group(function () {
 
-    Route::get('/show', [
-        UserSettingProfileController::class,
-        'show',
-    ]);
+    // Route::get('/show', [
+    //     UserSettingProfileController::class,
+    //     'show',
+    // ]);
 
     Route::put('/update', [
         UserSettingProfileController::class,
         'update',
     ]);
 
-    Route::put('/update/avatar', [
-        UserSettingProfileController::class,
-        'updateProfilePhoto',
-    ]);
-
     Route::delete('/update/avatar/delete', [
         UserSettingProfileController::class,
         'deleteProfilePhoto',
+    ]);
+    Route::put('/update', [
+        TraineeGoalController::class,
+        'update',
+    ]);
+    Route::put('/update', [
+        HealthInformationController::class,
+        'update',
     ]);
 });
 

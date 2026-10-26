@@ -8,29 +8,36 @@ use Carbon\Carbon;
 class UserProfile extends Model
 {
     protected $fillable = [
-    // Onboarding Fields
-    'gender',
-    'height',
-    'weight',
-    'date_of_birth',
-    'goal_id',
-    'activity_level_id',
-    'health_condition_note',
-    'dietary_restriction_note',
-    'training_location',
-    'profile_photo',
-    'available_days',
-    'disclaimer_accepted',
-    
-    // Fields for TraineeGoal update
-    'target_weight',
-    'goal_duration',
-    'additional_notes',
-];
+        // Onboarding Fields
+        'gender',
+        'height',
+        'weight',
+        'date_of_birth',
+        'goal_id',
+        'activity_level_id',
+        'health_condition_note',
+        'dietary_restriction_note',
+        'training_location',
+        'profile_photo',
+        'available_days',
+        'disclaimer_accepted',
+        // Fields for TraineeGoal update
+        'target_weight',
+        'goal_duration',
+        'additional_notes',
+        // للصحة 
+        'health_status',
+        'chronic_diseases',
+        'previous_injuries',
+        'current_medications'
+    ];
 
     protected $casts = [
         'available_days' => 'array',
         'disclaimer_accepted' => 'boolean',
+        'chronic_diseases' => 'array',
+        'previous_injuries' => 'array',
+        'current_medications' => 'array',
     ];
 
     public function user()

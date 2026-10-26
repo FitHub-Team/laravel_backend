@@ -8,35 +8,60 @@ use Illuminate\Http\Request;
 
 class HealthInformationController extends Controller
 {
-    // جلب المعلومات الصحية للمتدرب الحالي
     public function show(Request $request)
     {
-        // نفترض أن المعلومات مخزنة في جدول الـ profile أو نموذج المستخدم
-        $user = $request->user();
-        
-        // يمكنك إرجاع الـ user أو الـ profile الخاص به
-        return new HealthInformationResource($user->profile ?? $user);
+        $profile = $request->user()->userProfile;
+
+        abort_if(!$profile, 404, 'Profile not found');
+
+        return new HealthInformationResource($profile);
     }
 
-    // تحديث المعلومات الصحية
     public function update(Request $request)
     {
-        $user = $request->user();
-        $profile = $user->profile ?? $user;
+        $validated = $request->validate([
+            'health_status' => [
+                'sometimes', 'nullable', 'string', 'max:100',
+            ],
 
-        // التحفظ وتحديث الحقول المعتمدة
-        $profile->update($request->only([
-            'health_status',
-            'chronic_diseases',
-            'previous_injuries',
-            'current_medications',
-            'other_details'
-        ]));
+            'chronic_diseases' => [
+                'sometimes', 'nullable', 'array', 'max:50',
+            ],
+            'chronic_diseases.*' => [
+                'required', 'string', 'max:100', 'distinct',
+            ],
+
+            'previous_injuries' => [
+                'sometimes', 'nullable', 'array', 'max:50',
+            ],
+            'previous_injuries.*' => [
+                'required', 'string', 'max:200', 'distinct',
+            ],
+
+            'current_medications' => [
+                'sometimes', 'nullable', 'array', 'max:50',
+            ],
+            'current_medications.*' => [
+                'required', 'string', 'max:200', 'distinct',
+            ],
+
+            'health_condition_note' => [
+                'sometimes', 'nullable', 'string', 'max:5000',
+            ],
+        ]);
+
+        $profile = $request->user()->userProfile;
+
+        abort_if(!$profile, 404, 'Profile not found');
+
+    
+
+      $profile->update($validated);
 
         return response()->json([
             'status' => true,
-            'message' => 'Health information updated successfully',
-            'data' => new HealthInformationResource($profile)
+            'message' => 'تم تحديث المعلومات الصحية بنجاح',
+            'data' => new HealthInformationResource($profile->refresh()),
         ]);
     }
 }

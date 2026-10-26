@@ -4,33 +4,32 @@ namespace App\Http\Controllers\Api\user;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\user\UpdateProfileRequest;
+use App\Http\Resources\user\TraineeProfileResource;
 use App\Services\User\ProfileService;
-use App\Helper\ImageHelper;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 
-
 class SettingProfileController extends Controller
 {
-
     public function __construct(
         private ProfileService $profileService
     ) {}
-
 
     public function show(Request $request)
     {
         try {
             $user = $request->user();
 
-            $profile = $user->userProfile()->with([
-                'goal',
-                'activityLevel',
-                'healthConditions',
-                'dietaryRestrictions',
-                'trainingLocation',
-            ])->first();
+            $profile = $user->userProfile()
+                ->with([
+                    'goal',
+                    'activityLevel',
+                    'healthConditions',
+                    'dietaryRestrictions',
+                    'trainingLocation',
+                ])
+                ->first();
 
             $age = $profile?->date_of_birth
                 ? Carbon::parse($profile->date_of_birth)->age
@@ -38,144 +37,104 @@ class SettingProfileController extends Controller
 
             return response()->json([
                 'message' => 'User profile data',
-
-
                 'data' => [
-
                     'fullname' => $user->full_name,
-
                     'email' => $user->email,
-
                     'age' => $age,
-
                     'gender' => $profile?->gender,
-
                     'height' => $profile?->height,
-
                     'weight' => $profile?->weight,
 
                     'goal' => $profile?->goal?->title,
-
                     'activity_level' => $profile?->activityLevel?->title,
 
-                    'health_conditions' => $profile?->healthConditions?->pluck('title'),
+                    'health_conditions' => $profile?->healthConditions
+                        ?->pluck('title'),
 
-                    'dietary_restrictions' => $profile?->dietaryRestrictions?->pluck('title'),
+                    'dietary_restrictions' => $profile?->dietaryRestrictions
+                        ?->pluck('title'),
 
                     'training_location' => $profile?->trainingLocation?->title,
-
                     'available_days' => $profile?->available_days,
 
                     'health_condition_note' => $profile?->health_condition_note,
-
                     'dietary_restriction_note' => $profile?->dietary_restriction_note,
 
                     'disclaimer_accepted' => $profile?->disclaimer_accepted,
-
                     'profile_photo' => $profile?->profile_photo,
-
                 ],
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
+            report($e);
 
             return response()->json([
-                'message' => 'Error fetching user profile data',
-                'error' => $e->getMessage(),
+                'status' => false,
+                'message' => 'حدث خطأ أثناء جلب بيانات الملف الشخصي.',
             ], 500);
         }
     }
 
-public function update(UpdateProfileRequest $request)
-{
-    try {
-        $validated = $request->validated();
-
-        $user = $this->profileService->update(
-            $request->user(),
-            $validated
-        );
-
-        if (!$user) {
-            return response()->json([
-                'status' => false,
-                'message' => 'الملف الشخصي للمستخدم غير موجود.',
-            ], 404);
-        }
-
-        $profile = $user->userProfile;
-
-        return response()->json([
-            'status' => true,
-            'message' => 'تم تحديث بيانات الملف الشخصي بنجاح',
-            'data' => [
-                'id'            => $user->id,
-                'full_name'     => $user->full_name,
-                'email'         => $user->email,
-                'phone'         => $user->phone,
-                'gender'        => $profile?->gender,
-                'date_of_birth' => $profile?->date_of_birth,
-                // إرجاع رابط الصورة كـ String (أو null إذا لم توجد) ليتطابق مع الـ API المتفق عليها
-                'profile_photo' => $profile?->profile_photo 
-                    ? asset('storage/' . $profile->profile_photo) 
-                    : null,
-            ],
-        ], 200);
-
-    } catch (Exception $e) {
-        return response()->json([
-            'status' => false,
-            'message' => 'حدث خطأ اثناء تحديث الملف الشخصي',
-            'error' => $e->getMessage(),
-        ], 500);
-    }
-}
-
-    public function updateProfilePhoto(Request $request)
+    public function update(UpdateProfileRequest $request)
     {
-        $request->validate([
-            'profile_photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
-        //  dd($request);
-
         try {
-            $profile = $this->profileService->updateProfilePhoto(
+            $validated = $request->validated();
+
+            // معالجة الصورة تتم بدالة منفصلة في السيرفس
+            unset($validated['profile_photo']);
+
+            $user = $this->profileService->update(
                 $request->user(),
-                $request->file('profile_photo')
+                $validated
             );
 
-
-            if (!$profile) {
+            if (!$user) {
                 return response()->json([
                     'status' => false,
                     'message' => 'الملف الشخصي للمستخدم غير موجود.',
                 ], 404);
             }
 
+            if ($request->hasFile('profile_photo')) {
+                $result = $this->profileService->updateProfilePhoto(
+                    $user,
+                    $request->file('profile_photo')
+                );
+
+                if (!$result) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'تعذر العثور على الملف الشخصي لتحديث الصورة.',
+                    ], 404);
+                }
+            }
+
+            // تحميل أحدث بيانات المستخدم والبروفايل فقط
+            $user->refresh();
+            $user->load('userProfile');
+
             return response()->json([
                 'status' => true,
-                'message' => 'تم تحديث صورة الملف الشخصي بنجاح',
-                'data' => [
-                    'profile_photo' => $profile->userProfile->profile_photo
-                        ? asset('storage/' . $profile->userProfile->profile_photo)
-                        : null,
-                ],
+                'message' => 'تم تحديث بيانات الملف الشخصي بنجاح',
+                'data' => new TraineeProfileResource($user),
             ], 200);
         } catch (Exception $e) {
+            report($e);
+
             return response()->json([
                 'status' => false,
-                'message' => 'حدث خطأ اثناء تحديث صورة الملف الشخصي',
-                'error' => $e->getMessage(),
+                'message' => $e->getMessage() ,
             ], 500);
         }
     }
+
     public function deleteProfilePhoto(Request $request)
     {
         try {
-            $profile = $this->profileService->deleteProfilePhoto(
+            $result = $this->profileService->deleteProfilePhoto(
                 $request->user()
             );
 
-            if (!$profile) {
+            if (!$result) {
                 return response()->json([
                     'status' => false,
                     'message' => 'الملف الشخصي للمستخدم غير موجود.',
@@ -187,10 +146,11 @@ public function update(UpdateProfileRequest $request)
                 'message' => 'تم حذف صورة الملف الشخصي بنجاح',
             ], 200);
         } catch (Exception $e) {
+            report($e);
+
             return response()->json([
                 'status' => false,
-                'message' => 'حدث خطأ اثناء حذف صورة الملف الشخصي',
-                'error' => $e->getMessage(),
+                'message' => 'حدث خطأ أثناء حذف صورة الملف الشخصي.',
             ], 500);
         }
     }
