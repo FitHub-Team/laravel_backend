@@ -9,9 +9,11 @@ class NutritionPlanRepository implements NutritionPlanRepositoryInterface
 {
     public function getTraineeNutritionPlan(int $traineeId)
     {
-        return NutritionPlan::with('meals')
+        return NutritionPlan::with(['days.meals.foods.recipe'])
             ->where('trainee_id', $traineeId)
-            ->latest()
+            ->whereIn('status', ['active', 'completed'])
+            ->orderByDesc('version')
+            ->orderByDesc('start_date')
             ->get();
     }
 }

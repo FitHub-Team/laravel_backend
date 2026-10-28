@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Services\Coach\NutritionPlanService;
 use Illuminate\Http\Request;
 
-class NutritionPlanController extends Controller
+class NutritionPlanController extends \App\Http\Controllers\Api\coach\NutritionPlan\NutritionPlanController
 {
     protected NutritionPlanService $nutritionPlanService;
 
@@ -39,8 +39,8 @@ class NutritionPlanController extends Controller
         ]);
 
         $plan = $this->nutritionPlanService->saveOrUpdatePlan(
-            $request->user()->id, 
-            $trainee_id, 
+            $request->user()->id,
+            $trainee_id,
             $validatedData
         );
 
