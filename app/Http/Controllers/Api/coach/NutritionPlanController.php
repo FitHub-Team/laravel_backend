@@ -8,8 +8,6 @@ use Illuminate\Http\Request;
 
 class NutritionPlanController extends \App\Http\Controllers\Api\coach\NutritionPlan\NutritionPlanController
 {
-<<<<<<< Updated upstream
-=======
     protected NutritionPlanService $nutritionPlanService;
 
     public function __construct(NutritionPlanService $nutritionPlanService)
@@ -52,5 +50,4 @@ class NutritionPlanController extends \App\Http\Controllers\Api\coach\NutritionP
             'data' => $plan
         ], 200);
     }
->>>>>>> Stashed changes
 }

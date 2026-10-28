@@ -13,10 +13,7 @@ class NutritionMeal extends Model
 
     protected $fillable = [
         'nutrition_plan_id',
-<<<<<<< Updated upstream
-=======
         'nutrition_plan_day_id',
->>>>>>> Stashed changes
         'meal_name',
         'components',
         'calories',
@@ -41,8 +38,6 @@ class NutritionMeal extends Model
         return $this->belongsTo(NutritionPlan::class);
     }
 
-<<<<<<< Updated upstream
-=======
     public function day(): BelongsTo
     {
         return $this->belongsTo(NutritionPlanDay::class, 'nutrition_plan_day_id');
@@ -53,7 +48,6 @@ class NutritionMeal extends Model
         return $this->hasMany(NutritionFood::class)->orderBy('sort_order')->orderBy('id');
     }
 
->>>>>>> Stashed changes
     public function recipe(): BelongsTo
     {
         return $this->belongsTo(Recipe::class);
@@ -61,10 +55,6 @@ class NutritionMeal extends Model
 
     public function progressMeals(): HasMany
     {
-<<<<<<< Updated upstream
-        return $this->hasMany(ProgressMeal::class, 'nutrition_meal_id');
-=======
         return $this->hasMany(progress_meals::class, 'nutrition_meal_id');
->>>>>>> Stashed changes
     }
 }

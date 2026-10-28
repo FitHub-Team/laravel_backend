@@ -9,11 +9,7 @@ class NutritionPlanRepository implements NutritionPlanRepositoryInterface
 {
     public function getTraineeNutritionPlan(int $traineeId)
     {
-<<<<<<< Updated upstream
-        return NutritionPlan::with(['meals.recipe'])
-=======
         return NutritionPlan::with(['days.meals.foods.recipe'])
->>>>>>> Stashed changes
             ->where('trainee_id', $traineeId)
             ->whereIn('status', ['active', 'completed'])
             ->orderByDesc('version')
