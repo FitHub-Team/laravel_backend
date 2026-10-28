@@ -36,11 +36,24 @@ class NutritionPlan extends Model
         'end_date' => 'date',
     ];
 
+<<<<<<< Updated upstream
     public function meals(): HasMany
     {
         return $this->hasMany(NutritionMeal::class)->orderBy('sort_order')->orderBy('id');
     }
 
+=======
+    public function days(): HasMany
+    {
+        return $this->hasMany(NutritionPlanDay::class);
+    }
+
+    public function meals(): HasMany
+    {
+        return $this->hasMany(NutritionMeal::class)->orderBy('sort_order')->orderBy('id');
+    }
+
+>>>>>>> Stashed changes
     public function trainee(): BelongsTo
     {
         return $this->belongsTo(User::class, 'trainee_id');

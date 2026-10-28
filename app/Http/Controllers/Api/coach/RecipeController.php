@@ -21,7 +21,8 @@ class RecipeController extends Controller
         $recipes = $this->recipeService->getRecipes(
             $request->user()->id,
             $request->query('search'),
-            $request->query('meal_type')
+            $request->query('meal_type'),
+            $request->query('source', 'all') // all | public | private
         );
 
         return response()->json([

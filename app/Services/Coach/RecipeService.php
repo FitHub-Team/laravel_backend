@@ -11,24 +11,27 @@ class RecipeService
     public function getRecipes(
         int $coachId,
         ?string $search = null,
-        ?string $mealType = null
-    ): Collection {
+        ?string $mealType = null,
+        ?string $source = 'all' // all | public | private
+    ) {
         $query = Recipe::query()
-            ->where(function ($query) use ($coachId) {
-                $query
-                    ->where('coach_id', $coachId)
-                    ->orWhere('is_public', true);
+            ->where(function ($q) use ($coachId, $source) {
+                if ($source === 'public') {
+                    $q->where('is_public', true);
+                } elseif ($source === 'private') {
+                    $q->where('coach_id', $coachId)
+                        ->where('is_public', false);
+                } else {
+                    // الافتراضي: الخاصة + العامة
+                    $q->where('coach_id', $coachId)
+                        ->orWhere('is_public', true);
+                }
             });
 
         if ($search) {
-            $query->where(function ($query) use ($search) {
-                $query
-                    ->where('name', 'like', "%{$search}%")
-                    ->orWhere(
-                        'description',
-                        'like',
-                        "%{$search}%"
-                    );
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
             });
         }
 
@@ -36,23 +39,7 @@ class RecipeService
             $query->where('meal_type', $mealType);
         }
 
-        return $query
-            ->latest()
-            ->get();
-    }
-
-    public function getRecipe(
-        int $recipeId,
-        int $coachId
-    ): Recipe {
-        return Recipe::query()
-            ->where('id', $recipeId)
-            ->where(function ($query) use ($coachId) {
-                $query
-                    ->where('coach_id', $coachId)
-                    ->orWhere('is_public', true);
-            })
-            ->firstOrFail();
+        return $query->latest()->get();
     }
 
     public function createRecipe(
