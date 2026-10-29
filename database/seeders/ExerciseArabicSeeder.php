@@ -4,40 +4,46 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 use RuntimeException;
-use Throwable;
 
 class ExerciseArabicSeeder extends Seeder
 {
     public function run(): void
     {
-        $path = database_path('data/SuperFit_exercises_ar_review.csv');
+        $path = database_path('data/exercises.csv');
 
         if (!is_file($path)) {
-            throw new RuntimeException("CSV not found: {$path}");
+            throw new RuntimeException(
+                "Exercises file not found: {$path}"
+            );
         }
 
         $handle = fopen($path, 'r');
 
         if ($handle === false) {
-            throw new RuntimeException('Cannot open CSV file.');
+            throw new RuntimeException('Unable to open exercises.csv');
         }
 
         try {
-            $headers = fgetcsv($handle);
+            $headers = fgetcsv($handle, 0, ',', '"', '');
 
-            if (!$headers) {
-                throw new RuntimeException('Empty CSV file.');
+            if ($headers === false) {
+                throw new RuntimeException('Exercises CSV is empty.');
             }
 
+            // إزالة BOM إن وجد، وتنظيف أسماء الأعمدة.
             $headers[0] = preg_replace(
                 '/^\xEF\xBB\xBF/',
                 '',
                 $headers[0]
             );
 
-            $map = [
+            $headers = array_map(
+                fn($header) => trim((string) $header),
+                $headers
+            );
+
+            $fieldMap = [
                 'Title' => 'name',
                 'name_ar' => 'name_ar',
                 'Desc' => 'description',
@@ -50,212 +56,127 @@ class ExerciseArabicSeeder extends Seeder
                 'equipment_ar' => 'equipment_ar',
                 'Level' => 'difficulty_level',
                 'difficulty_level_ar' => 'difficulty_level_ar',
+                'Rating' => 'rating',
                 'RatingDesc' => 'rating_description',
             ];
 
-            $required = [
-                'source_row',
-                'Rating',
-                ...array_keys($map),
-            ];
+            $requiredHeaders = array_merge(
+                ['source_row'],
+                array_keys($fieldMap)
+            );
 
-            if (array_diff($required, $headers)) {
+            $missingHeaders = array_diff(
+                $requiredHeaders,
+                $headers
+            );
+
+            if ($missingHeaders !== []) {
                 throw new RuntimeException(
-                    'Missing CSV columns: ' .
-                    implode(', ', array_diff($required, $headers))
+                    'Missing CSV columns: '
+                        . implode(', ', $missingHeaders)
                 );
             }
 
-            // Verify database columns before writing
-            $dbColumns = Schema::getColumnListing('exercises');
+            $count = DB::transaction(function () use (
+                $handle,
+                $headers,
+                $fieldMap
+            ) {
+                $count = 0;
+                $recordNumber = 1;
 
-            $needed = [
-                'id',
-                'rating',
-                ...array_values($map),
-            ];
+                while (
+                    ($row = fgetcsv($handle, 0, ',', '"', '')) !== false
+                ) {
+                    $recordNumber++;
 
-            if (array_diff($needed, $dbColumns)) {
-                throw new RuntimeException(
-                    'Missing database columns: ' .
-                    implode(', ', array_diff($needed, $dbColumns))
-                );
-            }
+                    // تجاهل السطر الفارغ.
+                    if ($row === [null]) {
+                        continue;
+                    }
 
-            $records = [];
-            $ids = [];
+                    if (count($row) !== count($headers)) {
+                        throw new RuntimeException(
+                            "Invalid column count at record {$recordNumber}."
+                        );
+                    }
 
-            // Read and validate the entire CSV first
-            while (($row = fgetcsv($handle)) !== false) {
-                if (count($row) !== count($headers)) {
-                    throw new RuntimeException(
-                        'Invalid CSV row structure.'
+                    $record = array_combine($headers, $row);
+
+                    $id = filter_var(
+                        trim((string) $record['source_row']),
+                        FILTER_VALIDATE_INT,
+                        ['options' => ['min_range' => 0]]
                     );
+
+                    if ($id === false) {
+                        throw new RuntimeException(
+                            "Invalid source_row at record {$recordNumber}."
+                        );
+                    }
+
+                    if ($id === false) {
+                        throw new RuntimeException(
+                            "Invalid source_row at record {$recordNumber}."
+                        );
+                    }
+
+                    $values = [];
+
+                    foreach ($fieldMap as $csvField => $dbField) {
+                        $value = trim((string) $record[$csvField]);
+
+                        $values[$dbField] = $value === ''
+                            ? null
+                            : $value;
+                    }
+
+                    if ($values['name'] === null) {
+                        throw new RuntimeException(
+                            "Missing Title at record {$recordNumber}."
+                        );
+                    }
+
+                    if ($values['rating'] !== null) {
+                        if (!is_numeric($values['rating'])) {
+                            throw new RuntimeException(
+                                "Invalid Rating at record {$recordNumber}."
+                            );
+                        }
+
+                        $values['rating'] = (float) $values['rating'];
+                    }
+
+                    $existing = DB::table('exercises')
+                        ->where('id', $id)
+                        ->exists();
+
+                    $values['updated_at'] = now();
+
+                    if ($existing) {
+                        DB::table('exercises')
+                            ->where('id', $id)
+                            ->update($values);
+                    } else {
+                        DB::table('exercises')->insert(
+                            array_merge($values, [
+                                'id' => $id,
+                                'created_at' => now(),
+                            ])
+                        );
+                    }
+
+                    $count++;
                 }
 
-                $data = array_combine($headers, $row);
-
-                $sourceId = trim($data['source_row']);
-
-                if (!ctype_digit($sourceId)) {
-                    throw new RuntimeException(
-                        "Invalid source_row: {$sourceId}"
-                    );
-                }
-
-                $id = (int) $sourceId;
-
-                if (isset($ids[$id])) {
-                    throw new RuntimeException(
-                        "Duplicate exercise ID: {$id}"
-                    );
-                }
-
-                $ids[$id] = true;
-
-                if (trim($data['Title']) === '') {
-                    throw new RuntimeException(
-                        "Missing English title for ID {$id}"
-                    );
-                }
-
-                $record = [
-                    'id' => $id,
-                ];
-
-                foreach ($map as $csvColumn => $dbColumn) {
-                    $value = trim($data[$csvColumn]);
-
-                    $record[$dbColumn] = $value !== ''
-                        ? $value
-                        : null;
-                }
-
-                $rating = trim($data['Rating']);
-
-                if ($rating !== '' && !is_numeric($rating)) {
-                    throw new RuntimeException(
-                        "Invalid rating for ID {$id}"
-                    );
-                }
-
-                $record['rating'] = $rating !== ''
-                    ? (float) $rating
-                    : null;
-
-                $records[] = $record;
-            }
+                return $count;
+            });
         } finally {
             fclose($handle);
         }
 
-        if (empty($records)) {
-            throw new RuntimeException('No exercises to import.');
-        }
-
-        // Verify zero-based, continuous AI library IDs
-        sort($records);
-
-        $sortedIds = array_keys($ids);
-        sort($sortedIds, SORT_NUMERIC);
-
-        foreach ($sortedIds as $index => $id) {
-            if ($id !== $index) {
-                throw new RuntimeException(
-                    "AI library ID mismatch at {$index}: {$id}"
-                );
-            }
-        }
-
-        $this->command->info(
-            'Validated ' . count($records) . ' CSV exercises.'
-        );
-
-        // MySQL normally treats explicit ID 0 as AUTO_INCREMENT.
-        // Preserve source_row = 0 by enabling this SQL mode
-        // temporarily for this connection.
-        $connection = DB::connection();
-        $isMySql = $connection->getDriverName() === 'mysql';
-
-        $originalMode = null;
-
-        if ($isMySql) {
-            $originalMode = $connection
-                ->selectOne('SELECT @@SESSION.sql_mode AS mode')
-                ->mode;
-
-            $newMode = $originalMode
-                ? $originalMode . ',NO_AUTO_VALUE_ON_ZERO'
-                : 'NO_AUTO_VALUE_ON_ZERO';
-
-            $connection->statement(
-                'SET SESSION sql_mode = ?',
-                [$newMode]
-            );
-        }
-
-        try {
-            DB::transaction(function () use ($records, $ids) {
-
-                $now = now();
-                $inserted = 0;
-                $updated = 0;
-
-                foreach ($records as $record) {
-                    $id = $record['id'];
-
-                    $exists = DB::table('exercises')
-                        ->where('id', $id)
-                        ->exists();
-
-                    $record['updated_at'] = $now;
-
-                    if ($exists) {
-                        // Replace all exercise fields
-                        DB::table('exercises')
-                            ->where('id', $id)
-                            ->update($record);
-
-                        $updated++;
-                    } else {
-                        $record['created_at'] = $now;
-
-                        DB::table('exercises')
-                            ->insert($record);
-
-                        $inserted++;
-                    }
-                }
-
-                // Delete exercises absent from the new dataset.
-                // Foreign key constraints remain enabled.
-                $deleted = DB::table('exercises')
-                    ->whereNotIn('id', array_keys($ids))
-                    ->delete();
-
-                $this->command->info(
-                    "Inserted: {$inserted}"
-                );
-
-                $this->command->info(
-                    "Updated: {$updated}"
-                );
-
-                $this->command->info(
-                    "Deleted obsolete exercises: {$deleted}"
-                );
-            });
-        } finally {
-            if ($isMySql) {
-                $connection->statement(
-                    'SET SESSION sql_mode = ?',
-                    [$originalMode]
-                );
-            }
-        }
-
-        $this->command->info(
-            'Exercise library import completed successfully.'
+        $this->command?->info(
+            "Successfully imported {$count} exercises."
         );
     }
 }

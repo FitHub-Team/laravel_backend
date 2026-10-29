@@ -10,6 +10,7 @@ class ProgressExercise extends Model
     protected $fillable = [
         'trainee_id',
         'workout_exercise_id',
+        'workout_session_id',
         'is_completed',
         'notes',
         'sets',
@@ -35,6 +36,13 @@ class ProgressExercise extends Model
             'trainee_id'
         );
     }
+    public function workoutSession(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+{
+    return $this->belongsTo(
+        workout_session::class,
+        'workout_session_id'
+    );
+}
 
     /**
      * التمرين الموجود داخل خطة التمارين.

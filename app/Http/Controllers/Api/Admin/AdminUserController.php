@@ -8,6 +8,7 @@ use App\Http\Resources\Admin\UserIndexResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class AdminUserController extends Controller
 {
@@ -65,7 +66,7 @@ class AdminUserController extends Controller
                 'nullable',
                 'email',
                 'max:255',
-                'unique:users,email,' . $id
+                Rule::unique('users', 'email')->ignore($user->id),
             ],
 
             'gender' => 'nullable|string',
@@ -120,7 +121,6 @@ class AdminUserController extends Controller
                 ) {
 
                     $profileData['gender'] = 'male';
-
                 } elseif (
                     in_array($genderInput, [
                         'أنثى',
@@ -130,7 +130,6 @@ class AdminUserController extends Controller
                 ) {
 
                     $profileData['gender'] = 'female';
-
                 } else {
 
                     $profileData['gender'] =
@@ -195,7 +194,6 @@ class AdminUserController extends Controller
                 'message' => 'تم تعديل البيانات بنجاح',
                 'data' => new UserDetailResource($freshUser)
             ], 200);
-
         } catch (\Exception $e) {
 
             DB::rollBack();
@@ -203,7 +201,7 @@ class AdminUserController extends Controller
             return response()->json([
                 'status' => false,
                 'message' =>
-                    'حدث خطأ أثناء حفظ البيانات: ' .
+                'حدث خطأ أثناء حفظ البيانات: ' .
                     $e->getMessage()
             ], 500);
         }

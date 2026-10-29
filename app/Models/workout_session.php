@@ -35,4 +35,11 @@ class workout_session extends Model
             'workout_plan_day_id'
         );
     }
+    public function progressExercises(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(
+            ProgressExercise::class,
+            'workout_session_id'
+        );
+    }
 }

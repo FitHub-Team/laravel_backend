@@ -12,12 +12,12 @@ class WorkoutPlan extends Model
     protected $fillable = [
         'coach_id',
         'trainee_id',
-
         'start_date',
         'end_date',
         'status',
-        'version'
+        'version',
     ];
+
     protected $casts = [
         'version' => 'integer',
         'start_date' => 'date',
@@ -26,10 +26,11 @@ class WorkoutPlan extends Model
 
     public function workoutExercises()
     {
-        return $this->hasMany(WorkoutExercise::class, 'workout_plan_id');
+        return $this->hasMany(
+            WorkoutExercise::class,
+            'workout_plan_id'
+        );
     }
-
-
 
     public function exercises()
     {
@@ -39,20 +40,30 @@ class WorkoutPlan extends Model
             'workout_plan_id',
             'exercise_id'
         )->withPivot([
-            'day_of_week',
+            'id',
+            'workout_plan_day_id',
             'sets',
             'reps',
             'rest_time',
-            'notes'
+            'notes',
+            'estimated_duration_seconds',
+            'estimated_calories',
         ])->withTimestamps();
     }
 
     public function trainee()
     {
-        return $this->belongsTo(User::class, 'trainee_id');
+        return $this->belongsTo(
+            User::class,
+            'trainee_id'
+        );
     }
+
     public function days()
     {
-        return $this->hasMany(WorkoutPlanDay::class);
+        return $this->hasMany(
+            WorkoutPlanDay::class,
+            'workout_plan_id'
+        );
     }
 }

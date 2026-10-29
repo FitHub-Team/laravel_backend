@@ -21,4 +21,5 @@ class WorkoutPlanDay extends Model
     {
         return $this->belongsTo(WorkoutPlan::class);
     }
+    
 }

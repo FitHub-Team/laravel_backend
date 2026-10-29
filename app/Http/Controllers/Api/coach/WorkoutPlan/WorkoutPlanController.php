@@ -5,13 +5,18 @@ namespace App\Http\Controllers\Api\coach\WorkoutPlan;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Coach\WorkoutPlanRequest;
 use App\Models\WorkoutPlan;
+use App\Services\Coach\workoutPlan\WorkoutPlanDuplicateService;
+use App\Services\Coach\workoutPlan\WorkoutPlanFormatter;
 use App\Services\Coach\workoutPlan\WorkoutPlanService;
+use App\Services\Coach\workoutPlan\WorkoutPlanWriterService;
 use Illuminate\Http\Request;
 
 class WorkoutPlanController extends Controller
 {
     public function __construct(
-        protected WorkoutPlanService $workoutPlanService
+        protected WorkoutPlanService $workoutPlanService,
+        protected WorkoutPlanWriterService $workoutPlanWriterService,
+        protected WorkoutPlanDuplicateService $workoutPlanDuplicateService
     ) {}
 
     /*
@@ -41,13 +46,21 @@ class WorkoutPlanController extends Controller
 
     public function storeOrUpdate(
         WorkoutPlanRequest $request,
-        $traineeId
+        $traineeId,
+        WorkoutPlanFormatter $formatter
     ) {
-        $plan = $this->workoutPlanService->saveOrUpdatePlan(
-            $request->user()->id,
+        $coachId = $request->user()->id;
+
+        $plan = $this->workoutPlanWriterService->saveOrUpdatePlan(
+            $coachId,
             $traineeId,
             $request->validated()
         );
+
+        $plan = $formatter->format($plan, $coachId);
+
+        // التمارين المنسقة موجودة داخل أيامها.
+        $plan->unsetRelation('workoutExercises');
 
         return response()->json([
             'status' => true,
@@ -55,7 +68,6 @@ class WorkoutPlanController extends Controller
             'data' => $plan,
         ]);
     }
-
     /*
     |--------------------------------------------------------------------------
     | Send Existing Draft Plan
@@ -192,7 +204,7 @@ class WorkoutPlanController extends Controller
      */
     public function duplicate(Request $request, int $planId)
     {
-        $newPlan = $this->workoutPlanService->duplicatePlan(
+        $newPlan = $this->workoutPlanDuplicateService->duplicatePlan(
             $request->user()->id,
             $planId
         );
@@ -203,6 +215,7 @@ class WorkoutPlanController extends Controller
             'data' => $newPlan,
         ], 201);
     }
+
     // get all Plan Version
     public function getVersionsByCoach(Request $request)
     {

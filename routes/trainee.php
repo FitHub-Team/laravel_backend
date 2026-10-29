@@ -54,11 +54,11 @@ Route::prefix('profile/setting')->group(function () {
         UserSettingProfileController::class,
         'deleteProfilePhoto',
     ]);
-    Route::put('/update', [
+    Route::put('/update/goal', [
         TraineeGoalController::class,
         'update',
     ]);
-    Route::put('/update', [
+    Route::put('/update/health', [
         HealthInformationController::class,
         'update',
     ]);

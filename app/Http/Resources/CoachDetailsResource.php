@@ -7,6 +7,10 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class CoachDetailsResource extends JsonResource
 {
+    /**
+ * @mixin \App\Models\User
+ */
+    
     public function toArray(Request $request): array
     {
         return [

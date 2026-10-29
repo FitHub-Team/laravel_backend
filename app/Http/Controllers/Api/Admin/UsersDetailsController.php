@@ -129,6 +129,7 @@ class UsersDetailsController extends Controller
     {
         $validated = $request->validate([
             'full_name' => 'required|string|max:255',
+            
             'email' => 'required|email|unique:users,email,' . $id,
             'password' => 'nullable|string|min:8',
             'role' => 'required|in:user,coach,User,Coach',

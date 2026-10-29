@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests\Coach;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class WorkoutPlanRequest extends FormRequest
@@ -12,46 +11,74 @@ class WorkoutPlanRequest extends FormRequest
         return true;
     }
 
-    /**
-     * @return array<string, ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
-            'start_date' => 'nullable|date',
-            'end_date' => 'nullable|date',
+            'start_date' => ['nullable', 'date'],
+            'end_date' => ['nullable', 'date'],
 
-            'status' => 'sometimes|in:draft,active,completed,cancelled',
+            // الحفظ يدعم المسودة أو التفعيل فقط.
+            'status' => ['sometimes', 'in:draft,active'],
 
-            'exercises' => 'required|array',
+            'days' => ['required', 'array', 'min:1'],
 
-            'exercises.*.day_of_week' => 'required|string',
+            'days.*.day' => [
+                'required',
+                'string',
+                'distinct',
+                'in:sunday,monday,tuesday,wednesday,thursday,friday,saturday',
+            ],
 
-            'exercises.*.exercise_id' => [
+            'days.*.date' => ['nullable', 'date'],
+            'days.*.focus' => ['nullable', 'string'],
+
+            // قائمة التمارين داخل كل يوم، ويمكن أن تكون فارغة.
+            'days.*.exercises' => ['present', 'array'],
+
+            'days.*.exercises.*.exercise_id' => [
+                'bail',
                 'nullable',
-                'required_without:exercises.*.custom_exercise_id',
+                'required_without:days.*.exercises.*.custom_exercise_id',
                 'integer',
                 'exists:exercises,id',
             ],
 
-            'exercises.*.custom_exercise_id' => [
+            'days.*.exercises.*.custom_exercise_id' => [
+                'bail',
                 'nullable',
-                'required_without:exercises.*.exercise_id',
+                'required_without:days.*.exercises.*.exercise_id',
                 'integer',
                 'exists:custom_exercises,id',
             ],
 
-            'exercises.*.sets' => 'required|integer|min:1',
-            'exercises.*.reps' => 'required',
-            'exercises.*.rest_time' => 'nullable',
-            'exercises.*.notes' => 'nullable|string',
+            'days.*.exercises.*.sets' => [
+                'required',
+                'integer',
+                'min:1',
+            ],
 
-            'days' => 'required|array|min:1',
+            'days.*.exercises.*.reps' => ['required'],
 
-            'days.*.day' =>
-                'required|string|in:sunday,monday,tuesday,wednesday,thursday,friday,saturday',
+            'days.*.exercises.*.rest_time' => ['nullable'],
 
-            'days.*.focus' => 'nullable|string',
+            'days.*.exercises.*.notes' => [
+                'nullable',
+                'string',
+            ],
+
+            'days.*.exercises.*.estimated_duration_seconds' => [
+                'required',
+                'integer',
+                'min:1',
+            ],
+
+            'days.*.exercises.*.estimated_calories' => [
+                'sometimes',
+                'nullable',
+                'numeric',
+                'min:0',
+                'max:999999.99',
+            ],
         ];
     }
 }

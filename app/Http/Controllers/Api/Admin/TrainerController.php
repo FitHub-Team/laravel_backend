@@ -8,6 +8,7 @@ use App\Models\CoachProfile;
 use App\Models\User;
 use App\Services\Admin\TrainerService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class TrainerController extends Controller
 {
@@ -80,7 +81,12 @@ class TrainerController extends Controller
 
         $request->validate([
             'name' => 'sometimes|required|string|max:255',
-            'email' => 'sometimes|required|email|unique:users,email,' . $trainer->user_id,
+            'email' => [
+                'sometimes',
+                'required',
+                'email',
+                Rule::unique('users', 'email')->ignore($trainer->user_id),
+            ],
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'specialization' => 'nullable|string',
             'experience' => 'nullable|integer',

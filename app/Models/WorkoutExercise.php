@@ -12,9 +12,9 @@ class WorkoutExercise extends Model
 
     protected $fillable = [
         'workout_plan_id',
+        'workout_plan_day_id',
         'exercise_id',
         'custom_exercise_id',
-        'day_of_week',
         'sets',
         'reps',
         'rest_time',
@@ -22,6 +22,12 @@ class WorkoutExercise extends Model
         'exercise_name',
         'target_muscle',
         'equipment',
+        'estimated_duration_seconds',
+        'estimated_calories',
+    ];
+    protected $casts = [
+        'estimated_duration_seconds' => 'integer',
+        'estimated_calories' => 'decimal:2',
     ];
 
     public function workoutPlan()
@@ -32,10 +38,20 @@ class WorkoutExercise extends Model
     // العلاقة مع التمرين الأساسي
     public function exercise()
     {
-        return $this->belongsTo(Exercise::class);
+        return $this->hasMany(
+            WorkoutExercise::class,
+            'workout_plan_day_id'
+        );
     }
     public function customExercise(): BelongsTo
     {
         return $this->belongsTo(CustomExercise::class, 'custom_exercise_id');
+    }
+    public function workoutPlanDay(): BelongsTo
+    {
+        return $this->belongsTo(
+            WorkoutPlanDay::class,
+            'workout_plan_day_id'
+        );
     }
 }

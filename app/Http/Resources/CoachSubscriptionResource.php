@@ -8,6 +8,7 @@ use App\Models\Subscription;
 
 class CoachSubscriptionResource extends JsonResource
 {
+    
     public function toArray(Request $request): array
     {
         // جلب أحدث اشتراك بين المتدرب الحالي والكوتش

@@ -8,31 +8,47 @@ use App\Models\WorkoutPlan;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
-/**
- * Prepares a saved workout plan for the existing React editor.
- * The returned days contain an exercises array for each day.
- */
 class WorkoutPlanFormatter
 {
-    public function format(WorkoutPlan $plan, int $coachId): WorkoutPlan
-    {
-        $plan->loadMissing(['days', 'workoutExercises']);
+    public function format(
+        WorkoutPlan $plan,
+        int $coachId
+    ): WorkoutPlan {
+        $plan->loadMissing([
+            'days',
+            'workoutExercises',
+        ]);
 
         $workoutExercises = $plan->workoutExercises;
 
-        // Load exercise details in batches, not inside the days loop.
         $libraryExercises = Exercise::query()
-            ->whereIn('id', $workoutExercises->pluck('exercise_id')->filter()->unique()->all())
+            ->whereIn(
+                'id',
+                $workoutExercises
+                    ->pluck('exercise_id')
+                    ->filter()
+                    ->unique()
+                    ->all()
+            )
             ->get()
             ->keyBy('id');
 
         $customExercises = CustomExercise::query()
             ->where('coach_id', $coachId)
-            ->whereIn('id', $workoutExercises->pluck('custom_exercise_id')->filter()->unique()->all())
+            ->whereIn(
+                'id',
+                $workoutExercises
+                    ->pluck('custom_exercise_id')
+                    ->filter()
+                    ->unique()
+                    ->all()
+            )
             ->get()
             ->keyBy('id');
 
-        $exercisesByDay = $workoutExercises->groupBy('day_of_week');
+        // الربط بمعرّف اليوم بدل اسمه
+        $exercisesByDay = $workoutExercises
+            ->groupBy('workout_plan_day_id');
 
         $days = $plan->days->map(function ($day) use (
             $exercisesByDay,
@@ -40,8 +56,8 @@ class WorkoutPlanFormatter
             $customExercises
         ) {
             $exercises = $exercisesByDay
-                ->get($day->day, collect())
-                ->map(fn($item) => $this->formatExercise(
+                ->get($day->id, collect())
+                ->map(fn ($item) => $this->formatExercise(
                     $item,
                     $libraryExercises,
                     $customExercises
@@ -70,10 +86,20 @@ class WorkoutPlanFormatter
         Collection $customExercises
     ): ?array {
         $settings = [
+            // هذا هو المعرّف المستخدم لاحقًا لتتبّع الإنجاز
+            'workout_exercise_id' => $item->id,
+            'workout_plan_day_id' => $item->workout_plan_day_id,
+
             'sets' => $item->sets,
             'reps' => $item->reps,
             'rest_time' => $item->rest_time,
             'notes' => $item->notes,
+
+            'estimated_duration_seconds' =>
+                $item->estimated_duration_seconds,
+
+            'estimated_calories' =>
+                $item->estimated_calories,
         ];
 
         if ($item->exercise_id !== null) {
@@ -87,13 +113,15 @@ class WorkoutPlanFormatter
                 'id' => $exercise->id,
                 'exercise_id' => $exercise->id,
                 'custom_exercise_id' => null,
-                'name' => $exercise->name,
-                'description' => $exercise->description,
-                'muscle_group' => $exercise->muscle_group,
-                'equipment' => $exercise->equipment,
-                'difficulty_level' => $exercise->difficulty_level,
+
+                'name' => $exercise->name_ar ?: $exercise->name,
+                'description' => $exercise->description_ar ?:$exercise->description,
+                'muscle_group' =>$exercise->muscle_group_ar?: $exercise->muscle_group,
+                'equipment' => $exercise->equipment_ar ?: $exercise->equipment,
+                'difficulty_level' => $exercise->difficulty_level?: $exercise->difficulty_level,
+
                 'mechanics' => $exercise->mechanics,
-                'category' => $exercise->category,
+                'category' => $exercise->type_ar ?:$exercise->category,
                 'image' => $exercise->image,
                 'force_type' => $exercise->force_type,
             ], $settings, [
@@ -102,7 +130,9 @@ class WorkoutPlanFormatter
         }
 
         if ($item->custom_exercise_id !== null) {
-            $exercise = $customExercises->get($item->custom_exercise_id);
+            $exercise = $customExercises->get(
+                $item->custom_exercise_id
+            );
 
             if (!$exercise) {
                 return null;
@@ -112,11 +142,13 @@ class WorkoutPlanFormatter
                 'id' => $exercise->id,
                 'exercise_id' => null,
                 'custom_exercise_id' => $exercise->id,
+
                 'name' => $exercise->name,
                 'description' => $exercise->description,
                 'muscle_group' => $exercise->muscle_group,
                 'equipment' => $exercise->equipment,
                 'difficulty_level' => $exercise->difficulty,
+
                 'mechanics' => null,
                 'category' => null,
                 'image' => $exercise->image,
@@ -126,16 +158,18 @@ class WorkoutPlanFormatter
             ]);
         }
 
-        // Exercises generated by AI are stored directly on workout_exercises.
+        // دعم السجلات القديمة المخزّنة مباشرة بتمارين الخطة
         return array_merge([
             'id' => $item->id,
             'exercise_id' => null,
             'custom_exercise_id' => null,
+
             'name' => $item->exercise_name,
             'description' => null,
             'muscle_group' => $item->target_muscle,
             'equipment' => $item->equipment,
             'difficulty_level' => null,
+
             'mechanics' => null,
             'category' => null,
             'image' => null,
