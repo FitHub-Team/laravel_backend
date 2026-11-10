@@ -39,7 +39,7 @@ export default function CurrentPlansPage() {
 
     // View active plan
     const handleView = (plan) => {
-        navigate(`/dashboard/workout-plan/${plan.id}`);
+       `/dashboard/workout-plan/${plan.id}?trainee=${plan.trainee_id}`
     };
 
     // Send saved draft

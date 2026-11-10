@@ -29,72 +29,82 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // Login & Logout
     Route::get('/login', [AdminAuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AdminAuthController::class, 'loginWeb'])->name('login.submit');
-    Route::post('/logout', [AdminAuthController::class, 'logoutWeb'])->name('logout');
+    Route::middleware(['auth:admin', 'admin.access'])->group(function () {
+        Route::post('/logout', [AdminAuthController::class, 'logoutWeb'])->name('logout');
 
-    // Dashboard
-    Route::get('/', [AdminAuthController::class, 'dashboard'])->name('dashboard');
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.page');
+        // Dashboard
+        Route::get('/', [AdminAuthController::class, 'dashboard'])->name('dashboard');
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.page');
 
-    // Users Management
-    Route::get('/users', [AdminUserController::class, 'userManage'])->name('users-manage');
+        // Users Management
+        Route::get('/users', [AdminUserController::class, 'userManage'])->name('users-manage');
 
-    // Trainers Management
-    Route::get('/trainers', [TrainerController::class, 'trainerManage'])->name('trainer.manage');
-    Route::get('/trainers/{id}/details', [TrainerController::class, 'getDetails'])->name('trainer.details');
-    Route::post('/trainers/{id}/toggle-approval', [TrainerController::class, 'toggleApproval'])->name('trainer.toggleApproval');
-    Route::delete('/trainers/{id}', [TrainerController::class, 'destroy'])->name('trainer.destroy');
+        // Trainers Management
+        Route::get('/trainers', [TrainerController::class, 'trainerManage'])->name('trainer.manage');
+        Route::get('/trainers/{id}/details', [TrainerController::class, 'getDetails'])->name('trainer.details');
+        Route::post('/trainers/{id}/toggle-approval', [TrainerController::class, 'toggleApproval'])->name('trainer.toggleApproval');
+        Route::delete('/trainers/{id}', [TrainerController::class, 'destroy'])->name('trainer.destroy');
 
-    // Coaches Requests & Actions
-    Route::get('/coaches/requests', [TrainerController::class, 'coachRequests'])->name('coaches.requests');
-    Route::post('/coaches/{id}/approve', [TrainerController::class, 'approve'])->name('coaches.approve');
-    Route::post('/coaches/{id}/reject', [TrainerController::class, 'reject'])->name('coaches.reject');
+        // Coaches Requests & Actions
+        Route::get('/coaches/requests', [TrainerController::class, 'coachRequests'])->name('coaches.requests');
+        Route::post('/coaches/{id}/approve', [TrainerController::class, 'approve'])->name('coaches.approve');
+        Route::post('/coaches/{id}/reject', [TrainerController::class, 'reject'])->name('coaches.reject');
 
-    // ==========================================
-    // Sports Profile Management (New Views & Actions)
-    // ==========================================
+        // ==========================================
+        // Sports Profile Management (New Views & Actions)
+        // ==========================================
 
-    // Activity Levels Management
-    Route::get('/activity-level', [ActivityLevelController::class, 'index'])->name('activity-level.manage');
-    Route::post('/activity-level', [ActivityLevelController::class, 'store'])->name('activity-level.store');
-    Route::patch('/activity-level/{activityLevel}/toggle', [ActivityLevelController::class, 'toggleActive'])->name('activity-level.toggle');
-    Route::delete('/activity-level/{activityLevel}', [ActivityLevelController::class, 'destroy'])->name('activity-level.destroy');
-    Route::put('/activity-level/{activityLevel}', [ActivityLevelController::class, 'update'])->name('activity-level.update');
+        // Activity Levels Management
+        Route::get('/activity-level', [ActivityLevelController::class, 'index'])->name('activity-level.manage');
+        Route::post('/activity-level', [ActivityLevelController::class, 'store'])->name('activity-level.store');
+        Route::patch('/activity-level/{activityLevel}/toggle', [ActivityLevelController::class, 'toggleActive'])->name('activity-level.toggle');
+        Route::delete('/activity-level/{activityLevel}', [ActivityLevelController::class, 'destroy'])->name('activity-level.destroy');
+        Route::put('/activity-level/{activityLevel}', [ActivityLevelController::class, 'update'])->name('activity-level.update');
 
-    // Goals Management
-    Route::get('/goals', [GoalController::class, 'index'])->name('goals.manage');
-    Route::post('/goals', [GoalController::class, 'store'])->name('goals.store');
-    Route::patch('/goals/{goal}/toggle', [GoalController::class, 'toggleActive'])->name('goals.toggle');
-    Route::delete('/goals/{goal}', [GoalController::class, 'destroy'])->name('goals.destroy');
+        // Goals Management
+        Route::get('/goals', [GoalController::class, 'index'])->name('goals.manage');
+        Route::post('/goals', [GoalController::class, 'store'])->name('goals.store');
+        Route::patch('/goals/{goal}/toggle', [GoalController::class, 'toggleActive'])->name('goals.toggle');
+        Route::delete('/goals/{goal}', [GoalController::class, 'destroy'])->name('goals.destroy');
 
-    // Users Resource Routes (CRUD)
-    Route::get('/usersDetails', [UsersDetailsController::class, 'index'])->name('users-details');
-    Route::post('/users', [UsersDetailsController::class, 'store'])->name('users.store');
-    Route::put('/users/{user}', [UsersDetailsController::class, 'update'])->name('users.update');
-    Route::delete('/users/{user}', [UsersDetailsController::class, 'destroy'])->name('users.destroy');
+        // Users Resource Routes (CRUD)
+        Route::get('/usersDetails', [UsersDetailsController::class, 'index'])->name('users-details');
+        Route::post('/users', [UsersDetailsController::class, 'store'])->name('users.store');
+        Route::put('/users/{user}', [UsersDetailsController::class, 'update'])->name('users.update');
+        Route::delete('/users/{user}', [UsersDetailsController::class, 'destroy'])->name('users.destroy');
 
-    // Health Restrictions Management
-    Route::get('/health-restrictions', [HealthRestrictionController::class, 'index'])->name('health-restrictions.manage');
-
-
-    Route::post('/health-restrictions/store', [HealthRestrictionController::class, 'store'])
-        ->name('health-restrictions.store');
-
-    Route::delete('/user-profiles/{userProfile}/dietary-restrictions/{dietaryRestriction}', [HealthRestrictionController::class, 'destroy'])
-        ->name('health-restrictions.destroy');
+        // Health Restrictions Management
+        Route::get('/health-restrictions', [HealthRestrictionController::class, 'index'])->name('health-restrictions.manage');
 
 
-    Route::get('/preferences', function () {
-        return view('admin.preferencesManage');
-    })->name('preferences.manage');
+        Route::post('/health-restrictions/store', [HealthRestrictionController::class, 'store'])
+            ->name('health-restrictions.store');
 
-    // Skills Management
-    Route::get('/skills', [SkillController::class, 'index'])->name('skills.index');
-    Route::get('/skills/create', [SkillController::class, 'create'])->name('skills.create');
-    Route::post('/skills', [SkillController::class, 'store'])->name('skills.store');
-    Route::get('/skills/{skill}/edit', [SkillController::class, 'edit'])->name('skills.edit');
-    Route::put('/skills/{skill}', [SkillController::class, 'update'])->name('skills.update');
-    Route::patch('/skills/{skill}/toggle', [SkillController::class, 'toggleActive'])->name('skills.toggle');
-    Route::delete('/skills/{skill}', [SkillController::class, 'destroy'])->name('skills.destroy');
+        Route::delete('/user-profiles/{userProfile}/dietary-restrictions/{dietaryRestriction}', [HealthRestrictionController::class, 'destroy'])
+            ->name('health-restrictions.destroy');
+
+
+        Route::get('/preferences', function () {
+            return view('admin.preferencesManage');
+        })->name('preferences.manage');
+
+        // Skills Management
+        Route::get('/skills', [SkillController::class, 'index'])->name('skills.index');
+        Route::get('/skills/create', [SkillController::class, 'create'])->name('skills.create');
+        Route::post('/skills', [SkillController::class, 'store'])->name('skills.store');
+        Route::get('/skills/{skill}/edit', [SkillController::class, 'edit'])->name('skills.edit');
+        Route::put('/skills/{skill}', [SkillController::class, 'update'])->name('skills.update');
+        Route::patch('/skills/{skill}/toggle', [SkillController::class, 'toggleActive'])->name('skills.toggle');
+        Route::delete('/skills/{skill}', [SkillController::class, 'destroy'])->name('skills.destroy');
+
+
+        // Browser JSON requests use the admin session and the web CSRF protection.
+        Route::prefix('data/users')->group(function () {
+            Route::get('/{id}', [AdminUserController::class, 'show']);
+            Route::put('/{id}', [AdminUserController::class, 'update']);
+            Route::delete('/{id}', [AdminUserController::class, 'destroy']);
+        });
+    });
 
 });
 

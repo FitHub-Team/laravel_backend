@@ -97,10 +97,6 @@ public function getSubscriptionDetails($id)
                         'description' => 'نظام غذائي يناسب أهدافك',
                     ],
                     [
-                        'title' => 'تواصل مباشر مع المدرب',
-                        'description' => 'عبر الرسائل في أي وقت',
-                    ],
-                    [
                         'title' => 'متابعة وتقييم مستمر',
                         'description' => 'لقياس تقدمك وتعديل خطتك',
                     ],

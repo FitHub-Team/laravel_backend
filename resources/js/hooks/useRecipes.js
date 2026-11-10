@@ -1,3 +1,4 @@
+import toast from "../services/toast";
 import {
     useCallback,
     useEffect,
@@ -73,6 +74,7 @@ const useRecipes = () => {
             );
 
             await fetchRecipes();
+            toast.success("تمت إضافة الوصفة بنجاح");
 
             return true;
         } catch (error) {
@@ -91,6 +93,7 @@ const useRecipes = () => {
                     "حدث خطأ أثناء إضافة الوصفة",
             );
 
+            toast.error(error.response?.data?.message || "تعذر حفظ التغييرات. يرجى المحاولة مرة أخرى.");
             return false;
         } finally {
             setSaving(false);
@@ -110,6 +113,7 @@ const useRecipes = () => {
                 ),
             );
 
+            toast.success("تم حذف الوصفة بنجاح");
             return true;
         } catch (error) {
             console.error(
@@ -122,6 +126,7 @@ const useRecipes = () => {
                     "حدث خطأ أثناء حذف الوصفة",
             );
 
+            toast.error(error.response?.data?.message || "تعذر حفظ التغييرات. يرجى المحاولة مرة أخرى.");
             return false;
         } finally {
             setDeletingId(null);

@@ -12,6 +12,7 @@
 </head>
 
 <body>
+    @include('components.toast-notifications')
 
 <div class="wrap">
 
@@ -46,12 +47,6 @@
     <div class="strip"></div>
 
     {{-- Success Message --}}
-    @if(session('success'))
-        <div class="alert-success">
-            <span class="alert-icon">✓</span>
-            <span>{{ session('success') }}</span>
-        </div>
-    @endif
 
     {{-- Errors --}}
     @if($errors->any())

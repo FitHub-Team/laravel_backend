@@ -3,6 +3,7 @@ import { Mail, Lock, Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate, Link } from "react-router-dom";
 import api from "../../services/api";
+import toast from "../../services/toast";
 import logoImage from "../../assets/logo.png";
 import FlashMessage from "../../components/common/FlashMessage";
 
@@ -44,6 +45,7 @@ const Login = () => {
             localStorage.setItem("token", data.token);
             localStorage.setItem("user", JSON.stringify(data.user));
             // الذهاب للـ Dashboard
+            toast.success("تم تسجيل الدخول بنجاح");
             navigate("/dashboard");
         },
         onError: (error) => {

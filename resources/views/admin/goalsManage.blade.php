@@ -15,6 +15,7 @@
 </head>
 
 <body>
+    @include('components.toast-notifications')
 
 <div class="wrap">
 
@@ -75,17 +76,6 @@
 
 
     <!-- Success Message -->
-    @if(session('success'))
-
-        <div class="alert-success">
-
-            <span class="alert-icon">✓</span>
-
-            {{ session('success') }}
-
-        </div>
-
-    @endif
 
 
     <!-- Table Card -->

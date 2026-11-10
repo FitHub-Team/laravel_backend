@@ -1,3 +1,4 @@
+import toast from "../../../services/toast";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -107,13 +108,14 @@ function CoachProfile() {
             }));
 
             setIsDeletePhotoOpen(false);
+            toast.success("تم حذف الصورة بنجاح");
         } catch (error) {
             console.error(
                 "Delete avatar error:",
                 error.response?.data || error,
             );
 
-            alert(error.response?.data?.message || "حدث خطأ أثناء حذف الصورة");
+            toast.error(error.response?.data?.message || "حدث خطأ أثناء حذف الصورة");
         } finally {
             setIsDeletingPhoto(false);
         }

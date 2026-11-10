@@ -2,11 +2,13 @@
 
 use App\Http\Middleware\CoachMiddleware;
 use App\Http\Middleware\CoachTraineeAccess;
+use App\Http\Middleware\EnsureAdmin;
 use App\Http\Middleware\UserMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Middleware\SubstituteBindings;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -28,13 +30,25 @@ return Application::configure(basePath: dirname(__DIR__))
             SymfonyRequest::HEADER_X_FORWARDED_PROTO
         );
         $middleware->alias([
+            'admin.access' => EnsureAdmin::class,
             'coach' => CoachMiddleware::class,
             'trainee.access' => CoachTraineeAccess::class,
             'user' => UserMiddleware::class
         ]);
+        $middleware->prependToPriorityList(SubstituteBindings::class, EnsureAdmin::class);
+        $middleware->redirectGuestsTo(function (Request $request) {
+            if ($request->is('api/admin', 'api/admin/*')) {
+                return null;
+            }
+
+            return $request->is('admin', 'admin/*')
+                ? route('admin.login')
+                : route('login');
+        });
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
-            fn(Request $request) => $request->is('api/*'),
+            fn(Request $request) => $request->is('api/*')
+                || ($request->is('admin', 'admin/*') && $request->expectsJson()),
         );
     })->create();

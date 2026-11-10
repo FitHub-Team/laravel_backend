@@ -35,6 +35,7 @@
 
 
 <body>
+    @include('components.toast-notifications')
 
 <div
     dir="rtl"

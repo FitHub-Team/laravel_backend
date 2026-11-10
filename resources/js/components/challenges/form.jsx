@@ -1,3 +1,4 @@
+import toast from "../../services/toast";
 
 import { useEffect, useMemo, useState } from "react";
 
@@ -104,7 +105,7 @@ export default function ChallengesPage() {
     const points = Number(form.points);
 
     if (!title || !Number.isInteger(points) || points < 0) {
-      alert("يرجى إدخال اسم التحدي ونقاط صحيحة.");
+      toast.error("يرجى إدخال اسم التحدي ونقاط صحيحة.");
       return;
     }
 
