@@ -1404,6 +1404,7 @@
 
 
 <body>
+    @include('components.toast-notifications')
 
 <div class="container">
 
@@ -1434,22 +1435,6 @@
     {{-- =========================================================
         Success Message
     ========================================================== --}}
-
-    @if(session('success'))
-
-        <div class="alert alert-success">
-
-            <span class="alert-icon">
-                ✓
-            </span>
-
-            <span>
-                {{ session('success') }}
-            </span>
-
-        </div>
-
-    @endif
 
 
     {{-- =========================================================

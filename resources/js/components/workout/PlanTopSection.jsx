@@ -4,11 +4,9 @@ import {
     ChevronDown,
     Search,
     UserRound,
-    X,
-    CheckCircle2,
-    AlertCircle,
 } from "lucide-react";
 
+import FlashMessage from "../common/FlashMessage";
 import Button from "../common/Button";
 import WorkoutActions from "./WorkoutActions";
 import { formatLastUpdated } from "../../utils/dateHelper";
@@ -42,43 +40,11 @@ export default function PlanTopSection({
 }) {
     return (
         <div className="space-y-6">
-            {/* Notification */}
-            {flashMessage && (
-                <div
-                    role="status"
-                    aria-live="polite"
-                    className={`
-                        fixed left-5 top-5 z-[100]
-                        flex max-w-md items-start gap-3
-                        rounded-xl border bg-white
-                        px-4 py-3 shadow-lg
-                        ${
-                            flashMessage.type === "success"
-                                ? "border-green-200 text-green-800"
-                                : "border-red-200 text-red-700"
-                        }
-                    `}
-                >
-                    {flashMessage.type === "success" ? (
-                        <CheckCircle2 size={20} className="mt-0.5 shrink-0" />
-                    ) : (
-                        <AlertCircle size={20} className="mt-0.5 shrink-0" />
-                    )}
-
-                    <span className="flex-1 text-sm leading-6">
-                        {flashMessage.message}
-                    </span>
-
-                    <button
-                        type="button"
-                        onClick={dismissFlash}
-                        aria-label="إغلاق الرسالة"
-                        className="shrink-0"
-                    >
-                        <X size={16} />
-                    </button>
-                </div>
-            )}
+            <FlashMessage
+                message={flashMessage?.message}
+                type={flashMessage?.type}
+                onClose={dismissFlash}
+            />
 
             {/* Trainee + Plan Actions */}
             <section className="rounded-xl bg-white p-4 shadow-sm">

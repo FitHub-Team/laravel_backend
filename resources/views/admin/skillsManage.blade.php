@@ -34,6 +34,7 @@
 </head>
 
 <body class="bg-[#f4fbf8] text-gray-800">
+    @include('components.toast-notifications')
 
 <div class="container mx-auto px-4 py-8 md:px-8" dir="rtl">
 
@@ -125,29 +126,6 @@
 
 
     <!-- Success Message -->
-    @if(session('success'))
-
-        <div class="mb-6 p-4 bg-[#e8f7f2] border-r-4 border-[#2aa889] rounded-xl flex items-center shadow-sm">
-
-            <svg class="h-5 w-5 text-[#2aa889] ml-3"
-                 fill="currentColor"
-                 viewBox="0 0 20 20">
-
-                <path
-                    fill-rule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                    clip-rule="evenodd"
-                />
-
-            </svg>
-
-            <span class="text-sm font-semibold text-[#176b63]">
-                {{ session('success') }}
-            </span>
-
-        </div>
-
-    @endif
 
 
     <!-- Validation Errors -->

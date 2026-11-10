@@ -3,7 +3,6 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\General\BrowseCoachController;
 
@@ -140,19 +139,3 @@ Route::get('/user', function (Request $request) {
         'user' => $request->user(),
     ]);
 });
-
-/*
-|--------------------------------------------------------------------------
-| Chat
-|--------------------------------------------------------------------------
-*/
-
-Route::get('/chat/{userId}', [
-    ChatController::class,
-    'index',
-]);
-
-Route::post('/chat/send', [
-    ChatController::class,
-    'store',
-]);

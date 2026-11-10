@@ -10,7 +10,6 @@ import {
     Users,
     FileText,
     Bookmark,
-    MessageSquare,
     Bell,
     LogOut,
     User,

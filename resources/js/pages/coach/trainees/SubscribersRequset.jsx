@@ -1,3 +1,4 @@
+import toast from "../../../services/toast";
 import { useEffect, useState } from "react";
 import api from "../../../services/api";
 import { Check, X } from "lucide-react";
@@ -50,6 +51,7 @@ const SubscribersRequset = () => {
   const handleAccept = async (subscriptionId) => {
     try {
       await api.put(`/coach/subscriptions/${subscriptionId}/accept`);
+      toast.success("تم قبول طلب الاشتراك بنجاح");
 
       // حذف الطلب من القائمة بعد قبوله
       setTraineesRequest((prev) =>
@@ -57,13 +59,14 @@ const SubscribersRequset = () => {
       );
     } catch (error) {
       console.error("Accept error:", error);
-      setError("حدث خطأ أثناء قبول طلب الاشتراك");
+      toast.error("حدث خطأ أثناء قبول طلب الاشتراك");
     }
   };
   // رفض الاشتراك
   const handleReject = async (subscriptionId) => {
     try {
       await api.put(`/coach/subscriptions/${subscriptionId}/reject`);
+      toast.success("تم رفض طلب الاشتراك بنجاح");
 
       // حذف الطلب من القائمة بعد رفضه
       setTraineesRequest((prev) =>
@@ -71,7 +74,7 @@ const SubscribersRequset = () => {
       );
     } catch (error) {
       console.error("Reject error:", error);
-      setError("حدث خطأ أثناء رفض طلب الاشتراك");
+      toast.error("حدث خطأ أثناء رفض طلب الاشتراك");
     }
   };
 

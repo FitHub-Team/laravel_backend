@@ -1,3 +1,4 @@
+import toast from "../services/toast";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import {
@@ -74,6 +75,7 @@ const useCoachDashboard = () => {
       setActionLoadingId(subscriptionId);
 
       await acceptSubscriptionRequest(subscriptionId);
+      toast.success("تم قبول طلب الاشتراك بنجاح");
 
       await fetchDashboardData();
 
@@ -89,6 +91,7 @@ const useCoachDashboard = () => {
           "حدث خطأ أثناء قبول طلب الاشتراك",
       );
 
+      toast.error(error.response?.data?.message || "تعذر تحديث طلب الاشتراك");
       return false;
     } finally {
       setActionLoadingId(null);
@@ -106,6 +109,7 @@ const useCoachDashboard = () => {
       setActionLoadingId(subscriptionId);
 
       await rejectSubscriptionRequest(subscriptionId);
+      toast.success("تم رفض طلب الاشتراك بنجاح");
 
       setPendingRequests((currentRequests) =>
         currentRequests.filter(
@@ -125,6 +129,7 @@ const useCoachDashboard = () => {
           "حدث خطأ أثناء رفض طلب الاشتراك",
       );
 
+      toast.error(error.response?.data?.message || "تعذر تحديث طلب الاشتراك");
       return false;
     } finally {
       setActionLoadingId(null);

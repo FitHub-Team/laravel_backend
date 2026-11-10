@@ -10,6 +10,7 @@
 </head>
 
 <body>
+    @include('components.toast-notifications')
 
     <input type="checkbox" id="drawer-check" class="drawer-toggle">
 
@@ -18,12 +19,6 @@
             <a href="{{ route('admin.dashboard') }}" class="nav-link">لوحة الإحصائيات (Dashboard)</a>
             <a href="{{ route('admin.trainer.manage') }}" class="nav-link">إدارة المدربين (Coach Management)</a>
         </nav>
-
-        @if(session('success'))
-            <div style="background: #dcfce7; color: #15803d; padding: 12px; border-radius: 8px; margin-bottom: 16px; font-size: 14px;">
-                {{ session('success') }}
-            </div>
-        @endif
 
         <!-- البحث -->
         <div class="filter-bar">

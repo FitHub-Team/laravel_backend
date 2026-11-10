@@ -18,6 +18,7 @@
 </head>
 
 <body>
+    @include('components.toast-notifications')
 
     <!-- الخلفية -->
 

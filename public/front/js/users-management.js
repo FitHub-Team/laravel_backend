@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function displayUserDetails(id) {
 
-        fetch(`/api/admin/users/${id}`, {
+        fetch(`/admin/data/users/${id}`, {
 
             method: 'GET',
 
@@ -180,7 +180,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 );
 
 
-                alert(
+                window.SuperFitToast.error(
                     'تعذر جلب تفاصيل المستخدم'
                 );
             });
@@ -424,7 +424,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 // ==========================================
 
                 fetch(
-                    `/api/admin/users/${selectedUserId}`,
+                    `/admin/data/users/${selectedUserId}`,
                     {
 
                         method: 'PUT',
@@ -531,7 +531,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
 
 
-                        alert(
+                        window.SuperFitToast.success(
                             'تم حفظ التعديلات بنجاح في قاعدة البيانات!'
                         );
 
@@ -552,7 +552,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         );
 
 
-                        alert(
+                        window.SuperFitToast.error(
                             'حدث خطأ أثناء حفظ التعديلات.'
                         );
                     })
@@ -667,7 +667,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
                 fetch(
-                    `/api/admin/users/${selectedUserId}`,
+                    `/admin/data/users/${selectedUserId}`,
                     {
 
                         method: 'DELETE',
@@ -743,13 +743,13 @@ document.addEventListener('DOMContentLoaded', function () {
                             }
 
 
-                            alert(
+                            window.SuperFitToast.success(
                                 'تم حذف المستخدم بنجاح'
                             );
 
                         } else {
 
-                            alert(
+                            window.SuperFitToast.error(
                                 'حدث خطأ أثناء الحذف: ' +
                                 data.message
                             );
@@ -765,7 +765,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         );
 
 
-                        alert(
+                        window.SuperFitToast.error(
                             'حدث خطأ أثناء حذف المستخدم.'
                         );
                     });

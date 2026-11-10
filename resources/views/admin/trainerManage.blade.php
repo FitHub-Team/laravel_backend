@@ -13,6 +13,7 @@
 </head>
 
 <body>
+    @include('components.toast-notifications')
 
     <input type="checkbox" id="drawer-check" class="drawer-toggle">
 
@@ -36,12 +37,6 @@
         </nav>
 
         {{-- Success Message --}}
-        @if(session('success'))
-            <div class="alert alert-success">
-                <span class="alert-icon">✓</span>
-                <span>{{ session('success') }}</span>
-            </div>
-        @endif
 
         {{-- Page Header --}}
         <div class="page-header">

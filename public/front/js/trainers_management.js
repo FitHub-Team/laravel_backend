@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     error
                 );
 
-                alert('تعذر جلب تفاصيل المدرب');
+                window.SuperFitToast.error('تعذر جلب تفاصيل المدرب');
 
             });
 
@@ -355,6 +355,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                         if (result.success) {
 
+                            window.SuperFitToast.flash('تم تحديث حالة اعتماد المدرب بنجاح');
                             location.reload();
 
                         }
@@ -365,7 +366,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                         console.error(error);
 
-                        alert(
+                        window.SuperFitToast.error(
                             'حدث خطأ أثناء تحديث حالة الاعتماد'
                         );
 
@@ -448,6 +449,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                         if (result.success) {
 
+                            window.SuperFitToast.flash('تم حذف حساب المدرب بنجاح');
                             window.location.reload();
 
                         }
@@ -458,7 +460,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                         console.error(error);
 
-                        alert(
+                        window.SuperFitToast.error(
                             'حدث خطأ أثناء حذف حساب المدرب'
                         );
 
